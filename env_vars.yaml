@@ -1,1 +1,2 @@
-debug: True
+debug: False
+config: "base"

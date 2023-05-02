@@ -1,27 +1,44 @@
 simulation:
   init_CP: "PBFT"
+  simTime: 600
+  interval_switch: True
+  interval_mean: 30
+
+application:
   Nn: 10
   TI_dur: 25
   Tn: 25
   Tsize: 0.01
-  Bsize: 1
-  block_interval: 0.1
+
+execution:
   creation_time: 0.1
   block_val_delay: 0.5
   msg_val_delay: 0.1
   sync_message_request_delay: 1
 
+data:
+  Bsize: 1
+  block_interval: 0.1
 
 network:
   base_msg_size: 0.2
   gossip: False
   num_neighbours: 2
-  use_latency: True 
+  use_latency: measured 
   same_city_latency_ms: 10
   same_city_dev_ms: 5
+  queueing_delay: 0
+  processing_delay: 0
 
-  same_bandwidth_debug/test: True
-  
+  bandwidth:
+    mean: 10
+    dev: 5
+    debug: True
+
+consensus:
+  BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
+  PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
+
 behaviour:
   behaviour_interval: 10
 
@@ -54,7 +71,3 @@ behaviour:
     mean_recovery_time: 
       low: 10
       high: 60
-
-consensus:
-  BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
-  PBFT: Chain/Consensus/PBFT/PBFT_config.yaml

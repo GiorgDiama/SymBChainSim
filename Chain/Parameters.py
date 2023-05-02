@@ -1,4 +1,4 @@
-import yaml
+import yaml, os
 
 def read_yaml(path):
     with open(path, 'rb') as f:
@@ -21,7 +21,7 @@ class Parameters:
 
     @staticmethod
     def load_params_from_config():
-        params = read_yaml("Configs/new_base.yaml")
+        params = read_yaml(f"Configs/{os.environ['config']}.yaml")
 
         Parameters.simulation = params["simulation"]
         Parameters.simulation["events"] = {} # cnt events of each type
