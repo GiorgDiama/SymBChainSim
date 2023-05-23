@@ -1,6 +1,6 @@
 from Chain.Node import Node
 from Chain.Block import Block
-from Chain.Transaction import FullTransaction
+from Chain.Transaction import TransactionFactory
 from Chain.Parameters import Parameters
 from Chain.EventQueue import Queue
 
@@ -15,7 +15,7 @@ class Simulation:
 
         self.clock = 0
         
-        self.txion_model = FullTransaction(self.nodes, self.nodes)
+        self.txion_model = TransactionFactory(self.nodes)
 
         self.manager = None
 
