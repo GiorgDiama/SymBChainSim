@@ -23,6 +23,22 @@ class Network:
     distance_map = None
 
     @staticmethod
+    def export_state():
+        return {
+            "nodes": Network.nodes,
+            "locations": Network.locations,
+            "latency_map": Network.latency_map,
+            "distance_map": Network.distance_map
+        }
+    
+    @staticmethod
+    def load_state(state):
+        Network.nodes = state["nodes"]
+        Network.locations = state["locations"]
+        Network.distance_map = state["distance_map"]
+        Network.latency_map = state["latency_map"]
+
+    @staticmethod
     def size(msg):
         size = Parameters.network["base_msg_size"]
 
