@@ -10,16 +10,15 @@ from bisect import insort
 Transaction = namedtuple("Transaction", "id timestamp size")
 
 
-class FullTransaction():
+class TransactionFactory:
     '''
         Handles the generation and execution of transactions
     '''
-    def __init__(self, nodes, bps) -> None:
+    def __init__(self, nodes) -> None:
         self.nodes = nodes
-        self.bps = bps
 
     def transaction_prop(self, tx):
-        for node in self.bps:
+        for node in self.nodes:
             node.pool.append(tx)
 
     def generate_interval_txions(self, start):

@@ -102,10 +102,11 @@ class Manager:
 
         Network.set_bandwidths(node)
 
-        self.sim.nodes.append(node)
+        # also appends txion factory since the nodes there are a reference to the sim nodes
+        self.sim.nodes.append(node) 
         Network.nodes = self.sim.nodes
         
-        # bring the node up to date and begin the syncing process
+        # bring the new node up to date and begin the syncing process
         node.update(self.sim.clock)
         
         node.state.synced = False
