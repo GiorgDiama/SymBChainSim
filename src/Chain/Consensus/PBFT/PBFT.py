@@ -1,16 +1,13 @@
 '''
-    BigFoot Consensus Protocol
-    Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with
-    dynamic validator membership"
-
-    BigFoot State:
-        round - round change state defined by the rounds module
-        fast_path - boolean value determining wether the node is in the fast path or not 
-        state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
+    Practival Byzantime Fault Tollerance Consensus Protocol
+    
+    PBFT State:
+        round - current round
+        change_to - canditate round to change to
+        state - PBFT node state (new_round, pre-prepared, prepared, committed, round_change)]
         msgs: list of messages received from other nodes
         timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
-        fast_path_timeout - reference to fast_path_timeout event
-        block -  the proposed block in current round
+        block -  the current proposed block
 '''
 
 from Chain.Block import Block
@@ -24,10 +21,11 @@ from types import SimpleNamespace
 from random import randint
 from sys import modules
 
-NAME = "BigFoot"
+from copy import copy
 
 ########################## PROTOCOL CHARACTERISTICS ###########################
 
+NAME = "PBFT"
 
 def set_state(node):
     # add a reference to the CP module to to allow for CP method calls
@@ -35,18 +33,16 @@ def set_state(node):
 
     node.state.cp_state = SimpleNamespace(
         round=Rounds.round_change_state(),
-        fast_path=None,
         state="",
         miner="",
         msgs={'prepare': [], 'commit': []},
         timeout=None,
-        fast_path_timeout=None,
         block=None,
     )
 
 
 def state_to_string(node):
-    s = f"{Rounds.state_to_string(node)} | CP_state: {node.state.cp_state.state} | block: {node.state.cp_state.block.id if node.state.cp_state.block is not None else -1} | msgs: {node.state.cp_state.msgs} | TO: {round(node.state.cp_state.timeout.time,3) if node.state.cp_state.timeout is not None else -1} | FastTO: {round(node.state.cp_state.fast_path_timeout.time,3) if node.state.cp_state.fast_path_timeout is not None else -1}"
+    s = f"{Rounds.state_to_string(node)} | CP_state: {node.state.cp_state.state} | block: {node.state.cp_state.block.id if node.state.cp_state.block is not None else -1} | msgs: {node.state.cp_state.msgs} | TO: {round(node.state.cp_state.timeout.time,3) if node.state.cp_state.timeout is not None else -1}"
     return s
 
 
@@ -68,10 +64,9 @@ def init(node, time=0, starting_round=0):
     start(node, starting_round, time)
 
 
-def create_BigFoot_block(node, time):
+def create_PBFT_block(node, time):
     # calculate block creation delays
-    time += Parameters.data["block_interval"] + \
-        Parameters.execution["creation_time"]
+    time += Parameters.data["block_interval"] + Parameters.execution["creation_time"]
 
     # create block according to CP
     block = Block(
@@ -82,8 +77,10 @@ def create_BigFoot_block(node, time):
         miner=node.id,
         consensus=modules[__name__]
     )
-    block.extra_data = {'proposer': node.id,
-                        "round": node.state.cp_state.round.round}
+    block.extra_data = {
+        'proposer': node.id,
+        'round': node.state.cp_state.round.round
+    }
 
     # add transactions to the block
     # get current transaction from transaction pool and timeout time
@@ -91,8 +88,8 @@ def create_BigFoot_block(node, time):
     timeout_time = node.state.cp_state.timeout.time
 
     # while the pool is empty and the current time is less than the timeout wait for transactions to be added to the pool
-    # basically the transactions are there - the nodes check when the first transaction in time apears and forwards the clock to that time
-    # if not txions are found before the round timesout, we return -1 and let the block proposal timeout
+    # ( basically the transactions are there - the nodes check when the first transaction in time apears and forwards the clock to that time
+    # if not txions are found before the round times out, we return -1 and let the block proposal timeout
 
     while not current_pool and time + 1 < timeout_time:
         time += 1
@@ -101,22 +98,22 @@ def create_BigFoot_block(node, time):
     if current_pool and time < timeout_time:
         block.transactions, block.size = Parameters.simulation["txion_model"].execute_transactions(
             current_pool)
+
         return block, time
     else:
         return -1, -1
 
-
 ########################## HANDLERER ###########################
 
 
-def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
+def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
     if event.payload['type'] == 'pre_prepare':
         return pre_prepare(event)
     elif event.payload['type'] == 'prepare':
         return prepare(event)
     elif event.payload['type'] == 'commit':
         return commit(event)
-    elif event.payload['type'] == 'timeout' or event.payload['type'] == "fast_path_timeout":
+    elif event.payload['type'] == 'timeout':
         return timeout(event)
     elif event.payload['type'] == 'new_block':
         return new_block(event)
@@ -125,16 +122,28 @@ def handle_event(event):  # specific to BigFoot - called by events in Handler.ha
 
 ########################## PROTOCOL COMMUNICATION ###########################
 
+
+def validate_message(event, node):
+    node_state, cp_state = node.state, node.state.cp_state
+    payload = event.payload
+
+    if payload['round'] < cp_state.round.round:
+        return False
+
+    return True
+
+
 def process_vote(node, type, sender):
-    # BigFoot does not allow for mutliple blocks to be submitted in 1 round
+    # PBFT does not allow for mutliple blocks to be submitted in 1 round
     node.state.cp_state.msgs[type] += [sender.id]
+
 
 def pre_prepare(event):
     node = event.receiver
     time = event.time
     state = node.state.cp_state
     block = event.payload['block']
-
+    
     time += Parameters.execution["msg_val_delay"]
 
     # if node is a new round state (i.e waiting for a new block to be proposed)
@@ -145,14 +154,16 @@ def pre_prepare(event):
 
             # store block as current block
             state.block = event.payload['block'].copy()
+            block = state.block
 
             # change state to pre_prepared since block was accepted
             state.state = 'pre_prepared'
+            state.block = block
 
             # broadcast preare message
             payload = {
                 'type': 'prepare',
-                'block': state.block,
+                'block': block,
                 'round': state.round.round,
             }
             node.scheduler.schedule_broadcast_message(
@@ -170,79 +181,57 @@ def pre_prepare(event):
 
     return 'unhandled'
 
-
 def prepare(event):
     node = event.receiver
     time = event.time
     state = node.state.cp_state
     block = event.payload['block']
+
+    if not validate_message(event, node):
+        return "invalid"
     
     time += Parameters.execution["msg_val_delay"]
 
     if state.state == 'pre_prepared':
-        # validate block
-        time += Parameters.execution["block_val_delay"]
-        
         # count prepare votes from other nodes
         process_vote(node, 'prepare', event.creator)
 
-        # if we have enough prepare messages
-        if not state.fast_path:
-            # leader does not issue a prepare message
-            if len(state.msgs['prepare']) >= Parameters.application["required_messages"] - 1:
-                # change to prepared
-                state.state = 'prepared'
+        # if we have enough prepare messages (2f messages since leader does not participate || has allread 'voted')
+        if len(state.msgs['prepare']) == Parameters.application["required_messages"] - 1:
+            # change to prepared
+            state.state = 'prepared'
 
-                # send commit message
-                payload = {
-                    'type': 'commit',
-                    'block': block,
-                    'round': state.round.round,
-                }
-                node.scheduler.schedule_broadcast_message(
-                    node, time, payload, handle_event)
+            # send commit message
+            payload = {
+                'type': 'commit',
+                'block': block,
+                'round': state.round.round,
+            }
+            node.scheduler.schedule_broadcast_message(
+                node, time, payload, handle_event)
 
-                # count own vote
-                process_vote(node, 'commit', node)
-                return 'new_state'
-        else:
-            # leader does not issue a prepare message
-            if len(state.msgs['prepare']) == Parameters.application["Nn"]-1:
-                if state.block is None:
-                    state.block = block.copy()
+            # count own vote
+            process_vote(node, 'commit', node)
+            return 'new_state'
 
-                node.add_block(state.block, time)
-
-                if node == state.miner:
-                    payload = {
-                        'type': 'new_block',
-                        'block': block,
-                        'round': state.round.round,
-                    }
-
-                    node.scheduler.schedule_broadcast_message(
-                        node, time, payload, handle_event)
-
-                start(node, state.round.round + 1, time)
-
-                return 'new_state'
-            return "handled"
+        return 'handled'
     elif state.state == 'new_round':
         # node has yet to receive enough pre_prepare messages
         return 'backlog'
     elif state.state == "round_change":
         # The only thing that could make the node go into round change during this time
         # is either a timeout or an invalid block. Node will count the messages and if it receieves
-        # enough it will, depending on the reason do the following:
+        # enough it will depending on the reason do the following:
         # 1) (node timed out) will accept block and keep working as normal
-        # 2) (node though block was invalid) try to sync using block_data else request sync
+        # 2) (node though block was invalid) try to sync using block_data else initialise sync
         process_vote(node, 'prepare', event.creator)
-        
-        # if we have enough prepare messages (-1 for leader -1 for slef)
+
+        # if we have enough prepare messages (2f - 2 messages since we trust our self so that makes it 2f (leader does not participate))
+        # in the case where the node has entered rounch switch we do not count our own vote then 2f - 2 for prepare
         if len(state.msgs['prepare']) >= Parameters.application["required_messages"] - 2:
             time += Parameters.execution["block_val_delay"]
 
-            if block.depth -1 == node.last_block.depth:
+            if block.depth - 1 == node.last_block.depth:
                 state.round.round = event.payload['round']
 
                 # store block as current block
@@ -273,7 +262,7 @@ def prepare(event):
                     node.state.synced = False
                     Sync.create_local_sync_event(node, event.creator, time)
 
-            return "handled"
+                return "handled"
 
     return 'invalid'
 
@@ -283,7 +272,9 @@ def commit(event):
     time = event.time
     state = node.state.cp_state
     block = event.payload['block'].copy()
-    
+
+    if not validate_message(event, node):
+        return "invalid"
     time += Parameters.execution["msg_val_delay"]
 
     # if prepared
@@ -302,16 +293,15 @@ def commit(event):
             process_vote(node, 'commit', node)
 
             node.add_block(state.block, time)
+            
+            payload = {
+                'type': 'new_block',
+                'block': block,
+                'round': state.round.round,
+            }
 
-            if node == state.miner:
-                payload = {
-                    'type': 'new_block',
-                    'block': block,
-                    'round': state.round.round,
-                }
-
-                node.scheduler.schedule_broadcast_message(
-                    node, time, payload, handle_event)
+            node.scheduler.schedule_broadcast_message(
+                node, time, payload, handle_event)
 
             start(node, state.round.round + 1, time)
 
@@ -328,19 +318,12 @@ def commit(event):
         # 2) (node though block was invalid) try to sync using block_data else initialise sync
         process_vote(node, 'commit', event.creator)
 
-        # if we have enough commit messages (-1 for self)
+        # if we have enough commit messages (2f messages since we trust our self so that makes it 2f+1)
         if len(state.msgs['commit']) >= Parameters.application["required_messages"] - 1:
             time += Parameters.execution["block_val_delay"]
 
-            if block.depth -1 == node.last_block.depth:
+            if block.depth - 1 == node.last_block.depth:
                 state.round.round = event.payload['round']
-
-                # try to correct round
-                if state.round.round < event.payload['round']:
-                    state.round.round = event.payload['round']
-
-                if state.block is None:
-                    state.block = block.copy()
 
                 # send commit message (since now node agrees that this block should be commited)
                 payload = {
@@ -350,8 +333,6 @@ def commit(event):
                 }
                 node.scheduler.schedule_broadcast_message(
                     node, time, payload, handle_event)
-
-
 
                 process_vote(node, 'commit', node)
 
@@ -385,12 +366,16 @@ def new_block(event):
     block = event.payload['block']
     time = event.time
 
-    time += Parameters.execution["msg_val_delay"] + Parameters.execution["block_val_delay"]
-    
+    if not validate_message(event, node):
+        return "invalid"
+    time += Parameters.execution["msg_val_delay"]
+
+    time += Parameters.execution["block_val_delay"]
+
     # old block (ignore)
     if block.depth <= node.blockchain[-1].depth:
         return "invalid"
-    
+
     # future block (sync)
     elif block.depth > node.blockchain[-1].depth + 1:
         if node.state.synced:
@@ -398,13 +383,10 @@ def new_block(event):
             Sync.create_local_sync_event(node, event.creator, time)
 
             return "handled"
-    else:  
-        # Valid block (we assume message + block are valid)
-        # correct round - since message is valid and contains validator votes then if this is a future round
-        # node did not participate in the CP (likely to have just recieved sync but missed a round-change)
+    else:  # Valid block
+        # correct round
         if event.payload['round'] > node.state.cp_state.round.round:
             node.state.cp_state.round.round
-
         # add block and start new round
         node.add_block(block, time)
         start(node, event.payload['round']+1, time)
@@ -423,8 +405,6 @@ def start(node, new_round, time):
     state = node.state.cp_state
 
     state.state = 'new_round'
-    state.fast_path = True
-
     node.backlog = []
 
     reset_msgs(node)
@@ -435,11 +415,10 @@ def start(node, new_round, time):
     get_miner(node)
 
     if state.miner == node.id:
+        # taking into account block interval for the propossal round timeout
         schedule_timeout(node, Parameters.data["block_interval"] + time)
-        schedule_timeout(node, Parameters.data["block_interval"] + time,
-                          fast_path=True)
 
-        block, creation_time = create_BigFoot_block(node, time)
+        block, creation_time = create_PBFT_block(node, time)
 
         if creation_time == -1:
             print(f"Block creationg failed at {time} for CP {NAME}")
@@ -447,19 +426,18 @@ def start(node, new_round, time):
 
         state.state = 'pre_prepared'
         state.block = block.copy()
-
+        
         payload = {
             'type': 'pre_prepare',
             'block': block,
             'round': new_round,
-        }
+        }   
 
         node.scheduler.schedule_broadcast_message(
             node, creation_time, payload, handle_event)
     else:
+        # taking into account block interval for the propossal round timeout
         schedule_timeout(node, Parameters.data["block_interval"] + time)
-        schedule_timeout(node, Parameters.data["block_interval"] + time,
-                          fast_path=True)
 
 ########################## TIMEOUTS ###########################
 
@@ -467,106 +445,47 @@ def start(node, new_round, time):
 def timeout(event):
     node = event.creator
 
-    if not node.state.synced:
-        pass
-
     if event.payload['round'] == node.state.cp_state.round.round:
-        if event.payload['type'] == "fast_path_timeout":
-            state = node.state.cp_state
-            time = event.time
+        if event.actor.update(event.time):
+            return 0
 
-            # set fast_path to false and remove TO event
-            state.fast_path = False
-            state.fast_path_timeout = None
+        if node.state.synced:
+            synced, in_sync_neighbour = node.synced_with_neighbours()
+            if not synced:
+                node.state.synced = False
+                Sync.create_local_sync_event(
+                    node, in_sync_neighbour, event.time)
 
-            if not node.state.synced:
-                # if node is not synced it cannot send any commit messages
-                return "handled"
-
-            # In case fast path times out - check if we have enough prepare votes now (if so go to prepared state)
-            if state.block is not None and len(state.msgs['prepare']) >= Parameters.application["required_messages"] - 1:
-                # change to prepared
-                state.state = 'prepared'
-
-                # send commit message
-                payload = {
-                    'type': 'commit',
-                    'block': state.block,
-                    'round': state.round.round,
-                }
-                node.scheduler.schedule_broadcast_message(
-                    node, time, payload, handle_event)
-
-                # count own vote
-                process_vote(node, 'commit', node)
-                return 'new_state'
-        else:
-            if event.actor.update(event.time):
-                return 0
-
-            if node.state.synced:
-                synced, in_sync_neighbour = node.synced_with_neighbours()
-                if not synced:
-                    node.state.synced = False
-                    Sync.create_local_sync_event(
-                        node, in_sync_neighbour, event.time)
-
-            Rounds.change_round(node, event.time)
-
-        # handled because even though we change state to round_chage or new_state there is no need to handle backlog
-        return "handled"
+        Rounds.change_round(node, event.time)
+        return "handled"  # changes state to round_chage but no need to handle backlog
 
     return "invalid"
 
 
-def schedule_timeout(node, time, remove=True, add_time=True, fast_path=False):
-    if fast_path:
-        # set nodes fast_path attribute to True since fast path just started
-        node.state.fast_path = True
+def schedule_timeout(node, time, remove=True, add_time=True):
+    if node.state.cp_state.timeout is not None and remove:
+        try:
+            node.remove_event(node.state.cp_state.timeout)
+        except ValueError:
+            pass
 
-        if node.state.cp_state.fast_path_timeout is not None:
-            try:
-                node.remove_event(node.state.cp_state.fast_path_timeout)
-            except ValueError:
-                pass
+    if add_time:
+        time += Parameters.PBFT['timeout']
 
-        if add_time:
-            time += float(Parameters.BigFoot["fast_path_timeout"])
+    payload = {
+        'type': 'timeout',
+        'round': node.state.cp_state.round.round,
+    }
 
-        payload = {
-            'type': 'fast_path_timeout',
-            'round': node.state.cp_state.round.round,
-        }
-        event = node.scheduler.schedule_event(
-            node, time, payload, handle_event)
-
-        node.state.cp_state.fast_path_timeout = event
-    else:
-        if node.state.cp_state.timeout is not None and remove:
-            try:
-                node.remove_event(node.state.cp_state.timeout)
-            except ValueError:
-                pass
-
-        if add_time:
-            time += float(Parameters.BigFoot['timeout'])
-
-        payload = {
-            'type': 'timeout',
-            'round': node.state.cp_state.round.round,
-        }
-
-        event = node.scheduler.schedule_event(
-            node, time, payload, handle_event)
-
-        node.state.cp_state.timeout = event
+    event = node.scheduler.schedule_event(node, time, payload, handle_event)
+    node.state.cp_state.timeout = event
 
 ########################## RESYNC CP SPECIFIC ACTIONS ###########################
 
 
 def resync(node, payload, time):
     '''
-        BigFoot specific resync actions
+        PBFT specific resync actions
     '''
     set_state(node)
     if node.state.cp_state.round.round < payload['blocks'][-1].extra_data['round']:
@@ -575,7 +494,6 @@ def resync(node, payload, time):
     schedule_timeout(node, time=time)
 
 ######################### OTHER #################################################
-
 
 def clean_up(node):
     for event in node.queue.event_list:

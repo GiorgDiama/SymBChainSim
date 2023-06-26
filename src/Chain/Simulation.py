@@ -15,13 +15,11 @@ class Simulation:
 
         self.clock = 0
         
-        self.txion_model = TransactionFactory(self.nodes)
-
         self.manager = None
 
         self.current_cp = Parameters.simulation['init_CP']
 
-        Parameters.simulation['txion_model'] = self.txion_model
+        Parameters.simulation['txion_model'] = TransactionFactory(self.nodes)
 
         self.system_queue = Queue()
 
@@ -30,7 +28,7 @@ class Simulation:
     def init_simulation(self, CP):
         genesis = Block.genesis_block()
 
-        self.txion_model.generate_interval_txions(self.clock)
+        Parameters.simulation['txion_model'].generate_interval_txions(self.clock)
 
         for n in self.nodes:
             n.add_block(genesis, self.clock)

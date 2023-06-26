@@ -24,13 +24,13 @@ class Parameters:
         return {
             "simulation": Parameters.simulation,
             "application": Parameters.application,
-            "execution": Parameters.execution,
-            "data": Parameters.data,
-            "consensus": Parameters.consensus,
-            "network": Parameters.network,
+            # "execution": Parameters.execution,
+            # "data": Parameters.data,
+            # "consensus": Parameters.consensus,
+            # "network": Parameters.network,
 
-            "BigFoot": Parameters.BigFoot,
-            "PBFT": Parameters.PBFT
+            # "BigFoot": Parameters.BigFoot,
+            # "PBFT": Parameters.PBFT
         }
     
     @staticmethod

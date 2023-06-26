@@ -5,7 +5,7 @@ simulation:
   interval_mean: 30
 
 application:
-  Nn: 10
+  Nn: 4
   TI_dur: 25
   Tn: 25
   Tsize: 0.01
@@ -18,7 +18,7 @@ execution:
 
 data:
   Bsize: 1
-  block_interval: 0.1
+  block_interval: 0.5
 
 network:
   base_msg_size: 0.2
@@ -31,8 +31,8 @@ network:
   processing_delay: 0
 
   bandwidth:
-    mean: 10
-    dev: 5
+    mean: 2
+    dev: .5
     debug: True
 
 consensus:
@@ -62,7 +62,7 @@ behaviour:
   crash_probs:
     # percent of nodes that can crash (go offiline)
     # (based on the number of faulty nodes that the CP can tolerate) 
-    faulty_nodes: 2
+    faulty_nodes: 0
     # probabilities for crash
     mean_fault_time: 
       low: 30

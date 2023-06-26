@@ -7,10 +7,11 @@ import Chain.tools as tools
 
 from Chain.Event import Event, MessageEvent
 
+from Chain.Metrics import SimulationState
+
 '''
     Handling and running Events
 '''
-
 
 def handle_event(event, backlog=True):
     '''
@@ -23,6 +24,9 @@ def handle_event(event, backlog=True):
             unhadled    - Could not handle (error message)
             backlog     - future message, add to backlog
     '''
+
+    SimulationState.store_event(event)
+
     if event.payload["type"] in Parameters.simulation["events"].keys():
         Parameters.simulation["events"][event.payload["type"]] += 1
     else:
