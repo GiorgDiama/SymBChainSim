@@ -1,7 +1,7 @@
 simulation:
   init_CP: "PBFT"
   simTime: 600
-  interval_switch: True
+  interval_switch: False
   interval_mean: 30
 
 application:
