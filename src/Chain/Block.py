@@ -36,6 +36,8 @@ class Block:
                           
         new_block.extra_data = copy.copy(self.extra_data)
 
+        new_block.time_added = self.time_added
+
         return new_block
 
     def to_serializable(self):

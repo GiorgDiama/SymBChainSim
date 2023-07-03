@@ -6,6 +6,7 @@
 
 from Chain.Network import Network
 from Chain.Parameters import Parameters
+
 import Chain.tools as tools
 
 from random import randint, sample
@@ -27,16 +28,20 @@ def create_local_sync_event(desynced_node, request_node, time):
     latest_block = desynced_node.last_block
     missing_blocks = [b.copy() for b in request_node.blockchain if b.depth > latest_block.depth]    
 
-    # calculate delay (validation delay + network delay)
-    delay_network = Network.calculate_message_propagation_delay(
-        request_node, desynced_node, sum([x.size for x in missing_blocks]))
+    total_delay = 0    
+    
+    for i, b in enumerate(missing_blocks):
+        delay_network = Network.calculate_message_propagation_delay(
+            request_node, desynced_node, b.size)
+        
+        delay = delay_network + Parameters.execution["block_val_delay"] + Parameters.execution["sync_message_request_delay"]
 
-    delay_validation = Parameters.execution["block_val_delay"] * len(missing_blocks)
+        total_delay += delay    
 
-    delay = delay_network + delay_validation + Parameters.execution["sync_message_request_delay"]
+        missing_blocks[i].time_added += delay
 
     missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
-   
+    
     # create local sync event on desynced_node after delay
     if missbehaviour:
         payload = {
@@ -71,9 +76,8 @@ def handle_local_sync_event(event):
         create_local_sync_event(node, sample(node.neighbours, 1)[0], event.time)
     else:
         received_blocks = event.payload['blocks']
-
         for b in received_blocks:
-            # there is change the node was updated before this message made it to them 
+            # there is a chance the node was updated before this message made it to them 
             # so checking to not add repeat blocks
             if b.depth == node.blockchain[-1].depth + 1:
                 node.blockchain.append(b)
