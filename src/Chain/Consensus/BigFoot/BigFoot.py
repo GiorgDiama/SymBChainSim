@@ -175,10 +175,7 @@ def prepare(event):
     
     time += Parameters.execution["msg_val_delay"]
 
-    if state.state == 'pre_prepared':
-        # validate block
-        time += Parameters.execution["block_val_delay"]
-        
+    if state.state == 'pre_prepared':        
         # count prepare votes from other nodes
         process_vote(node, 'prepare', event.creator)
 
