@@ -125,10 +125,6 @@ def process_vote(node, type, sender):
     # BigFoot does not allow for mutliple blocks to be submitted in 1 round
     node.state.cp_state.msgs[type] += [sender.id]
 
-
-def test_cherry_pick():
-    pass
-
 def pre_prepare(event):
     node = event.receiver
     time = event.time
