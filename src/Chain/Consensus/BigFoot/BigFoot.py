@@ -66,7 +66,8 @@ def init(node, time=0, starting_round=0):
 
 def create_BigFoot_block(node, time):
     # calculate block creation delays
-    time += Parameters.data["block_interval"] + Parameters.execution["creation_time"]
+    time += Parameters.data["block_interval"] + \
+        Parameters.execution["creation_time"]
 
     # create block according to CP
     block = Block(
@@ -77,10 +78,8 @@ def create_BigFoot_block(node, time):
         miner=node.id,
         consensus=modules[__name__]
     )
-    block.extra_data = {
-        'proposer': node.id,
-        "round": node.state.cp_state.round.round
-    }
+    block.extra_data = {'proposer': node.id,
+                        "round": node.state.cp_state.round.round}
 
     # add transactions to the block
     # get current transaction from transaction pool and timeout time
@@ -167,6 +166,7 @@ def pre_prepare(event):
 
     return 'unhandled'
 
+
 def prepare(event):
     node = event.receiver
     time = event.time
@@ -176,6 +176,9 @@ def prepare(event):
     time += Parameters.execution["msg_val_delay"]
 
     if state.state == 'pre_prepared':
+        # validate block
+        time += Parameters.execution["block_val_delay"]
+        
         # count prepare votes from other nodes
         process_vote(node, 'prepare', event.creator)
 
@@ -216,17 +219,6 @@ def prepare(event):
                     node.scheduler.schedule_broadcast_message(
                         node, time, payload, handle_event)
 
-=======
-                payload = {
-                    'type': 'new_block',
-                    'block': block,
-                    'round': state.round.round,
-                }
-
-                node.scheduler.schedule_broadcast_message(
-                    node, time, payload, handle_event)
-                
->>>>>>> Stashed changes
                 start(node, state.round.round + 1, time)
 
                 return 'new_state'
@@ -291,9 +283,6 @@ def commit(event):
 
     # if prepared
     if state.state == 'prepared':
-        # validate block
-        time += Parameters.execution["block_val_delay"]
-
         process_vote(node, 'commit', event.creator)
 
         if len(state.msgs['commit']) >= Parameters.application["required_messages"]:
@@ -309,16 +298,15 @@ def commit(event):
 
             node.add_block(state.block, time)
 
-            payload = {
-                'type': 'new_block',
-                'block': block,
-                'round': state.round.round,
-            }
+            if node == state.miner:
+                payload = {
+                    'type': 'new_block',
+                    'block': block,
+                    'round': state.round.round,
+                }
 
                 node.scheduler.schedule_broadcast_message(
                     node, time, payload, handle_event)
-            node.scheduler.schedule_broadcast_message(
-                node, time, payload, handle_event)
 
             start(node, state.round.round + 1, time)
 

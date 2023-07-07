@@ -40,9 +40,11 @@ def set_state(node):
         block=None,
     )
 
+
 def state_to_string(node):
     s = f"{Rounds.state_to_string(node)} | CP_state: {node.state.cp_state.state} | block: {node.state.cp_state.block.id if node.state.cp_state.block is not None else -1} | msgs: {node.state.cp_state.msgs} | TO: {round(node.state.cp_state.timeout.time,3) if node.state.cp_state.timeout is not None else -1}"
     return s
+
 
 def reset_msgs(node):
     node.state.cp_state.msgs = {'prepare': [], 'commit': []}
@@ -119,9 +121,7 @@ def handle_event(event):  # specific to PBFT - called by events in Handler.handl
         return 'unhadled'
 
 ########################## PROTOCOL COMMUNICATION ###########################
-def process_vote(node, type, sender):
-    # PBFT does not allow for mutliple blocks to be submitted in 1 round
-    node.state.cp_state.msgs[type] += [sender.id]
+
 
 def validate_message(event, node):
     node_state, cp_state = node.state, node.state.cp_state
@@ -131,6 +131,12 @@ def validate_message(event, node):
         return False
 
     return True
+
+
+def process_vote(node, type, sender):
+    # PBFT does not allow for mutliple blocks to be submitted in 1 round
+    node.state.cp_state.msgs[type] += [sender.id]
+
 
 def pre_prepare(event):
     node = event.receiver
@@ -269,7 +275,6 @@ def commit(event):
 
     if not validate_message(event, node):
         return "invalid"
-    
     time += Parameters.execution["msg_val_delay"]
 
     # if prepared
