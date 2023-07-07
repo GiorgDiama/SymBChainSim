@@ -127,7 +127,7 @@ def process_vote(node, type, sender):
 
 
 def test_cherry_pick():
-    pass
+    print("CONFLICT?")
 
 def pre_prepare(event):
     node = event.receiver
