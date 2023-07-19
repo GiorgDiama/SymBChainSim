@@ -386,6 +386,7 @@ def new_block(event):
     else:  # Valid block
         # correct round
         if event.payload['round'] > node.state.cp_state.round.round:
+            # BUG: minor bug: fix and test
             node.state.cp_state.round.round
         # add block and start new round
         node.add_block(block, time)
