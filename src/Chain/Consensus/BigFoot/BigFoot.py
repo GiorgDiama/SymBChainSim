@@ -355,9 +355,9 @@ class BigFoot():
                         'round': self.rounds.round,
                     }
                     self.node.scheduler.schedule_broadcast_message(
-                        time, payload, self.handle_event)
+                        self.node, time, payload, self.handle_event)
 
-                    self.start(self.round.round + 1, time)
+                    self.start(self.rounds.round + 1, time)
 
                     return 'new_state'
                 else:
