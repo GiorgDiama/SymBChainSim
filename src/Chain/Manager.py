@@ -5,6 +5,7 @@ from Chain.Node import Node
 from Chain.Event import SystemEvent
 
 from Chain.Consensus.PBFT.PBFT import PBFT
+from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 import Chain.tools as tools
 
@@ -15,7 +16,8 @@ from random import randint, sample, choice, expovariate, normalvariate
 import math, sys, os
 
 CPs = {
-    PBFT.NAME: PBFT
+    PBFT.NAME: PBFT,
+    BigFoot.NAME: BigFoot
 }
 
 class Manager:

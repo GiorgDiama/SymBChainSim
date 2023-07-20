@@ -1,5 +1,5 @@
 simulation:
-  init_CP: "PBFT"
+  init_CP: "BigFoot"
   simTime: 600
   interval_switch: False
   interval_mean: 30

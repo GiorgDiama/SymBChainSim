@@ -169,11 +169,11 @@ class Node():
         }
 
     def update(self, time, round=-1):
-        if Parameters.application["CP"] != self.cp:
+        if Parameters.application["CP"].NAME != self.cp.NAME:
             self.reset()
-            self.cp = Parameters.application["CP"](self)
-            self.cp.init()
+            self.cp = Parameters.application["CP"].init(time=time)
             return True
+        
         return False
 
     def reset(self):

@@ -8,12 +8,11 @@ def round_change_state(round=0):
     '''
         Rounc chage state
     '''
-    state = {
-        'round': round,
-        'change_to': -1,
-        'votes': {},
-    }
-    return SimpleNamespace(**state)
+    return SimpleNamespace(
+        round=round,
+        change_to=-1, 
+        votes={}
+    )
 
 def state_to_string(node):
     '''

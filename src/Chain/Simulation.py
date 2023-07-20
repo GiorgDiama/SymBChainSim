@@ -5,6 +5,7 @@ from Chain.Parameters import Parameters
 from Chain.EventQueue import Queue
 
 from Chain.Consensus.PBFT.PBFT import PBFT
+from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 import Chain.tools as tools
 

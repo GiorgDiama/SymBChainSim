@@ -26,11 +26,11 @@ class PBFT():
 
     def __init__(self, node) -> None:
         self.rounds = Rounds.round_change_state()
-        self.state=""
-        self.miner=""
-        self.msgs={'prepare': [], 'commit': []}
-        self.timeout=None
-        self.block=None
+        self.state = ""
+        self.miner = ""
+        self.msgs = {'prepare': [], 'commit': []}
+        self.timeout = None
+        self.block = None
 
         self.node = node
     
@@ -44,7 +44,6 @@ class PBFT():
 
     def state_to_string(self):
         s = f"{self.rounds.round} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
-        
         return s
 
     def reset_msgs(self):
@@ -387,8 +386,8 @@ class PBFT():
         self.schedule_timeout(time, remove=True, add_time=True)
 
     def start(self, new_round=0, time=0):
-        # if self.node.update(time):
-        #     return 0
+        if self.node.update(time):
+            return 0
 
         self.state = 'new_round'
         self.node.backlog = []
@@ -431,8 +430,8 @@ class PBFT():
         node = self.node
 
         if event.payload['round'] == self.rounds.round:
-            # if self.update(event.time):
-            #     return 0
+            if self.update(event.time):
+                return 0
 
             if node.state.synced:
                 synced, in_sync_neighbour = node.synced_with_neighbours()
