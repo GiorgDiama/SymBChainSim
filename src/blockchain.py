@@ -4,8 +4,8 @@ from Chain.Manager import Manager
 
 import random, numpy
 
-import Chain.Consensus.PBFT.PBFT as PBFT
-import Chain.Consensus.BigFoot.BigFoot as BigFoot
+from Chain.Consensus.PBFT.PBFT import PBFT
+from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 from Chain.Metrics import SimulationState, Metrics
 
@@ -26,8 +26,8 @@ def run():
 
     for n in manager.sim.nodes:
         print(n, '| Total_blocks:', n.blockchain_length(),
-            '| pbft:',len([x for x in n.blockchain if x.consensus == PBFT]),
-            '| bf:',len([x for x in n.blockchain if x.consensus == BigFoot]),
+            '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
+            '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
             )
     
     SimulationState.store_state(manager.sim)

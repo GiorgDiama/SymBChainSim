@@ -118,7 +118,7 @@ class BigFoot():
         elif event.payload['type'] == 'commit':
             return event.actor.cp.commit(event)
         elif event.payload['type'] == 'timeout' or event.payload['type'] == "fast_path_timeout":
-            return event.actor.cp.timeout(event)
+            return event.actor.cp.handle_timeout(event)
         elif event.payload['type'] == 'new_block':
             return event.actor.cp.new_block(event)
         else:
@@ -450,7 +450,7 @@ class BigFoot():
     ########################## TIMEOUTS ###########################
 
 
-    def timeout(self, event):
+    def handle_timeout(self, event):
         if event.payload['round'] == self.rounds.round:
             if event.payload['type'] == "fast_path_timeout":
                 time = event.time

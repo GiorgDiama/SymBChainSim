@@ -109,7 +109,7 @@ class PBFT():
         elif event.payload['type'] == 'commit':
             return event.actor.cp.commit(event)
         elif event.payload['type'] == 'timeout':
-            return event.actor.cp.timeout(event)
+            return event.actor.cp.handle_timeout(event)
         elif event.payload['type'] == 'new_block':
             return event.actor.cp.new_block(event)
         else:
@@ -426,7 +426,7 @@ class PBFT():
 
     ########################## TIMEOUTS ###########################
 
-    def timeout(self, event):
+    def handle_timeout(self, event):
         node = self.node
 
         if event.payload['round'] == self.rounds.round:
