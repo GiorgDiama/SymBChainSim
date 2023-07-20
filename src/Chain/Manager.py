@@ -41,6 +41,7 @@ class Manager:
         tools.set_env_vars_from_config()
         Parameters.load_params_from_config()
 
+
         Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
         
         # create simulator
@@ -122,6 +123,21 @@ class Manager:
         Parameters.calculate_fault_tolerance()
 
         rem_node = self.sim.nodes.pop()
+
+        '''
+            TODO / BUG:
+                Removing a node will not update the neighbours of nodes!
+            
+            TEMP WORKAROUND: 
+                reassign the neibhours of nodes that had the removed node in their neighbour list
+
+            ideally, they would do that once they realised that the node is not there anymore
+        '''
+
+        for node in self.sim.nodes:
+            if rem_node in node.neighbours:
+                Network.assign_neighbours(node)
+
 
     def update_sim(self):
         '''

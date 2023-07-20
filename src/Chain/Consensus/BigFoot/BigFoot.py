@@ -19,10 +19,7 @@ from Chain.Parameters import Parameters
 import Chain.Consensus.Rounds as Rounds
 import Chain.Consensus.HighLevelSync as Sync
 
-from types import SimpleNamespace
-
 from random import randint
-from sys import modules
 
 ########################## PROTOCOL CHARACTERISTICS ###########################
 

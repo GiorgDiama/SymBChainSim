@@ -19,8 +19,6 @@ import Chain.Consensus.HighLevelSync as Sync
 from random import randint
 from sys import modules
 
-from copy import copy
-
 class PBFT():
     NAME = "PBFT"
 
