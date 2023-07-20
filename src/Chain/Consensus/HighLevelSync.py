@@ -93,7 +93,8 @@ def handle_local_sync_event(event):
         node.state.synced = True
 
         if received_blocks:
-            received_blocks[-1].consensus.resync(node, event.payload, event.time)
+            node.cp.resync(event.payload, event.time)
+            #received_blocks[-1].consensus.resync(node, event.payload, event.time)
         
         if node.update(event.time):
             return 0

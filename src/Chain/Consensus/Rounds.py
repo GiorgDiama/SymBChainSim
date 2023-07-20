@@ -45,7 +45,7 @@ def change_round(node, time):
 
     new_round = get_next_round(node)
 
-    state.round.change_to = new_round
+    state.rounds.change_to = new_round
 
     payload = {
         'type': 'round_change',
@@ -61,22 +61,22 @@ def handle_round_change_msg(event):
     new_round = event.payload['new_round']
     state = node.cp
 
-    msgs = state.round.votes
+    msgs = state.rounds.votes
 
-    if state.round.round >= new_round:
+    if state.rounds.round >= new_round:
         return 'invalid'
 
     if ret := count_round_change_vote(node, new_round, event.creator) == 'invalid':
         return ret
 
-    if (len(msgs[new_round]) == Parameters.application["f"]+1) and (new_round > state.round.change_to):
+    if (len(msgs[new_round]) == Parameters.application["f"]+1) and (new_round > state.rounds.change_to):
         state.state = 'round_change'
-        state.round.change_to = new_round
+        state.rounds.change_to = new_round
 
     if len(msgs[new_round]) == Parameters.application["required_messages"] - 1:
         # if a node receives enough round messages to change round and has not send a round change message in the past
         # send message (the node wants to change round since majority wants to change round)
-        state.round.change_to == new_round
+        state.rounds.change_to == new_round
         change_round(node, time)
 
         node.cp.start(new_round, time)

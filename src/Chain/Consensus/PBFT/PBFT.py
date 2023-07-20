@@ -430,7 +430,7 @@ class PBFT():
         node = self.node
 
         if event.payload['round'] == self.rounds.round:
-            if self.update(event.time):
+            if self.node.update(event.time):
                 return 0
 
             if node.state.synced:

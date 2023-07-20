@@ -96,7 +96,7 @@ class Node():
         else:
             if full:
                 return f"{color(f'**dead** Node: {self.id}',41)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
-                        \n   CP: {self.cp.state_to_string(self)} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                        \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
 

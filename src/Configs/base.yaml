@@ -5,7 +5,7 @@ simulation:
   interval_mean: 30
 
 application:
-  Nn: 4
+  Nn: 5
   TI_dur: 25
   Tn: 25
   Tsize: 0.01
@@ -31,9 +31,9 @@ network:
   processing_delay: 0
 
   bandwidth:
-    mean: 2
-    dev: .5
-    debug: True
+    mean: 12
+    dev: 2
+    debug: False
 
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
@@ -45,7 +45,7 @@ behaviour:
   byzantine_nodes:
     # percent of nodes that will be byzantine
     # (percentange based on how many faulty nodes the network can tolerate)
-    num_byzantine: 0
+    num_byzantine: 1
   sync:
     # define the chance a byzantine node will send bad sync data 
     # (and the delay that will cause)
@@ -62,7 +62,7 @@ behaviour:
   crash_probs:
     # percent of nodes that can crash (go offiline)
     # (based on the number of faulty nodes that the CP can tolerate) 
-    faulty_nodes: 0
+    faulty_nodes: 1
     # probabilities for crash
     mean_fault_time: 
       low: 30

@@ -304,7 +304,7 @@ class BigFoot():
                     self.node.scheduler.schedule_broadcast_message(
                         self.node, time, payload, self.handle_event)
 
-                self.start(self.round.round + 1, time)
+                self.start(self.rounds.round + 1, time)
 
                 return 'new_state'
             return 'handled'
@@ -550,7 +550,7 @@ class BigFoot():
         '''
         self.set_state()
         if self.rounds.round < payload['blocks'][-1].extra_data['round']:
-            self.round.round = payload['blocks'][-1].extra_data['round']
+            self.rounds.round = payload['blocks'][-1].extra_data['round']
 
         self.schedule_timeout(time=time)
 
