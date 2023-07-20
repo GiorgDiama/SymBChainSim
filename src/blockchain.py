@@ -4,8 +4,8 @@ from Chain.Manager import Manager
 
 import random, numpy
 
-import Chain.Consensus.BigFoot.BigFoot as BigFoot
 import Chain.Consensus.PBFT.PBFT as PBFT
+import Chain.Consensus.BigFoot.BigFoot as BigFoot
 
 from Chain.Metrics import SimulationState, Metrics
 
@@ -37,7 +37,5 @@ def run():
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
 
-    
-    
 
 run()

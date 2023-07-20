@@ -9,6 +9,18 @@ from types import SimpleNamespace
 
 from Chain.tools import color
 
+
+class Behaviour():
+    # model behaiviour of a fautly node
+    faulty = None
+    mean_fault_time = None
+    mean_recovery_time = None
+    recover_at = None
+    fault_event = None
+    recovery_event = None
+    byzantine = None
+    sync_fault_chance = None
+
 class Node():
     '''
     Node - models a blockchain node
@@ -51,29 +63,18 @@ class Node():
         self.neighbours = None
         self.location = None
         self.bandwidth = None
-
+        
         self.state = SimpleNamespace(
-            synced=True,
-            alive=True,
-            cp=None,
-            cp_state = None,
+            alive = True,
+            synced = True
         )
 
-        self.behaviour = SimpleNamespace(
-            # model behaiviour of a fautly node
-            faulty=None,
-            mean_fault_time=None,
-            mean_recovery_time=None,
-            recover_at=None,
-            fault_event=None,
-            recovery_event=None,
-            
-            byzantine=None,
-            sync_fault_chance=None,
-        )
+        self.cp = None
 
+        self.behaviour = Behaviour()
+        
         self.scheduler = Scheduler(self)
-
+        
         self.queue = Queue()
         self.sync_queue = Queue()
 
@@ -88,14 +89,14 @@ class Node():
     def __str__(self, full=False):
         if self.state.alive:
             if full:
-                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.state.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
-                        \n   CP: {self.state.cp.state_to_string(self)} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
+                        \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{color(f'**dead** Node: {self.id}',41)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.state.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
-                        \n   CP: {self.state.cp.state_to_string(self)} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                return f"{color(f'**dead** Node: {self.id}',41)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
+                        \n   CP: {self.cp.state_to_string(self)} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
 
@@ -161,22 +162,22 @@ class Node():
             "state": {
                 "synced": self.state.synced,
                 "alive": self.state.alive,
-                "cp": self.state.cp.NAME
+                "cp": self.cp.NAME
             },
 
             "behaviour": self.behaviour
         }
 
     def update(self, time, round=-1):
-        if Parameters.application["CP"] != self.state.cp:
+        if Parameters.application["CP"] != self.cp:
             self.reset()
-            self.state.cp = Parameters.application["CP"]
-            self.state.cp.init(self, time)
+            self.cp = Parameters.application["CP"](self)
+            self.cp.init()
             return True
         return False
 
     def reset(self):
-        self.state.cp.clean_up(self)
+        self.cp.clean_up()
         self.backlog = []
 
     def stored_txions(self, num=None):

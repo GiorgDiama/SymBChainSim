@@ -43,10 +43,6 @@ def set_state(node):
         block=None,
     )
 
-def state_to_string(node):
-    s = f"{Rounds.state_to_string(node)} | CP_state: {node.state.cp_state.state} | block: {node.state.cp_state.block.id if node.state.cp_state.block is not None else -1} | msgs: {node.state.cp_state.msgs} | TO: {round(node.state.cp_state.timeout.time,3) if node.state.cp_state.timeout is not None else -1} | FastTO: {round(node.state.cp_state.fast_path_timeout.time,3) if node.state.cp_state.fast_path_timeout is not None else -1}"
-    return s
-
 def reset_msgs(node):
     node.state.cp_state.msgs = {'prepare': [], 'commit': []}
     Rounds.reset_votes(node)

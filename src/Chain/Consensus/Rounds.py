@@ -19,14 +19,14 @@ def state_to_string(node):
     '''
         returns the state of *node* as a string
     '''
-    s = f"round: {node.state.cp_state.round.round} | change_to: {node.state.cp_state.round.change_to} | round_votes: {node.state.cp_state.round.votes}"
+    s = f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
     return s
 
 def reset_votes(node):
     '''
         resets round change votes of node
     '''
-    node.state.cp_state.round.votes = {}
+    node.cp.rounds.votes = {}
 
 def handle_event(event):
     '''
@@ -39,8 +39,8 @@ def change_round(node, time):
     '''
         Begins the round change process in *node*
     '''
-    node.state.cp.init_round_chage(node, time)
-    state = node.state.cp_state
+    node.cp.init_round_chage(time)
+    state = node.cp
     
     state.state = 'round_change'
 
@@ -60,7 +60,7 @@ def handle_round_change_msg(event):
     node = event.receiver
     time = event.time
     new_round = event.payload['new_round']
-    state = node.state.cp_state
+    state = node.cp
 
     msgs = state.round.votes
 
@@ -80,26 +80,26 @@ def handle_round_change_msg(event):
         state.round.change_to == new_round
         change_round(node, time)
 
-        node.state.cp.start(node, new_round, time)
+        node.cp.start(new_round, time)
         return "handled"
 
 
 def get_next_round(node):
-    change_msgs = node.state.cp_state.round.votes
+    change_msgs = node.cp.rounds.votes
 
     new_round_candidates = [
         x for x in change_msgs.items() if len(x[1]) >= Parameters.application["f"]]
 
     if new_round_candidates:
         largest_proposed = max(new_round_candidates, key=lambda x: x[0])[0]
-        own = node.state.cp_state.round.round + 1
+        own = node.cp.rounds.round + 1
         return max(largest_proposed, own)
 
-    return node.state.cp_state.round.round + 1
+    return node.cp.rounds.round + 1
 
 
 def count_round_change_vote(node, new_round, voter):
-    msgs = node.state.cp_state.round.votes
+    msgs = node.cp.rounds.votes
 
     for key in msgs:
         # check if the voter has voted for some other round

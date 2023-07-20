@@ -4,8 +4,7 @@ from Chain.Network import Network
 from Chain.Node import Node
 from Chain.Event import SystemEvent
 
-import Chain.Consensus.BigFoot.BigFoot as BigFoot
-import Chain.Consensus.PBFT.PBFT as PBFT
+from Chain.Consensus.PBFT.PBFT import PBFT
 
 import Chain.tools as tools
 
@@ -16,7 +15,6 @@ from random import randint, sample, choice, expovariate, normalvariate
 import math, sys, os
 
 CPs = {
-    BigFoot.NAME: BigFoot,
     PBFT.NAME: PBFT
 }
 
@@ -40,8 +38,9 @@ class Manager:
         # load params (cmd and env)
         tools.set_env_vars_from_config()
         Parameters.load_params_from_config()
-        Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
 
+        Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
+        
         # create simulator
         self.sim = Simulation()
         self.sim.manager = self
@@ -302,10 +301,3 @@ class Behaiviour:
 
                 fnode.behaviour.fault_event = event
                 self.sim.system_queue.add_event(event)
-
-
-
-                
-    
-
-

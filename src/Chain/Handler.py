@@ -37,7 +37,7 @@ def handle_event(event, backlog=True):
         return 'dead_node'
     
     # if this event is CP specific and the CP of the event does not mactch the current CP - old message
-    if "CP" in event.payload and event.payload['CP'] != event.actor.state.cp.NAME:
+    if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
 
     # if network mode is gossip - the node will mutlticast message to it's neighbours

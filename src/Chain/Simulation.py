@@ -4,8 +4,7 @@ from Chain.Transaction import TransactionFactory
 from Chain.Parameters import Parameters
 from Chain.EventQueue import Queue
 
-import Chain.Consensus.PBFT.PBFT as PBFT
-import Chain.Consensus.BigFoot.BigFoot as BigFoot
+from Chain.Consensus.PBFT.PBFT import PBFT
 
 import Chain.tools as tools
 
@@ -17,7 +16,7 @@ class Simulation:
         
         self.manager = None
 
-        self.current_cp = Parameters.simulation['init_CP']
+        self.current_cp = Parameters.application['CP']
 
         Parameters.simulation['txion_model'] = TransactionFactory(self.nodes)
 
@@ -32,7 +31,8 @@ class Simulation:
 
         for n in self.nodes:
             n.add_block(genesis, self.clock)
-            CP.init(n)
+            n.cp = self.current_cp(n)
+            n.cp.init()
 
     def get_next_event(self):
         # get next blockchain event

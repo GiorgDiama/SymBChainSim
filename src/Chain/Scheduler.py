@@ -6,7 +6,7 @@ class Scheduler:
         self.node = node
 
     def schedule_broadcast_message(self, creator, time, payload, handler):
-        payload["CP"] = creator.state.cp.NAME
+        payload["CP"] = creator.cp.NAME
         # Schedules a message broadcast from node
         event = Event(handler, creator, time, payload)
 
@@ -18,7 +18,7 @@ class Scheduler:
         event = Event(handler, creator, time, payload)
 
         if queue == "main":
-            payload["CP"] = creator.state.cp.NAME
+            payload["CP"] = creator.cp.NAME
             creator.add_event(event)
         elif queue == "sync":
             creator.sync_queue.add_event(event)
