@@ -1,0 +1,8 @@
+timeout: 10
+
+missbehaviours:
+  - drop_message
+  - delay_message:
+      # percent of timeout
+      low: 50
+      high: 75
