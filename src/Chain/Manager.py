@@ -41,7 +41,6 @@ class Manager:
         tools.set_env_vars_from_config()
         Parameters.load_params_from_config()
 
-
         Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
         
         # create simulator

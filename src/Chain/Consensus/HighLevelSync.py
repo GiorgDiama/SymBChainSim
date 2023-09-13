@@ -11,13 +11,11 @@ import Chain.tools as tools
 
 from random import randint, sample
 
-
 def handler(event):
     if event.payload["type"] == "local_fast_sync":
         return handle_local_sync_event(event)
     else:
         return "unhadled"
-
 
 def create_local_sync_event(desynced_node, request_node, time):
     '''

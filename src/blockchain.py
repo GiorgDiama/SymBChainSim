@@ -37,5 +37,38 @@ def run():
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
 
+CPs = {
+    PBFT.NAME: PBFT,
+    BigFoot.NAME: BigFoot
+}
 
-run()
+def simple_simulation():
+    from Chain.Simulation import Simulation
+    from Chain.Network import Network
+
+    sim = Simulation()
+
+    Network.init_network(sim.nodes)
+
+    sim.init_simulation()
+
+    t = datetime.now()
+    sim.run_simulation()
+    runtime = datetime.now() - t
+
+    for n in sim.nodes:
+        print(n, '| Total_blocks:', n.blockchain_length(),
+            '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
+            '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
+                )
+    
+    SimulationState.store_state(sim)
+
+    Metrics.measure_all(SimulationState.blockchain_state)
+    Metrics.print_metrics()
+
+    print(f"\nSIMULATION EXECUTION TIME: {runtime}")
+
+
+simple_simulation()
+

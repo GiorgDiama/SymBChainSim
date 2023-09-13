@@ -9,7 +9,6 @@ from types import SimpleNamespace
 
 from Chain.tools import color
 
-
 class Behaviour():
     # model behaiviour of a fautly node
     faulty = None
@@ -54,7 +53,7 @@ class Node():
         p: Simulation parameters
     '''
 
-    def __init__(self, id):
+    def __init__(self, id, queue):
         self.id = id
         self.blockchain = []
         self.pool = []
@@ -72,13 +71,12 @@ class Node():
         self.cp = None
 
         self.behaviour = Behaviour()
-        
+    
+        self.backlog = []
+
         self.scheduler = Scheduler(self)
         
-        self.queue = Queue()
-        self.sync_queue = Queue()
-
-        self.backlog = []
+        self.queue = queue
     
     def __repr__(self):
         if self.state.alive:
@@ -118,19 +116,6 @@ class Node():
     @property
     def last_block(self):
         return self.blockchain[-1]
-
-    @property
-    def next_event(self):
-        '''
-            returns next event (without removing for queue)
-        '''
-        sync_time = self.sync_queue.time_next
-        main_time = self.queue.time_next
-
-        if sync_time is None or main_time < sync_time:
-            return self.queue.get_next_event()
-        else:
-            return self.sync_queue.get_next_event()
     
     @property
     def behaviour_state_to_string(self):
@@ -233,20 +218,3 @@ class Node():
 
         if self.state.alive:
             self.queue.add_event(event)
-
-    def handle_next_event(self):
-        ''' 
-            handles the next event of the current node
-        '''
-        sync_time = self.sync_queue.time_next
-        main_time = self.queue.time_next
-
-        if sync_time is None or main_time < sync_time:
-            event = self.queue.pop_next_event()
-        else:
-            event = self.sync_queue.pop_next_event()
-
-        Handler.handle_event(event)
-
-    def remove_event(self, event):
-        self.queue.remove_event(event)
