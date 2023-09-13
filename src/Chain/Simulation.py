@@ -10,23 +10,15 @@ from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 import Chain.tools as tools
 
-CPs = {
-    PBFT.NAME: PBFT,
-    BigFoot.NAME: BigFoot
-}
-
 class Simulation:
     def __init__(self) -> None:
-        # load params (cmd and env)
-        tools.set_env_vars_from_config()
-        Parameters.load_params_from_config()
-        Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
-
         self.q = Queue()
 
         self.nodes = [Node(x, self.q) for x in range(Parameters.application["Nn"])]
 
         self.clock = 0
+        
+        self.time_interval = Parameters.application["TI_dur"]
         
         self.current_cp = Parameters.application['CP']
 
@@ -44,19 +36,15 @@ class Simulation:
 
     def sim_next_event(self):        
         next_event = self.q.pop_next_event()
+
         self.clock = next_event.time
+
+        if self.clock >= self.time_interval:
+            Parameters.simulation['txion_model'].generate_interval_txions(self.clock)
+            self.time_interval += Parameters.application["TI_dur"]
 
         handle_event(next_event)
 
     def run_simulation(self):
-        self.sim_next_event()
-        
-        next_ti = Parameters.application["TI_dur"]
         while self.clock <= Parameters.simulation['simTime']:
-            if self.clock >= next_ti:
-                Parameters.simulation['txion_model'].generate_interval_txions(next_ti)
-                next_ti += Parameters.application["TI_dur"]
-                
             self.sim_next_event()
-        
-    

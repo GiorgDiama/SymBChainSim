@@ -102,6 +102,7 @@ class Network:
             else:
                 node.bandwidth = random.normalvariate(Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
                 print(node.bandwidth)
+
     @staticmethod
     def assign_neighbours(node=None):
         '''
@@ -141,7 +142,6 @@ class Network:
             '''
             delay += ((0.022 * dist + 4.862) / 2) / 1000
         
-
         delay += Parameters.network["queueing_delay"] + Parameters.network["processing_delay"]
 
         return delay
@@ -156,7 +156,7 @@ class Network:
         if node is None:
             for n in Network.nodes:
                 n.location = random.choice(Network.locations)
-                tools.debug_logs(msg=f"{n}: {n.location}")
+                #tools.debug_logs(msg=f"{n}: {n.location}")
 
         else:
             if location is None:

@@ -5,10 +5,8 @@ import random, sys, numpy as np
 from collections import namedtuple
 from bisect import insort
 
-
 ##############################   MODELS TRANSACTION  ##########################################
 Transaction = namedtuple("Transaction", "id timestamp size")
-
 
 class TransactionFactory:
     '''

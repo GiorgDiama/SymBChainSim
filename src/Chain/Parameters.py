@@ -1,5 +1,7 @@
 import yaml, os
 
+from collections import namedtuple
+
 def read_yaml(path):
     with open(path, 'rb') as f:
         data = yaml.safe_load(f)
@@ -51,7 +53,7 @@ class Parameters:
 
         Parameters.simulation = params["simulation"]
         Parameters.simulation["events"] = {} # cnt events of each type
-        
+
         Parameters.behaiviour = params["behaviour"]
 
         Parameters.network = params["network"]

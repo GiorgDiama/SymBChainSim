@@ -45,6 +45,14 @@ CPs = {
 def simple_simulation():
     from Chain.Simulation import Simulation
     from Chain.Network import Network
+    from Chain.Parameters import Parameters
+    import Chain.tools as tools
+
+    # load params (cmd and env)
+    tools.set_env_vars_from_config()
+    Parameters.load_params_from_config()
+    
+    Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
 
     sim = Simulation()
 
@@ -68,7 +76,6 @@ def simple_simulation():
     Metrics.print_metrics()
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
-
 
 simple_simulation()
 

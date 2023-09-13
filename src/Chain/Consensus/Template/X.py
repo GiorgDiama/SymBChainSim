@@ -1,3 +1,5 @@
+import Chain.Consensus.Rounds as Rounds
+
 class X():
     ''' 
     This is a template showing the general structure of CP protocols in SBS.
@@ -71,7 +73,11 @@ class X():
     '''
         ALL THE EVENT HANDLING METHODS, CALLED BY THE HANDLER, PROGRESSING THE CP
     '''
-    
+    def start(self):
+        '''
+            STARTS PROTOCOL
+        '''
+        pass
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
 
     def resync(self, payload, time):

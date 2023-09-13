@@ -204,7 +204,7 @@ class Node():
         block.time_added = time
         self.blockchain.append(block)
 
-        # update transaction pool removed verified transactions
+        # update local transaction pool by removing verified transactions (i.e., txions included in the block)
         ids = [x.id for x in block.transactions]
         self.pool = [x for x in self.pool if x.id not in ids]
 
@@ -212,9 +212,8 @@ class Node():
         ''' adds event to the queue of the node if the node is online'''
 
         '''
-            TODO: Is there ever a case where a local event would need to be added
+            Is there ever a case where a local event would need to be added
             even if the node is offline?
         '''
-
         if self.state.alive:
             self.queue.add_event(event)

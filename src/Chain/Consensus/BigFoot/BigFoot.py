@@ -503,7 +503,7 @@ class BigFoot():
 
             if self.fast_path_timeout is not None:
                 try:
-                    self.node.remove_event(self.fast_path_timeout)
+                    self.node.queue.remove_event(self.fast_path_timeout)
                 except ValueError:
                     pass
 
@@ -521,7 +521,7 @@ class BigFoot():
         else:
             if self.timeout is not None and remove:
                 try:
-                    self.node.remove_event(self.timeout)
+                    self.node.queue.remove_event(self.timeout)
                 except ValueError:
                     pass
 

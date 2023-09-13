@@ -1,13 +1,13 @@
 simulation:
   init_CP: "PBFT"
   simTime: 600
-  interval_switch: True
+  interval_switch: False
   interval_mean: 30
 
 application:
-  Nn: 10
+  Nn: 5
   TI_dur: 25
-  Tn: 50
+  Tn: 25
   Tsize: 0.01
 
 execution:

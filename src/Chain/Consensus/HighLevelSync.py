@@ -50,7 +50,7 @@ def create_local_sync_event(desynced_node, request_node, time):
         }
 
         desynced_node.scheduler.schedule_event(
-            desynced_node, time+missbehave_delay, payload, handler, queue="sync")
+            desynced_node, time+missbehave_delay, payload, handler)
     else:
         payload = {
             "request_node": request_node,
@@ -60,7 +60,7 @@ def create_local_sync_event(desynced_node, request_node, time):
         }
 
         desynced_node.scheduler.schedule_event(
-            desynced_node, time+delay, payload, handler, queue="sync")
+            desynced_node, time+delay, payload, handler)
     
 
 def handle_local_sync_event(event):
