@@ -10,6 +10,8 @@ from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 import Chain.tools as tools
 
+from Chain.Event import SystemEvent
+
 class Simulation:
     def __init__(self) -> None:
         self.q = Queue()
@@ -17,10 +19,10 @@ class Simulation:
         self.nodes = [Node(x, self.q) for x in range(Parameters.application["Nn"])]
 
         self.clock = 0
-        
-        self.time_interval = Parameters.application["TI_dur"]
-        
+                
         self.current_cp = Parameters.application['CP']
+
+        self.manager = None
 
         Parameters.simulation['txion_model'] = TransactionFactory(self.nodes)
 
@@ -39,11 +41,10 @@ class Simulation:
 
         self.clock = next_event.time
 
-        if self.clock >= self.time_interval:
-            Parameters.simulation['txion_model'].generate_interval_txions(self.clock)
-            self.time_interval += Parameters.application["TI_dur"]
-
-        handle_event(next_event)
+        if isinstance(next_event, SystemEvent):
+            self.manager.handle_next_event(next_event)
+        else:
+            handle_event(next_event)
 
     def run_simulation(self):
         while self.clock <= Parameters.simulation['simTime']:

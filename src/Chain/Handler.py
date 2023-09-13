@@ -24,7 +24,7 @@ def handle_event(event, backlog=True):
             unhadled    - Could not handle (error message)
             backlog     - future message, add to backlog
     '''
-
+    
     SimulationState.store_event(event)
 
     if event.payload["type"] in Parameters.simulation["events"].keys():
@@ -40,19 +40,20 @@ def handle_event(event, backlog=True):
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
 
-    # if network mode is gossip - the node will mutlticast message to it's neighbours
-    # backlog since we don't want want to multicast when cheking backlog
+    # if network mode is gossip - the node will mutlticast message to it's neighbours.
+    # Checking if backlog == True since we don't want want to multicast when cheking backlog (Backlog == True when handling an event for the first time)
     if Parameters.network["gossip"] and backlog and isinstance(event, MessageEvent):
         Network.multicast(event.actor, event)
 
     # handlle event using it's respective handler
     ret = event.handler(event)
 
-    # add event to backlog
-    # if backloged event (when backlog == False) returns backlog -> still future event)
     if ret == 'backlog' and backlog:
+        # add event to backlog
+        # if backloged event (when backlog == False) returns backlog -> still future event)
         bisect.insort(event.actor.backlog, event)
     elif ret == 'new_state' and backlog:
+        # if the event caused a new satate, check the backlog
         handle_backlog(event.actor)
     elif ret == 'unhadled':
         raise ValueError("Event was not handled by its own handler!")

@@ -77,5 +77,5 @@ def simple_simulation():
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
 
-simple_simulation()
+run()
 

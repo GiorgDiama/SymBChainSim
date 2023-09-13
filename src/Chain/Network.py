@@ -156,8 +156,7 @@ class Network:
         if node is None:
             for n in Network.nodes:
                 n.location = random.choice(Network.locations)
-                #tools.debug_logs(msg=f"{n}: {n.location}")
-
+                tools.debug_logs(msg=f"{n}: {n.location}")
         else:
             if location is None:
                 node.location = random.choice(Network.locations)

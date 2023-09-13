@@ -555,6 +555,4 @@ class BigFoot():
 
 
     def clean_up(self):
-        for event in self.node.queue.event_list:
-            if event.payload["CP"] == self.NAME:
-                self.node.queue.remove_event(event)
+        pass

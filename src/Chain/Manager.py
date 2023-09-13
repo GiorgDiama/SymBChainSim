@@ -54,7 +54,7 @@ class Manager:
         self.behaviour = Behaiviour(self.sim)
 
         # initialise simulation
-        self.sim.init_simulation(CPs[Parameters.simulation["init_CP"]])
+        self.sim.init_simulation()
 
         # schedule the first system events
         self.init_system_events()
@@ -73,7 +73,7 @@ class Manager:
 
     def change_cp(self, cp):
         '''
-            changes the CP of the system (cp can be either a reference to a cp protocol or a string)
+changes the CP of the system (cp can be either a reference to a cp protocol or a string)
         '''
         if isinstance(cp, str):
             cp = CPs[cp]
@@ -158,9 +158,7 @@ class Manager:
                             ################ SYSTEM EVENTS #################
     ################################################################################################
 
-    def handle_next_event(self):
-        event = self.sim.system_queue.pop_next_event()
-
+    def handle_next_event(self, event):
         if event.payload["type"] == "apply_behavior":
             self.handle_apply_behavior_event(event)
         elif event.payload["type"] == "node fault":
@@ -182,7 +180,7 @@ class Manager:
             payload = {"type": "apply_behavior"}
         )
 
-        self.sim.system_queue.add_event(event)
+        self.sim.q.add_event(event)
 
     def handle_apply_behavior_event(self, event):
         # Random CP Change
@@ -212,7 +210,7 @@ class Manager:
             }
         )
 
-        self.sim.system_queue.add_event(event)
+        self.sim.q.add_event(event)
     
     def handle_change_cp_event(self, event):
         self.change_cp(event.payload["cp"])
@@ -231,7 +229,7 @@ class Manager:
                 "type": "generate_txions",
             }
         )
-        self.sim.system_queue.add_event(event)
+        self.sim.q.add_event(event)
 
     def handle_generate_txions_event(self, event):
         Parameters.simulation['txion_model'].generate_interval_txions(event.time)
@@ -250,7 +248,7 @@ class Manager:
             }
         )
         event.payload["node"].behaviour.recovery_event = event
-        self.sim.system_queue.add_event(event)
+        self.sim.q.add_event(event)
     
     def handle_node_recovery_event(self, event):
         event.payload["node"].resurect()
@@ -314,7 +312,7 @@ class Behaiviour:
                 )
 
                 if fnode.behaviour.fault_event is not None:
-                    self.sim.system_queue.remove_event(fnode.behaviour.fault_event)
+                    self.sim.q.remove_event(fnode.behaviour.fault_event)
 
                 fnode.behaviour.fault_event = event
-                self.sim.system_queue.add_event(event)
+                self.sim.q.add_event(event)
