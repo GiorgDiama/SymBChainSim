@@ -501,12 +501,6 @@ class BigFoot():
             # set nodes fast_path attribute to True since fast path just started
             self.node.state.fast_path = True
 
-            if self.fast_path_timeout is not None:
-                try:
-                    self.node.queue.remove_event(self.fast_path_timeout)
-                except ValueError:
-                    pass
-
             if add_time:
                 time += float(Parameters.BigFoot["fast_path_timeout"])
 
@@ -519,12 +513,6 @@ class BigFoot():
 
             self.fast_path_timeout = event
         else:
-            if self.timeout is not None and remove:
-                try:
-                    self.node.queue.remove_event(self.timeout)
-                except ValueError:
-                    pass
-
             if add_time:
                 time += float(Parameters.BigFoot['timeout'])
 
@@ -552,7 +540,6 @@ class BigFoot():
         self.schedule_timeout(time=time)
 
     ######################### OTHER #################################################
-
 
     def clean_up(self):
         pass

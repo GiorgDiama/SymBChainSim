@@ -24,16 +24,16 @@ def run():
     manager.run()
     runtime = datetime.now() - t
 
-    for n in manager.sim.nodes:
-        print(n, '| Total_blocks:', n.blockchain_length(),
-            '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
-            '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
-            )
+    # for n in manager.sim.nodes:
+    #     print(n, '| Total_blocks:', n.blockchain_length(),
+    #         '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
+    #         '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
+    #         )
     
-    SimulationState.store_state(manager.sim)
+    # SimulationState.store_state(manager.sim)
 
-    Metrics.measure_all(SimulationState.blockchain_state)
-    Metrics.print_metrics()
+    # Metrics.measure_all(SimulationState.blockchain_state)
+    # Metrics.print_metrics()
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
 

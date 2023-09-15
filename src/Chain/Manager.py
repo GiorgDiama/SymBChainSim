@@ -73,7 +73,7 @@ class Manager:
 
     def change_cp(self, cp):
         '''
-changes the CP of the system (cp can be either a reference to a cp protocol or a string)
+            changes the CP of the system (cp can be either a reference to a cp protocol or a string)
         '''
         if isinstance(cp, str):
             cp = CPs[cp]
@@ -199,7 +199,7 @@ changes the CP of the system (cp can be either a reference to a cp protocol or a
 
     def schedule_change_cp_event(self):
         if Parameters.simulation["interval_switch"]:
-            time = self.sim.clock + expovariate(1/Parameters.simulation["interval_mean"])
+            time = self.sim.clock + normalvariate(30,5)
             cp = PBFT if Parameters.application["CP"] == BigFoot else BigFoot
 
         event = SystemEvent(
@@ -270,7 +270,7 @@ class Behaiviour:
         byzantine_params = Parameters.behaiviour["byzantine_nodes"]
         sync_params = Parameters.behaiviour["sync"]
 
-        self.byzantine = sample(self.faulty, byzantine_params["num_byzantine"])
+        self.byzantine = sample(self.sim.nodes, byzantine_params["num_byzantine"])
 
         for node in self.byzantine:
             node.behaviour.byzantine = True

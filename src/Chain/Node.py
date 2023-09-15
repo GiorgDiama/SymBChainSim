@@ -155,6 +155,7 @@ class Node():
 
     def update(self, time, round=-1):
         if Parameters.application["CP"].NAME != self.cp.NAME:
+            #print(f"{self.id} changing to {Parameters.application['CP'].NAME} at time {time}")
             self.reset()
             self.cp = Parameters.application["CP"](self)
             self.cp.init(time)
@@ -163,7 +164,6 @@ class Node():
         return False
 
     def reset(self):
-        self.cp.clean_up()
         self.backlog = []
 
     def stored_txions(self, num=None):

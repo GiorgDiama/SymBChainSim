@@ -444,12 +444,6 @@ class PBFT():
         return "invalid"
 
     def schedule_timeout(self, time, remove=True, add_time=True):
-        if self.timeout is not None and remove:
-            try:
-                self.node.queue.remove_event(self.timeout)
-            except ValueError:
-                pass
-
         if add_time:
             time += Parameters.PBFT['timeout']
 
