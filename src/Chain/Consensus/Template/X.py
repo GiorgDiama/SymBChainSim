@@ -1,5 +1,6 @@
 import Chain.Consensus.Rounds as Rounds
 
+
 class X():
     ''' 
     This is a template showing the general structure of CP protocols in SBS.
@@ -10,7 +11,7 @@ class X():
     Reading this in combination with an allredy implemented protocol (like PBFT)
     can help you understand better what each required function does
     '''
-        
+
     # this is used to assing the protocol to nodes by name
     NAME = "X"
 
@@ -18,24 +19,24 @@ class X():
         '''
             Models the conseusus protocol state
         '''
-        #EXAMPLE
+        # EXAMPLE
 
         # Rounds module for managing round based protocols
         self.rounds = Rounds.round_change_state()
-        # messages received from the consensus 
+        # messages received from the consensus
         self.msgs = {...}
 
         '''
             referance to the node this instance is attached to
         '''
         self.node = node
-    
+
     def set_state(self):
         '''
             Important if you want to reset the sate / want to define it differently based on the node - can be skipped
         '''
         pass
-        
+
     def state_to_string(self):
         '''
             This returns the state of the CP in a string and is NECESSARY FOR DEBUGGING
@@ -43,7 +44,6 @@ class X():
         # EXAMPLE
         s = f"{self.rounds.round} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
-
 
     def init(self, time=0, starting_round=0):
         ''' 
@@ -67,12 +67,13 @@ class X():
             by X in order for the handler to call this event
         '''
         pass
-    
+
     ########################## PROTOCOL COMMUNICATION ###########################
 
     '''
         ALL THE EVENT HANDLING METHODS, CALLED BY THE HANDLER, PROGRESSING THE CP
     '''
+
     def start(self):
         '''
             STARTS PROTOCOL
