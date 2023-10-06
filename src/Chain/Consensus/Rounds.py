@@ -4,15 +4,17 @@
 from types import SimpleNamespace
 from Chain.Parameters import Parameters
 
+
 def round_change_state(round=0):
     '''
         Rounc chage state
     '''
     return SimpleNamespace(
         round=round,
-        change_to=-1, 
+        change_to=-1,
         votes={}
     )
+
 
 def state_to_string(node):
     '''
@@ -21,11 +23,13 @@ def state_to_string(node):
     s = f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
     return s
 
+
 def reset_votes(node):
     '''
         resets round change votes of node
     '''
     node.cp.rounds.votes = {}
+
 
 def handle_event(event):
     '''
@@ -34,13 +38,14 @@ def handle_event(event):
     if event.payload['type'] == "round_change":
         handle_round_change_msg(event)
 
+
 def change_round(node, time):
     '''
         Begins the round change process in *node*
     '''
     node.cp.init_round_chage(time)
     state = node.cp
-    
+
     state.state = 'round_change'
 
     new_round = get_next_round(node)
@@ -54,6 +59,7 @@ def change_round(node, time):
 
     node.scheduler.schedule_broadcast_message(
         node, time, payload, handle_event)
+
 
 def handle_round_change_msg(event):
     node = event.receiver
