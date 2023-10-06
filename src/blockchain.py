@@ -2,18 +2,26 @@ from datetime import datetime
 
 from Chain.Manager import Manager
 
-import random, numpy
+import random
+import numpy
 
 from Chain.Consensus.PBFT.PBFT import PBFT
 from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
 from Chain.Metrics import SimulationState, Metrics
+import Chain.tools as tools
 
 ############### SEEDS ############
 seed = 5
 random.seed(seed)
 numpy.random.seed(seed)
 ############### SEEDS ############
+
+CPs = {
+    PBFT.NAME: PBFT,
+    BigFoot.NAME: BigFoot
+}
+
 
 def run():
     manager = Manager()
@@ -24,23 +32,20 @@ def run():
     manager.run()
     runtime = datetime.now() - t
 
-    # for n in manager.sim.nodes:
-    #     print(n, '| Total_blocks:', n.blockchain_length(),
-    #         '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
-    #         '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
-    #         )
-    
-    # SimulationState.store_state(manager.sim)
+    for n in manager.sim.nodes:
+        print(n.__str__(full=True),
+              '\tPBFT blocks in BC:\t', len(
+                  [x for x in n.blockchain[1:]if x.consensus.NAME == PBFT.NAME]),
+              '\n\tBigFoot blocks in BC:\t', len(
+                  [x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]))
 
-    # Metrics.measure_all(SimulationState.blockchain_state)
-    # Metrics.print_metrics()
+    SimulationState.store_state(manager.sim)
 
-    print(f"\nSIMULATION EXECUTION TIME: {runtime}")
+    Metrics.measure_all(SimulationState.blockchain_state)
+    Metrics.print_metrics()
 
-CPs = {
-    PBFT.NAME: PBFT,
-    BigFoot.NAME: BigFoot
-}
+    print(tools.color(f"\n SIMULATION EXECUTION TIME: {runtime}", 44))
+
 
 def simple_simulation():
     from Chain.Simulation import Simulation
@@ -51,7 +56,7 @@ def simple_simulation():
     # load params (cmd and env)
     tools.set_env_vars_from_config()
     Parameters.load_params_from_config()
-    
+
     Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
 
     sim = Simulation()
@@ -66,10 +71,12 @@ def simple_simulation():
 
     for n in sim.nodes:
         print(n, '| Total_blocks:', n.blockchain_length(),
-            '| pbft:',len([x for x in n.blockchain[1:] if x.consensus.NAME == PBFT.NAME]),
-            '| bf:',len([x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]),
-                )
-    
+              '| pbft:', len([x for x in n.blockchain[1:]
+                             if x.consensus.NAME == PBFT.NAME]),
+              '| bf:', len([x for x in n.blockchain[1:]
+                           if x.consensus.NAME == BigFoot.NAME]),
+              )
+
     SimulationState.store_state(sim)
 
     Metrics.measure_all(SimulationState.blockchain_state)
@@ -77,5 +84,5 @@ def simple_simulation():
 
     print(f"\nSIMULATION EXECUTION TIME: {runtime}")
 
-run()
 
+run()
