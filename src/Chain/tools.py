@@ -5,6 +5,7 @@ import yaml
 
 from Chain.Parameters import Parameters
 
+
 def debug_logs(msg, **kwargs):
     '''
         must set enviroment variable 'debug' to true (env_vars.yaml)] (can overwrite with nd as cmd arg)
@@ -19,7 +20,7 @@ def debug_logs(msg, **kwargs):
             47:white
     '''
 
-    if os.environ['debug'] == "True"  and "nd" not in sys.argv:
+    if os.environ['debug'] == "True" and "nd" not in sys.argv:
         if 'col' in kwargs:
             msg = color(msg, kwargs["col"])
 
@@ -36,7 +37,8 @@ def debug_logs(msg, **kwargs):
                     "Simulator must be given inorder to use commands")
             else:
                 if "cmd_col" in kwargs:
-                    kwargs['command'] = color(kwargs['command'], kwargs['cmd_col'])
+                    kwargs['command'] = color(
+                        kwargs['command'], kwargs['cmd_col'])
 
                 cmd = input(kwargs['command'])
                 ret = exec_cmd(kwargs["simulator"], cmd)
@@ -53,6 +55,7 @@ def get_named_cmd_arg(name):
         return sys.argv[sys.argv.index(name)+1]
     else:
         return None
+
 
 def set_env_vars_from_config(name="env_vars.yaml"):
     '''
@@ -72,11 +75,12 @@ def set_env_vars_from_config(name="env_vars.yaml"):
     # enable/disable debug from cmd ("True"/"False")
     if debug := get_named_cmd_arg("--debug"):
         os.environ["debug"] = debug
-    
+
     if '--debug_at' in sys.argv:
-            os.environ["start_debug"] = get_named_cmd_arg('--debug_at')
-            os.environ["debug"] = "False"
-    
+        os.environ["start_debug"] = get_named_cmd_arg('--debug_at')
+        os.environ["debug"] = "False"
+
+
 def exec_cmd(simulator, cmd):
     ''' When debug mode is on - a command can be given as input (this handles the execution)'''
     if cmd == '':
@@ -102,15 +106,17 @@ def exec_cmd(simulator, cmd):
     elif cmd[0] == "stop":
         exit()
     elif cmd[0] == "CP":
-            if cmd[1] == "PBFT":
-                simulator.manager.change_cp(sys.modules["Chain.Consensus.PBFT.PBFT"])
-            elif cmd[1] == "BigFoot":
-                simulator.manager.change_cp(sys.modules["Chain.Consensus.BigFoot.BigFoot"])
+        if cmd[1] == "PBFT":
+            simulator.manager.change_cp(
+                sys.modules["Chain.Consensus.PBFT.PBFT"])
+        elif cmd[1] == "BigFoot":
+            simulator.manager.change_cp(
+                sys.modules["Chain.Consensus.BigFoot.BigFoot"])
 
     elif cmd[0] == "add_node":
         simulator.manager.add_node()
     elif cmd[0] == "remove_node":
-        simulator.manager.remove_node() 
+        simulator.manager.remove_node()
     else:
         return f"No such command: {cmd}"
 
@@ -179,6 +185,7 @@ def print_node_state(simulator):
 
 ####################### YAML ######################
 
+
 def read_yaml(path):
     with open(path, 'rb') as f:
         data = yaml.safe_load(f)
@@ -190,6 +197,7 @@ def write_yaml(data, path):
         yaml.dump(data, f)
 
 ###################### COLOR #####################
+
 
 def color(string, c=44):
     return f'\x1b[1;37;{c}m' + string + '\x1b[0m'
