@@ -5,16 +5,18 @@ simulation:
   interval_mean: 30
 
 application:
-  Nn: 100
-  TI_dur: 25
-  Tn: 5
+  Nn: 4
+  TI_dur: 601
+  Tn: 21
   Tsize: 0.01
+  use_transactions: True
 
 execution:
   creation_time: 0.1
-  block_val_delay: 0.5
-  msg_val_delay: 0.1
+  block_val_delay: 0.1
+  msg_val_delay: 0.05
   sync_message_request_delay: 1
+  proposer_selection: "round_robin"
 
 data:
   Bsize: 1
@@ -24,15 +26,15 @@ network:
   base_msg_size: 0.2
   gossip: False
   num_neighbours: 2
-  use_latency: measured 
+  use_latency: measured
   same_city_latency_ms: 10
   same_city_dev_ms: 5
   queueing_delay: 0
   processing_delay: 0
 
   bandwidth:
-    mean: 12
-    dev: 2
+    mean: 50
+    dev: 12
     debug: True
 
 consensus:
@@ -47,13 +49,13 @@ behaviour:
     # (percentange based on how many faulty nodes the network can tolerate)
     num_byzantine: 0
   sync:
-    # define the chance a byzantine node will send bad sync data 
+    # define the chance a byzantine node will send bad sync data
     # (and the delay that will cause)
-    bad_data: 
+    bad_data:
       delay: 10
     # define the chance a byzantine node will not responde to a sync message
-    # (and the delay that will cause) 
-    no_response: 
+    # (and the delay that will cause)
+    no_response:
       delay: 5
     probs:
       low: 5
@@ -61,13 +63,13 @@ behaviour:
 
   crash_probs:
     # percent of nodes that can crash (go offiline)
-    # (based on the number of faulty nodes that the CP can tolerate) 
+    # (based on the number of faulty nodes that the CP can tolerate)
     faulty_nodes: 0
     # probabilities for crash
-    mean_fault_time: 
+    mean_fault_time:
       low: 30
       high: 60
     # how long for the node to recover
-    mean_recovery_time: 
+    mean_recovery_time:
       low: 10
       high: 60
