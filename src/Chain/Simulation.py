@@ -12,14 +12,16 @@ import Chain.tools as tools
 
 from Chain.Event import SystemEvent
 
+
 class Simulation:
     def __init__(self) -> None:
         self.q = Queue()
 
-        self.nodes = [Node(x, self.q) for x in range(Parameters.application["Nn"])]
+        self.nodes = [Node(x, self.q)
+                      for x in range(Parameters.application["Nn"])]
 
         self.clock = 0
-                
+
         self.current_cp = Parameters.application['CP']
 
         self.manager = None
@@ -29,16 +31,16 @@ class Simulation:
     def init_simulation(self):
         genesis = Block.genesis_block()
 
-        Parameters.simulation['txion_model'].generate_interval_txions(self.clock)
-    
+        Parameters.simulation['txion_model'].generate_interval_txions(
+            self.clock)
+
         for n in self.nodes:
             n.add_block(genesis, self.clock)
             n.cp = self.current_cp(n)
             n.cp.init()
 
-    def sim_next_event(self):        
+    def sim_next_event(self):
         next_event = self.q.pop_next_event()
-
         self.clock = next_event.time
 
         if isinstance(next_event, SystemEvent):
