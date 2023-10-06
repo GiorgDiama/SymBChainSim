@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 from Chain.tools import color
 
+
 class Behaviour():
     # model behaiviour of a fautly node
     faulty = None
@@ -19,6 +20,7 @@ class Behaviour():
     recovery_event = None
     byzantine = None
     sync_fault_chance = None
+
 
 class Node():
     '''
@@ -62,22 +64,22 @@ class Node():
         self.neighbours = None
         self.location = None
         self.bandwidth = None
-        
+
         self.state = SimpleNamespace(
-            alive = True,
-            synced = True
+            alive=True,
+            synced=True
         )
 
         self.cp = None
 
         self.behaviour = Behaviour()
-    
+
         self.backlog = []
 
         self.scheduler = Scheduler(self)
-        
+
         self.queue = queue
-    
+
     def __repr__(self):
         if self.state.alive:
             return f"Node: {self.id}"
@@ -93,7 +95,7 @@ class Node():
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{color(f'**dead** Node: {self.id}',41)}\n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
+                return f"{color(f'**dead** Node: {self.id}',41)} \n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
@@ -108,15 +110,16 @@ class Node():
     @property
     def trunc_ids(self):
         '''
-            returns a list of the last 10 block ids in nodes local blockchain
+            returns a list of the last 5 block ids in nodes local blockchain
         '''
-        hidden_blocks = len(self.blockchain)-10 if len(self.blockchain)-10 > 0 else 0
-        return f"{hidden_blocks} hidden_blocks...{[f'{x.id} {x.consensus.NAME if x.consensus is not None else None}' for x in self.blockchain[-10:]]} {self.blockchain[-1].depth}"
+        hidden_blocks = len(self.blockchain) - \
+            5 if len(self.blockchain)-5 > 0 else 0
+        return f"{hidden_blocks} hidden_blocks...{[f'{x.id} {x.consensus.NAME if x.consensus is not None else None}' for x in self.blockchain[-5:]]} {self.blockchain[-1].depth}"
 
     @property
     def last_block(self):
         return self.blockchain[-1]
-    
+
     @property
     def behaviour_state_to_string(self):
         s = ""
@@ -129,17 +132,18 @@ class Node():
             s += f"{color('BYZANTINE',41)}  -> fault_chance: {self.behaviour.sync_fault_chance}"
         else:
             s += "HONEST"
-        
+
         return s
 
     def to_serializable(self):
         return {
             "id": self.id,
-            "blockchain": [x.to_serializable() for x in self.blockchain[1:]], # ignore genesis block
+            # ignore genesis block
+            "blockchain": [x.to_serializable() for x in self.blockchain[1:]],
             "pool": self.pool,
             "blocks": self.blocks,
 
-            "neighbours": [x.id for x in self.neighbours], 
+            "neighbours": [x.id for x in self.neighbours],
 
             "location": self.location,
             "bandwidth": self.bandwidth,
@@ -155,12 +159,12 @@ class Node():
 
     def update(self, time, round=-1):
         if Parameters.application["CP"].NAME != self.cp.NAME:
-            #print(f"{self.id} changing to {Parameters.application['CP'].NAME} at time {time}")
+            # print(f"{self.id} changing to {Parameters.application['CP'].NAME} at time {time}")
             self.reset()
             self.cp = Parameters.application["CP"](self)
             self.cp.init(time)
             return True
-        
+
         return False
 
     def reset(self):
@@ -177,14 +181,14 @@ class Node():
 
     def blockchain_length(self):
         return len(self.blockchain)-1
-    
+
     def synced_with_neighbours(self):
         '''
             Comparing the latest block of current node with all neighbours to check sync status
         '''
         latest_neighbour_block = max(
-            [{"block":n.last_block, "neighbour": n} for n in self.neighbours],
-            key=lambda x:x["block"].depth)
+            [{"block": n.last_block, "neighbour": n} for n in self.neighbours],
+            key=lambda x: x["block"].depth)
 
         if latest_neighbour_block["block"].depth > self.last_block.depth:
             return False, latest_neighbour_block["neighbour"]
@@ -204,9 +208,10 @@ class Node():
         block.time_added = time
         self.blockchain.append(block)
 
-        # update local transaction pool by removing verified transactions (i.e., txions included in the block)
-        ids = [x.id for x in block.transactions]
-        self.pool = [x for x in self.pool if x.id not in ids]
+        if Parameters.application["use_transactions"]:
+            # update local transaction pool by removing verified transactions (i.e., txions included in the block)
+            for t in block.transactions:
+                self.pool.remove(t)
 
     def add_event(self, event):
         ''' adds event to the queue of the node if the node is online'''
