@@ -1,6 +1,7 @@
 from Chain.Event import Event
 from Chain.Network import Network
 
+
 class Scheduler:
     def __init__(self, node) -> None:
         self.node = node
@@ -19,5 +20,5 @@ class Scheduler:
 
         payload["CP"] = creator.cp.NAME
         creator.add_event(event)
-        
+
         return event
