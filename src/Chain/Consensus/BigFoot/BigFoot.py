@@ -23,6 +23,7 @@ from random import randint
 
 ########################## PROTOCOL CHARACTERISTICS ###########################
 
+
 class BigFoot():
     NAME = "BigFoot"
 
@@ -37,7 +38,7 @@ class BigFoot():
         self.block = None
 
         self.node = node
-    
+
     def set_state(self):
         self.rounds = Rounds.round_change_state()
         self.fast_path = None
@@ -83,43 +84,35 @@ class BigFoot():
         block.extra_data = {'proposer': self.node.id,
                             "round": self.rounds.round}
 
-        # add transactions to the block
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in self.node.pool if t.timestamp <= time]
-        timeout_time = self.timeout.time
+        transactions, size, created_time = Parameters.simulation["txion_model"].execute_transactions(
+            self.node.pool, time, time + self.timeout.time)
 
-        # while the pool is empty and the current time is less than the timeout wait for transactions to be added to the pool
-        # basically the transactions are there - the nodes check when the first transaction in time apears and forwards the clock to that time
-        # if not txions are found before the round timesout, we return -1 and let the block proposal timeout
-
-        while not current_pool and time + 1 < timeout_time:
-            time += 1
-            current_pool = [t for t in self.node.pool if t.timestamp <= time]
-
-        if current_pool and time < timeout_time:
-            block.transactions, block.size = Parameters.simulation["txion_model"].execute_transactions(
-                current_pool)
-            return block, time
+        if transactions:
+            block.transactions = transactions
+            block.size = size
+            return block, created_time
         else:
             return -1, -1
-
 
     ########################## HANDLERER ###########################
 
     @staticmethod
     def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
-        if event.payload['type'] == 'pre_prepare':
-            return event.actor.cp.pre_prepare(event)
-        elif event.payload['type'] == 'prepare':
-            return event.actor.cp.prepare(event)
-        elif event.payload['type'] == 'commit':
-            return event.actor.cp.commit(event)
-        elif event.payload['type'] == 'timeout' or event.payload['type'] == "fast_path_timeout":
-            return event.actor.cp.handle_timeout(event)
-        elif event.payload['type'] == 'new_block':
-            return event.actor.cp.new_block(event)
-        else:
-            return 'unhadled'
+        match event.payload["type"]:
+            case 'pre_prepare':
+                return event.actor.cp.pre_prepare(event)
+            case 'prepare':
+                return event.actor.cp.prepare(event)
+            case 'commit':
+                return event.actor.cp.commit(event)
+            case 'timeout':
+                return event.actor.cp.handle_timeout(event)
+            case "fast_path_timeout":
+                return event.actor.cp.handle_timeout(event)
+            case 'new_block':
+                return event.actor.cp.new_block(event)
+            case _:
+                return 'unhadled'
 
     ########################## PROTOCOL COMMUNICATION ###########################
 
@@ -166,14 +159,13 @@ class BigFoot():
 
         return 'unhandled'
 
-
     def prepare(self, event):
         time = event.time
         block = event.payload['block']
-        
+
         time += Parameters.execution["msg_val_delay"]
 
-        if self.state == 'pre_prepared':        
+        if self.state == 'pre_prepared':
             # count prepare votes from other nodes
             self.process_vote('prepare', event.creator)
 
@@ -228,12 +220,12 @@ class BigFoot():
             # 1) (node timed out) will accept block and keep working as normal
             # 2) (node though block was invalid) try to sync using block_data else request sync
             self.process_vote('prepare', event.creator)
-            
+
             # if we have enough prepare messages (-1 for leader -1 for slef)
             if len(self.msgs['prepare']) >= Parameters.application["required_messages"] - 2:
                 time += Parameters.execution["block_val_delay"]
 
-                if block.depth -1 == self.node.last_block.depth:
+                if block.depth - 1 == self.node.last_block.depth:
                     self.rounds.round = event.payload['round']
 
                     # store block as current block
@@ -262,16 +254,17 @@ class BigFoot():
                     # it is synced initiate syncing process
                     if self.node.state.synced:
                         self.node.state.synced = False
-                        Sync.create_local_sync_event(self.node, event.creator, time)
+                        Sync.create_local_sync_event(
+                            self.node, event.creator, time)
 
                 return "handled"
 
         return 'invalid'
 
-    def commit(self,event):
+    def commit(self, event):
         time = event.time
         block = event.payload['block'].copy()
-        
+
         time += Parameters.execution["msg_val_delay"]
 
         # if prepared
@@ -320,7 +313,7 @@ class BigFoot():
             if len(self.msgs['commit']) >= Parameters.application["required_messages"] - 1:
                 time += Parameters.execution["block_val_delay"]
 
-                if block.depth -1 == self.node.last_block.depth:
+                if block.depth - 1 == self.node.last_block.depth:
                     self.rounds.round = event.payload['round']
 
                     # try to correct round
@@ -362,7 +355,8 @@ class BigFoot():
                     # it is synced initiate syncing process
                     if self.node.state.synced:
                         self.node.state.synced = False
-                        Sync.create_local_sync_event(self.node, event.creator, time)
+                        Sync.create_local_sync_event(
+                            self.node, event.creator, time)
 
                     return "handled"
 
@@ -372,12 +366,13 @@ class BigFoot():
         block = event.payload['block']
         time = event.time
 
-        time += Parameters.execution["msg_val_delay"] + Parameters.execution["block_val_delay"]
-        
+        time += Parameters.execution["msg_val_delay"] + \
+            Parameters.execution["block_val_delay"]
+
         # old block (ignore)
         if block.depth <= self.node.blockchain[-1].depth:
             return "invalid"
-        
+
         # future block (sync)
         elif block.depth > self.node.blockchain[-1].depth + 1:
             if self.node.state.synced:
@@ -385,7 +380,7 @@ class BigFoot():
                 Sync.create_local_sync_event(self.node, event.creator, time)
 
                 return "handled"
-        else:  
+        else:
             # Valid block (we assume message + block are valid)
             # correct round - since message is valid and contains validator votes then if this is a future round
             # node did not participate in the CP (likely to have just recieved sync but missed a round-change)
@@ -401,7 +396,6 @@ class BigFoot():
 
     def init_round_chage(self, time):
         self.schedule_timeout(time, remove=True, add_time=True)
-
 
     def start(self, new_round, time):
         if self.node.update(time):
@@ -421,7 +415,8 @@ class BigFoot():
 
         if self.miner == self.node.id:
             self.schedule_timeout(Parameters.data["block_interval"] + time)
-            self.schedule_timeout(Parameters.data["block_interval"] + time, fast_path=True)
+            self.schedule_timeout(
+                Parameters.data["block_interval"] + time, fast_path=True)
 
             block, creation_time = self.create_BigFoot_block(time)
 
@@ -442,10 +437,10 @@ class BigFoot():
                 self.node, creation_time, payload, self.handle_event)
         else:
             self.schedule_timeout(Parameters.data["block_interval"] + time)
-            self.schedule_timeout(Parameters.data["block_interval"] + time, fast_path=True)
+            self.schedule_timeout(
+                Parameters.data["block_interval"] + time, fast_path=True)
 
     ########################## TIMEOUTS ###########################
-
 
     def handle_timeout(self, event):
         if event.payload['round'] == self.rounds.round:
@@ -495,7 +490,6 @@ class BigFoot():
 
         return "invalid"
 
-
     def schedule_timeout(self, time, remove=True, add_time=True, fast_path=False):
         if fast_path:
             # set nodes fast_path attribute to True since fast path just started
@@ -527,7 +521,6 @@ class BigFoot():
             self.timeout = event
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
-
 
     def resync(self, payload, time):
         '''
