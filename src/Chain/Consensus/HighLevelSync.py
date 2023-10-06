@@ -11,11 +11,13 @@ import Chain.tools as tools
 
 from random import randint, sample
 
+
 def handler(event):
     if event.payload["type"] == "local_fast_sync":
         return handle_local_sync_event(event)
     else:
         return "unhadled"
+
 
 def create_local_sync_event(desynced_node, request_node, time):
     '''
@@ -24,22 +26,25 @@ def create_local_sync_event(desynced_node, request_node, time):
         Calculate transmission + validation delay and create local sync event after
     '''
     latest_block = desynced_node.last_block
-    missing_blocks = [b.copy() for b in request_node.blockchain if b.depth > latest_block.depth]    
+    missing_blocks = [
+        b.copy() for b in request_node.blockchain if b.depth > latest_block.depth]
 
-    total_delay = 0    
-    
+    total_delay = 0
+
     for i, b in enumerate(missing_blocks):
         delay_network = Network.calculate_message_propagation_delay(
             request_node, desynced_node, b.size)
-        
-        delay = delay_network + Parameters.execution["block_val_delay"] + Parameters.execution["sync_message_request_delay"]
 
-        total_delay += delay    
+        delay = delay_network + \
+            Parameters.execution["block_val_delay"] + \
+            Parameters.execution["sync_message_request_delay"]
+
+        total_delay += delay
 
         missing_blocks[i].time_added += delay
 
     missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
-    
+
     # create local sync event on desynced_node after delay
     if missbehaviour:
         payload = {
@@ -61,7 +66,7 @@ def create_local_sync_event(desynced_node, request_node, time):
 
         desynced_node.scheduler.schedule_event(
             desynced_node, time+delay, payload, handler)
-    
+
 
 def handle_local_sync_event(event):
     '''
@@ -71,18 +76,20 @@ def handle_local_sync_event(event):
 
     if event.payload['fail']:
         # if the previous request failed - request data from a random neighbour
-        create_local_sync_event(node, sample(node.neighbours, 1)[0], event.time)
+        create_local_sync_event(node, sample(
+            node.neighbours, 1)[0], event.time)
     else:
         received_blocks = event.payload['blocks']
         for b in received_blocks:
-            # there is a chance the node was updated before this message made it to them 
+            # there is a chance the node was updated before this message made it to them
             # so checking to not add repeat blocks
             if b.depth == node.blockchain[-1].depth + 1:
                 node.blockchain.append(b)
-        
+
         # while the node is desynced keep asking for blocks
         if node.last_block.depth < event.payload["request_node"].last_block.depth:
-            create_local_sync_event(node, event.payload["request_node"], event.time)
+            create_local_sync_event(
+                node, event.payload["request_node"], event.time)
             return 0
 
         # adds time of final check
@@ -92,10 +99,11 @@ def handle_local_sync_event(event):
 
         if received_blocks:
             node.cp.resync(event.payload, event.time)
-            #received_blocks[-1].consensus.resync(node, event.payload, event.time)
-        
+            # received_blocks[-1].consensus.resync(node, event.payload, event.time)
+
         if node.update(event.time):
             return 0
+
 
 def apply_sync_missbehaiviour(sender):
     '''
@@ -112,10 +120,12 @@ def apply_sync_missbehaiviour(sender):
             roll_type = randint(0, 100)
             if roll_type < 50:
                 ########### BAD DATA ############
-                tools.debug_logs(msg=f"node {sender} sent bad sync data!", col=47)
+                tools.debug_logs(
+                    msg=f"node {sender} sent bad sync data!", col=47)
                 delay = Parameters.behaiviour["sync"]["bad_data"]["delay"]
             else:
-                tools.debug_logs(msg=f"node {sender} did not respond to sync message!", col=47)
+                tools.debug_logs(
+                    msg=f"node {sender} did not respond to sync message!", col=47)
                 ########### NO RESPONSE #########
                 delay = Parameters.behaiviour["sync"]["no_response"]["delay"]
             return delay, True
