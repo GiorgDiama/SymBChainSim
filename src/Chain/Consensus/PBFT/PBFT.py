@@ -19,6 +19,7 @@ import Chain.Consensus.HighLevelSync as Sync
 from random import randint
 from sys import modules
 
+
 class PBFT():
     NAME = "PBFT"
 
@@ -31,7 +32,7 @@ class PBFT():
         self.block = None
 
         self.node = node
-    
+
     def set_state(self):
         self.rounds = Rounds.round_change_state()
         self.state = ""
@@ -48,12 +49,16 @@ class PBFT():
         self.msgs = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
 
-    def get_miner(self, round_robin=True):
-        if round_robin:  # new miner in a round robin fashion
-            self.miner = self.rounds.round % Parameters.application[
-                "Nn"]
-        else:  # get new miner based on the hash of the last block
-           self.miner = self.node.last_block.id % Parameters.application["Nbp"]
+    def get_miner(self, round_robin=False):
+        # new miner in a round robin fashion
+        if Parameters.execution["proposer_selection"] == "round_robin":
+            self.miner = self.rounds.round % Parameters.application["Nn"]
+        elif Parameters.execution["proposer_selection"] == "hash":
+            # get new miner based on the hash of the last block
+            self.miner = self.node.last_block.id % Parameters.application["Nn"]
+        else:
+            raise (ValueError(
+                f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def init(self, time=0, starting_round=0):
         self.set_state()
@@ -61,7 +66,8 @@ class PBFT():
 
     def create_PBFT_block(self, time):
         # calculate block creation delays
-        time += Parameters.data["block_interval"] + Parameters.execution["creation_time"]
+        time += Parameters.data["block_interval"] + \
+            Parameters.execution["creation_time"]
 
         # create block according to CP
         block = Block(
@@ -70,49 +76,40 @@ class PBFT():
             previous=self.node.last_block.id,
             time_created=time,
             miner=self.node.id,
-            consensus = PBFT
+            consensus=PBFT,
         )
         block.extra_data = {
             'proposer': self.node.id,
             'round': self.rounds.round
         }
 
-        # add transactions to the block
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in self.node.pool if t.timestamp <= time]
-        timeout_time = self.timeout.time
+        transactions, size, created_time = Parameters.simulation["txion_model"].execute_transactions(
+            self.node.pool, time, time + self.timeout.time)
 
-        # while the pool is empty and the current time is less than the timeout wait for transactions to be added to the pool
-        # ( basically the transactions are there - the nodes check when the first transaction in time apears and forwards the clock to that time
-        # if not txions are found before the round times out, we return -1 and let the block proposal timeout
-
-        while not current_pool and time + 1 < timeout_time:
-            time += 1
-            current_pool = [t for t in self.node.pool if t.timestamp <= time]
-
-        if current_pool and time < timeout_time:
-            block.transactions, block.size = Parameters.simulation["txion_model"].execute_transactions(
-                current_pool)
-
-            return block, time
+        if transactions:
+            block.transactions = transactions
+            block.size = size
+            return block, created_time
         else:
             return -1, -1
 
     @staticmethod
-    def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
-        if event.payload['type'] == 'pre_prepare':
-            return event.actor.cp.pre_prepare(event)
-        elif event.payload['type'] == 'prepare':
-            return event.actor.cp.prepare(event)
-        elif event.payload['type'] == 'commit':
-            return event.actor.cp.commit(event)
-        elif event.payload['type'] == 'timeout':
-            return event.actor.cp.handle_timeout(event)
-        elif event.payload['type'] == 'new_block':
-            return event.actor.cp.new_block(event)
-        else:
-            return 'unhadled'
-    
+    def handle_event(event):
+        # specific to PBFT - called by events in Handler.handle_event()
+        match event.payload["type"]:
+            case 'pre_prepare':
+                return event.actor.cp.pre_prepare(event)
+            case 'prepare':
+                return event.actor.cp.prepare(event)
+            case 'commit':
+                return event.actor.cp.commit(event)
+            case 'timeout':
+                return event.actor.cp.handle_timeout(event)
+            case 'new_block':
+                return event.actor.cp.new_block(event)
+            case _:
+                return 'unhadled'
+
     ########################## PROTOCOL COMMUNICATION ###########################
 
     def validate_message(self, event):
@@ -125,13 +122,13 @@ class PBFT():
 
     def process_vote(self, type, sender):
         # PBFT does not allow for mutliple blocks to be submitted in 1 round
-        self.msgs[type] += [sender.id] 
+        self.msgs[type] += [sender.id]
 
     def pre_prepare(self, event):
         node = self.node
         time = event.time
         block = event.payload['block']
-        
+
         time += Parameters.execution["msg_val_delay"]
 
         # if node is a new round state (i.e waiting for a new block to be proposed)
@@ -176,7 +173,7 @@ class PBFT():
 
         if not self.validate_message(event):
             return "invalid"
-        
+
         time += Parameters.execution["msg_val_delay"]
 
         if self.state == 'pre_prepared':
@@ -253,7 +250,6 @@ class PBFT():
 
         return 'invalid'
 
-
     def commit(self, event):
         node = self.node
         time = event.time
@@ -279,7 +275,7 @@ class PBFT():
                 self.process_vote('commit', node)
 
                 node.add_block(self.block, time)
-                
+
                 payload = {
                     'type': 'new_block',
                     'block': block,
@@ -344,7 +340,7 @@ class PBFT():
                         Sync.create_local_sync_event(node, event.creator, time)
 
                     return "handled"
-                
+
         return "invalid"
 
     def new_block(self, event):
@@ -409,12 +405,12 @@ class PBFT():
 
             self.state = 'pre_prepared'
             self.block = block.copy()
-            
+
             payload = {
                 'type': 'pre_prepare',
                 'block': block,
                 'round': new_round,
-            }   
+            }
 
             self.node.scheduler.schedule_broadcast_message(
                 self.node, creation_time, payload, PBFT.handle_event)
@@ -452,7 +448,8 @@ class PBFT():
             'round': self.rounds.round,
         }
 
-        event = self.node.scheduler.schedule_event(self.node, time, payload, PBFT.handle_event)
+        event = self.node.scheduler.schedule_event(
+            self.node, time, payload, PBFT.handle_event)
         self.timeout = event
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
