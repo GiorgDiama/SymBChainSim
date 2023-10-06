@@ -1,5 +1,6 @@
 from random import randint
 
+
 class Event():
     '''
         Models events for the descrete event simulation
@@ -12,9 +13,10 @@ class Event():
 
         actor: reference to the node that this event is meant for - any object inheriting base event *MUST* use the "actor" attribute
     '''
+
     def __hash__(self) -> int:
         return hash((self.id, self.time))
-    
+
     def __lt__(self, other):
         return self.time < other.time
 
@@ -39,17 +41,17 @@ class Event():
     def __repr__(self):
         return f"LCL: {self.creator.id} {round(self.time,3)} {self.payload['type']}"
 
-    def __init__(self, handler, creator, time, payload, id = -1) -> None:
+    def __init__(self, handler, creator, time, payload, id=-1) -> None:
         # unique id (or hash) used to identeify received messages for gossip
         self.id = randint(0, 1000000) if id == -1 else id
-        
+
         self.handler = handler
         self.creator = creator
         self.time = time
         self.payload = payload
 
         self.actor = creator
-    
+
     def to_serializable(self):
         return {
             "creator": self.creator.id,
@@ -57,11 +59,13 @@ class Event():
             "type": self.payload["type"]
         }
 
+
 class MessageEvent(Event):
     '''
         Models messages betwee nodes (i.e cp message, sync msessage, new blocks etc)
         is created by the netwrok through a node Event and added to the EQ's of other nodes
     '''
+
     def __str__(self):
         return f"MSG: {self.creator} -> {self.receiver}  {round(self.time,3)} - payload {self.payload}"
 
@@ -81,7 +85,7 @@ class MessageEvent(Event):
     @staticmethod
     def from_Event(event, receiver):
         return MessageEvent(event.handler, event.creator, event.time, event.payload, event.id, receiver)
-    
+
     def to_serializable(self):
         return {
             "creator": self.creator.id,
@@ -90,13 +94,15 @@ class MessageEvent(Event):
             "type": self.payload["type"]
         }
 
+
 class SystemEvent():
     '''
         Simplified event for simulation managemnt tasks
     '''
+
     def __hash__(self) -> int:
         return hash((self.id, self.time))
-    
+
     def __lt__(self, other):
         return self.time < other.time
 
