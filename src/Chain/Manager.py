@@ -13,12 +13,15 @@ import Chain.Consensus.HighLevelSync as Sync
 
 from random import randint, sample, choice, expovariate, normalvariate
 
-import math, sys, os
+import math
+import sys
+import os
 
 CPs = {
     PBFT.NAME: PBFT,
     BigFoot.NAME: BigFoot
 }
+
 
 class Manager:
     '''
@@ -42,13 +45,13 @@ class Manager:
         Parameters.load_params_from_config()
 
         Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
-        
+
         # create simulator
         self.sim = Simulation()
         self.sim.manager = self
 
         # initialise network
-        Network.init_network(self.sim.nodes) 
+        Network.init_network(self.sim.nodes)
 
         # initialise behaviour module
         self.behaviour = Behaiviour(self.sim)
@@ -65,7 +68,7 @@ class Manager:
             (most system events are recurring meaning its only necessary to manually schedule the first one )
         '''
         self.schedule_apply_behavior_event()
-        
+
         self.schedule_generate_txions_event()
 
         if Parameters.simulation["interval_switch"]:
@@ -78,10 +81,11 @@ class Manager:
         if isinstance(cp, str):
             cp = CPs[cp]
 
-        tools.debug_logs(msg=f"WILL CHANGE CP TO {cp.NAME}", input="RETURN TO CONFIRM...", col=42)
+        tools.debug_logs(
+            msg=f"WILL CHANGE CP TO {cp.NAME}", input="RETURN TO CONFIRM...", col=42)
 
         Parameters.application["CP"] = cp
-    
+
     def add_node(self):
         '''
             Adds a node taking part in the consensus process
@@ -93,25 +97,26 @@ class Manager:
         # create node and gensis block
         node = Node(self.sim.nodes[-1].id+1)
         node.add_block(self.sim.nodes[0].blockchain[0].copy(), self.sim.clock)
-        
+
         # assign a location and neighbours to node
         Network.assign_location_to_nodes(node)
         Network.assign_neighbours(node)
-    
+
         for n in node.neighbours:
             n.neighbours.append(node)
 
         Network.set_bandwidths(node)
 
         # also appends txion factory since the nodes there are a reference to the sim nodes
-        self.sim.nodes.append(node) 
+        self.sim.nodes.append(node)
         Network.nodes = self.sim.nodes
-        
+
         # bring the new node up to date and begin the syncing process
         node.update(self.sim.clock)
-        
+
         node.state.synced = False
-        Sync.create_local_sync_event(node, choice(node.neighbours), self.sim.clock)
+        Sync.create_local_sync_event(
+            node, choice(node.neighbours), self.sim.clock)
 
     def remove_node(self):
         '''
@@ -137,7 +142,6 @@ class Manager:
             if rem_node in node.neighbours:
                 Network.assign_neighbours(node)
 
-
     def update_sim(self):
         '''
             Time based updates that are not controlled by system events can be triggered here
@@ -145,7 +149,7 @@ class Manager:
         ################ Start debug at time #################
         if 'start_debug' in os.environ and int(os.environ['start_debug']) <= self.sim.clock:
             os.environ['debug'] = "True"
-    
+
     def run(self):
         ''' Managed simulation loop'''
         self.behaviour.update_behaviour()
@@ -155,7 +159,7 @@ class Manager:
             self.update_sim()
 
     ################################################################################################
-                            ################ SYSTEM EVENTS #################
+            ################ SYSTEM EVENTS #################
     ################################################################################################
 
     def handle_next_event(self, event):
@@ -171,13 +175,13 @@ class Manager:
             self.handle_change_cp_event(event)
 
     ################################################################################################
-                            ################ APPLY BEHAVIOUR #################
+            ################ APPLY BEHAVIOUR #################
     ################################################################################################
 
     def schedule_apply_behavior_event(self):
         event = SystemEvent(
-            time = self.sim.clock + Parameters.behaiviour["behaviour_interval"],
-            payload = {"type": "apply_behavior"}
+            time=self.sim.clock + Parameters.behaiviour["behaviour_interval"],
+            payload={"type": "apply_behavior"}
         )
 
         self.sim.q.add_event(event)
@@ -185,25 +189,24 @@ class Manager:
     def handle_apply_behavior_event(self, event):
         # Random CP Change
         if "rand-cp" in sys.argv:
-            if randint(0,100) < 10:
+            if randint(0, 100) < 10:
                 self.change_cp(choice(list(CPs.values())))
 
-        #apply behaviour 
+        # apply behaviour
         self.behaviour.apply_behavior()
         self.schedule_apply_behavior_event()
-    
 
     ################################################################################################
-                            ################ CHANGE CP #################
+        ################ CHANGE CP #################
     ################################################################################################
 
     def schedule_change_cp_event(self):
         if Parameters.simulation["interval_switch"]:
-            time = self.sim.clock + normalvariate(30,5)
+            time = self.sim.clock + normalvariate(30, 5)
             cp = PBFT if Parameters.application["CP"] == BigFoot else BigFoot
 
         event = SystemEvent(
-            time = time,
+            time=time,
             payload={
                 "type": "change_cp",
                 "cp": cp
@@ -211,20 +214,20 @@ class Manager:
         )
 
         self.sim.q.add_event(event)
-    
+
     def handle_change_cp_event(self, event):
         self.change_cp(event.payload["cp"])
         self.schedule_change_cp_event()
 
     ################################################################################################
-                            ################ GENERATE TXIONS #################
+        ################ GENERATE TXIONS #################
     ################################################################################################
-    
+
     def schedule_generate_txions_event(self):
         time = self.sim.clock + Parameters.application["TI_dur"]
 
         event = SystemEvent(
-            time = time,
+            time=time,
             payload={
                 "type": "generate_txions",
             }
@@ -232,24 +235,25 @@ class Manager:
         self.sim.q.add_event(event)
 
     def handle_generate_txions_event(self, event):
-        Parameters.simulation['txion_model'].generate_interval_txions(event.time)
+        Parameters.simulation['txion_model'].generate_interval_txions(
+            event.time)
 
         # schedule txion generation for next interval
         self.schedule_generate_txions_event()
-        
 
     def handle_node_fault_event(self, event):
         event.payload["node"].kill()
-        recovery_time = event.time + expovariate(1/event.payload["node"].behaviour.mean_recovery_time)
+        recovery_time = event.time + \
+            expovariate(1/event.payload["node"].behaviour.mean_recovery_time)
         event = SystemEvent(
-            time = recovery_time,
-            payload = {"type": "node recovery",
-                        "node": event.payload["node"]
-            }
+            time=recovery_time,
+            payload={"type": "node recovery",
+                     "node": event.payload["node"]
+                     }
         )
         event.payload["node"].behaviour.recovery_event = event
         self.sim.q.add_event(event)
-    
+
     def handle_node_recovery_event(self, event):
         event.payload["node"].resurect()
         event.payload["node"].behaviour.recovery_event = None
@@ -270,7 +274,8 @@ class Behaiviour:
         byzantine_params = Parameters.behaiviour["byzantine_nodes"]
         sync_params = Parameters.behaiviour["sync"]
 
-        self.byzantine = sample(self.sim.nodes, byzantine_params["num_byzantine"])
+        self.byzantine = sample(
+            self.sim.nodes, byzantine_params["num_byzantine"])
 
         for node in self.byzantine:
             node.behaviour.byzantine = True
@@ -289,26 +294,27 @@ class Behaiviour:
                 fault_params["mean_fault_time"]['low'],
                 fault_params["mean_fault_time"]["high"]
             )
-            
+
             node.behaviour.mean_recovery_time = randint(
                 fault_params["mean_recovery_time"]['low'],
                 fault_params["mean_recovery_time"]["high"]
             )
-            
+
     def apply_behavior(self):
-        if "behaviour-off" in sys.argv: 
+        if "behaviour-off" in sys.argv:
             return 0
 
         ################ FAULT LOGIC ########################
         for fnode in self.faulty:
             if fnode.state.alive and (fnode.behaviour.fault_event is None or fnode.behaviour.fault_event.time > Parameters.simulation["simTime"]):
-                next_fault_time = self.sim.clock + expovariate(1/fnode.behaviour.mean_fault_time)
-                
+                next_fault_time = self.sim.clock + \
+                    expovariate(1/fnode.behaviour.mean_fault_time)
+
                 event = SystemEvent(
-                    time = next_fault_time,
-                    payload = {"type": "node fault",
-                                "node": fnode
-                    }
+                    time=next_fault_time,
+                    payload={"type": "node fault",
+                             "node": fnode
+                             }
                 )
 
                 if fnode.behaviour.fault_event is not None:
