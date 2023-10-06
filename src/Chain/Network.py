@@ -3,12 +3,15 @@ from Chain.Parameters import Parameters
 
 import Chain.tools as tools
 
-import numpy as np, glob, pandas as pd
+import numpy as np
+import glob
+import pandas as pd
 from sys import getsizeof
 
 import random
 
 import json
+
 
 class Network:
     '''
@@ -21,7 +24,7 @@ class Network:
     locations = None
     latency_map = None
     distance_map = None
-    
+
     @staticmethod
     def size(msg):
         size = Parameters.network["base_msg_size"]
@@ -68,7 +71,7 @@ class Network:
             sender, receiver, Network.size(msg))
 
         msg.time += delay
-        
+
         receiver.add_event(msg)
 
     @staticmethod
@@ -84,7 +87,7 @@ class Network:
 
         Network.parse_latencies()
         Network.parse_distances()
-    
+
         Network.assign_location_to_nodes()
 
         Network.set_bandwidths()
@@ -100,8 +103,10 @@ class Network:
             if Parameters.network["bandwidth"]["debug"]:
                 node.bandwidth = 1
             else:
-                node.bandwidth = random.normalvariate(Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
-                print(node.bandwidth)
+                node.bandwidth = random.normalvariate(
+                    Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
+
+            tools.debug_logs(msg=f"Node {node.id}: {node.bandwidth}MB/s")
 
     @staticmethod
     def assign_neighbours(node=None):
@@ -131,7 +136,7 @@ class Network:
             delay += Network.latency_map[sender.location][receiver.location][0] / 1000
         elif Parameters.network["use_latency"] == "distance":
             dist = Network.distance_map[sender.location][receiver.location]
-            dist = dist * 0.621371 # conversion to miles since formula is based on miles
+            dist = dist * 0.621371  # conversion to miles since formula is based on miles
             '''
                 y = 0.022x + 4.862 is fitted to match the round trip latency between 2
                 locations based on distance source: 
@@ -141,8 +146,9 @@ class Network:
                 / 1000 to get seconds (formula fitted on ms)
             '''
             delay += ((0.022 * dist + 4.862) / 2) / 1000
-        
-        delay += Parameters.network["queueing_delay"] + Parameters.network["processing_delay"]
+
+        delay += Parameters.network["queueing_delay"] + \
+            Parameters.network["processing_delay"]
 
         return delay
 
@@ -156,7 +162,7 @@ class Network:
         if node is None:
             for n in Network.nodes:
                 n.location = random.choice(Network.locations)
-                tools.debug_logs(msg=f"{n}: {n.location}")
+                tools.debug_logs(msg=f"Node {n.id}: {n.location}")
         else:
             if location is None:
                 node.location = random.choice(Network.locations)
@@ -166,7 +172,7 @@ class Network:
     @staticmethod
     def get_bandwidth(sender, receiver):
         return min(sender.bandwidth, receiver.bandwidth)
-    
+
     @staticmethod
     def parse_latencies():
         '''
@@ -175,9 +181,9 @@ class Network:
         Network.locations = []
         Network.latency_map = {}
 
-        with open("NetworkLatencies/latency_map.json","rb") as f:
+        with open("NetworkLatencies/latency_map.json", "rb") as f:
             Network.latency_map = json.load(f)
-        
+
         Network.locations = list(Network.latency_map.keys())
 
         for loc in Network.locations:
@@ -185,15 +191,14 @@ class Network:
                 Parameters.network["same_city_latency_ms"],
                 Parameters.network["same_city_dev_ms"]
             )
-    
+
     def parse_distances():
         Network.locations = []
         Network.distance_map = {}
-    
-        with open("NetworkLatencies/distance_map.json","rb") as f:
+
+        with open("NetworkLatencies/distance_map.json", "rb") as f:
             Network.distance_map = json.load(f)
-        
-        # overwritting the locations is fine to gurantee that they exists 
+
+        # overwritting the locations is fine to gurantee that they exists
         # (this is the case if we laoded latencied before and prevents an error if we dont want to use latencies)
         Network.locations = list(Network.distance_map.keys())
-
