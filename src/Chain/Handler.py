@@ -13,6 +13,7 @@ from Chain.Metrics import SimulationState
     Handling and running Events
 '''
 
+
 def handle_event(event, backlog=True):
     '''
         Handless events by calling their respctive handlers and backlogs
@@ -24,18 +25,18 @@ def handle_event(event, backlog=True):
             unhadled    - Could not handle (error message)
             backlog     - future message, add to backlog
     '''
-    
+
     SimulationState.store_event(event)
 
     if event.payload["type"] in Parameters.simulation["events"].keys():
         Parameters.simulation["events"][event.payload["type"]] += 1
     else:
         Parameters.simulation["events"][event.payload["type"]] = 1
-        
+
     # if node is dead - event will not be handled
     if not event.actor.state.alive:
         return 'dead_node'
-    
+
     # if this event is CP specific and the CP of the event does not mactch the current CP - old message
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
@@ -60,6 +61,7 @@ def handle_event(event, backlog=True):
 
     return ret
 
+
 def handle_backlog(node):
     '''
         Tries to handle every event in the backlog - removes handled events
@@ -73,7 +75,7 @@ def handle_backlog(node):
         ret = handle_event(event, backlog=False)
 
         tools.debug_logs(msg=f"event returned {ret}")
-        
+
         if ret == 'handled' or ret == 'new_state' or ret == 'invalid':
             remove_list.append(event)
 
