@@ -1,13 +1,15 @@
 import random
 import copy
 
+
 class Block:
     '''
         Defines the block - a basic component of the blockchain
     '''
+
     def __init__(self, depth=0, id=0, previous=-1,
-                 time_created=0, miner=None, transactions=[], size=1.0, consensus=None):
-        
+                 time_created=0, miner=None, transactions=[], size=0, consensus=None):
+
         self.depth = depth
         self.id = id
         self.previous = previous
@@ -33,7 +35,7 @@ class Block:
         '''
         new_block = Block(self.depth, self.id, self.previous, self.time_created,
                           self.miner, self.transactions, self.size, self.consensus)
-                          
+
         new_block.extra_data = copy.copy(self.extra_data)
 
         new_block.time_added = self.time_added
@@ -53,7 +55,7 @@ class Block:
             "round": self.extra_data["round"],
             "transactions": [x for x in self.transactions]
         }
-    
+
     @staticmethod
     def genesis_block():
         '''
