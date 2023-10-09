@@ -31,7 +31,7 @@ def run():
     t = datetime.now()
     manager.run()
     runtime = datetime.now() - t
-
+    print()
     for n in manager.sim.nodes:
         print(n.__str__(full=True),
               '\tPBFT blocks in BC:\t', len(
