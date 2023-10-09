@@ -12,14 +12,19 @@ class PrioQueue:
     def add_task(self, task, priority):
         heapq.heappush(self.pq, (priority, task))
 
-    def remove_task(self, task):
-        pass
-
     def pop_task(self):
         return heapq.heappop(self.pq)[1]
 
     def size(self):
         return len(self.pq)
+
+    def remove(self, tasks):
+        '''
+            IMPORTANT: 
+                Expensive opperation! Dont use unless you absolutely have to!
+        '''
+        self.pq.remove(tasks)
+        heapq.heapify(self.pq)
 
 
 class Queue:
@@ -42,6 +47,9 @@ class Queue:
             inserts events while mainiting time order
         '''
         self.prio_queue.add_task(event, event.time)
+
+    def remove_event(self, event):
+        self.prio_queue.remove((event.time, event))
 
     def pop_next_event(self):
         '''
