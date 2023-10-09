@@ -12,6 +12,8 @@ import Chain.tools as tools
 
 from Chain.Event import SystemEvent
 
+import sys
+
 
 class Simulation:
     def __init__(self) -> None:
@@ -41,7 +43,14 @@ class Simulation:
 
     def sim_next_event(self):
         next_event = self.q.pop_next_event()
+
         self.clock = next_event.time
+
+        print(
+            f"\rSimulation clock: {'%.2f'%self.clock}/{Parameters.simulation['simTime']}", end='', flush=True)
+
+        tools.debug_logs(msg=tools.sim_info(self, print_event_queues=True),
+                         command=f"Next event: {next_event}", simulator=self)
 
         if isinstance(next_event, SystemEvent):
             self.manager.handle_next_event(next_event)
