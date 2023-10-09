@@ -211,7 +211,8 @@ class Node():
         if Parameters.application["use_transactions"]:
             # update local transaction pool by removing verified transactions (i.e., txions included in the block)
             for t in block.transactions:
-                self.pool.remove(t)
+                if t in self.pool:
+                    self.pool.remove(t)
 
     def add_event(self, event):
         ''' adds event to the queue of the node if the node is online'''
