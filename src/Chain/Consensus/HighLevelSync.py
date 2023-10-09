@@ -41,7 +41,7 @@ def create_local_sync_event(desynced_node, request_node, time):
 
         total_delay += delay
 
-        missing_blocks[i].time_added += delay
+        missing_blocks[i].time_added += time + delay
 
     missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
 
