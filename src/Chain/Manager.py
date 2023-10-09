@@ -163,16 +163,17 @@ class Manager:
     ################################################################################################
 
     def handle_next_event(self, event):
-        if event.payload["type"] == "apply_behavior":
-            self.handle_apply_behavior_event(event)
-        elif event.payload["type"] == "node fault":
-            self.handle_node_fault_event(event)
-        elif event.payload["type"] == "node recovery":
-            self.handle_node_recovery_event(event)
-        elif event.payload["type"] == "generate_txions":
-            self.handle_generate_txions_event(event)
-        elif event.payload["type"] == "change_cp":
-            self.handle_change_cp_event(event)
+        match event.payload["type"]:
+            case "apply_behavior":
+                self.handle_apply_behavior_event(event)
+            case "node fault":
+                self.handle_node_fault_event(event)
+            case "node recovery":
+                self.handle_node_recovery_event(event)
+            case "generate_txions":
+                self.handle_generate_txions_event(event)
+            case "change_cp":
+                self.handle_change_cp_event(event)
 
     ################################################################################################
             ################ APPLY BEHAVIOUR #################
