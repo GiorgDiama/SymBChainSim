@@ -25,20 +25,6 @@ class Parameters:
     PBFT = {}
 
     @staticmethod
-    def export_state():
-        return {
-            "simulation": Parameters.simulation,
-            "application": Parameters.application,
-            # "execution": Parameters.execution,
-            # "data": Parameters.data,
-            # "consensus": Parameters.consensus,
-            # "network": Parameters.network,
-
-            # "BigFoot": Parameters.BigFoot,
-            # "PBFT": Parameters.PBFT
-        }
-
-    @staticmethod
     def load_state(state):
         Parameters.simulation = state["simulation"]
         Parameters.application = state["application"]
@@ -56,20 +42,14 @@ class Parameters:
 
         Parameters.simulation = params["simulation"]
         Parameters.simulation["events"] = {}  # cnt events of each type
-
         Parameters.behaiviour = params["behaviour"]
-
         Parameters.network = params["network"]
-
         Parameters.application = params["application"]
         # incremental txion ids starting on...
         Parameters.application["txIDS"] = 0
         Parameters.calculate_fault_tolerance()
-
         Parameters.execution = params["execution"]
-
         Parameters.data = params["data"]
-
         Parameters.BigFoot = read_yaml(params['consensus']['BigFoot'])
         Parameters.PBFT = read_yaml(params['consensus']['PBFT'])
 
@@ -77,5 +57,6 @@ class Parameters:
     def calculate_fault_tolerance():
         Parameters.application["f"] = int(
             (Parameters.application["Nn"] - 1) / 3)
+
         Parameters.application["required_messages"] = (
             2 * Parameters.application["f"]) + 1
