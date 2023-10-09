@@ -4,6 +4,7 @@ import sys
 import yaml
 
 from Chain.Parameters import Parameters
+from Chain.Event import SystemEvent, MessageEvent, Event
 
 
 def debug_logs(msg, **kwargs):
@@ -121,67 +122,41 @@ def exec_cmd(simulator, cmd):
         return f"No such command: {cmd}"
 
 
-def global_event_queue(simulator):
-    queue = []
-    for n in simulator.bps:
-        for e in reversed(n.queue.event_list):
-            queue.append(e)
-
-    return sorted(queue)
-
-
-def print_global_eq(simulator, ret=False, indiv=True):
-    s = ""
-    s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
-    for n in simulator.nodes:
-        s += n.__str__(full=True) + '\n'
-    s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
-
-    if indiv:
-        s += color('-'*30 + 'EVENTS' + '-'*30, 45) + '\n'
+def sim_info(simulator, print_event_queues=True):
+    if os.environ['debug'] == "True" and "nd" not in sys.argv:
+        s = ""
+        s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
         for n in simulator.nodes:
-            if n.state.alive:
-                s += color(n.__str__(), 42) + '\n'
-            else:
-                s += color(n.__str__(), 41) + '\n'
-            for e in reversed(n.queue.event_list):
-                s += "\t" + e.__str__() + '\n'
-            s += color("syncMSG", 44) + '\n'
-            for e in reversed(n.sync_queue.event_list):
-                s += "\t" + e.__str__() + '\n'
-            s += color("backlog", 43) + '\n'
-            for e in reversed(n.backlog):
-                s += color("\t" + e.__str__(), 43) + '\n'
-        s += color("----------SYSTEM EVENTS------------", 44) + '\n'
-        for e in reversed(simulator.system_queue.event_list):
-            s += "\t" + e.__str__() + '\n'
+            s += n.__str__(full=True) + '\n'
+        s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
 
-        s += color('-'*30 + 'EVENTS' + '-'*30, 45) + '\n'
-    else:
-        s += '-'*10 + 'EVENTS' + '-'*10 + '\n'
-        for e in reversed(global_event_queue(simulator)[1:]):
-            if ret:
-                s += e.__str__() + '\n'
-    if ret:
+        if print_event_queues:
+            events_per_node = {-1: ""}
+            for e in sorted(simulator.q.prio_queue.pq, key=lambda x: x[0], reverse=True):
+                event = e[1]
+                if isinstance(event, MessageEvent) or isinstance(event, Event):
+                    if event.actor.id in events_per_node:
+                        events_per_node[event.actor.id] += str(e[1]) + '\n'
+                    else:
+                        events_per_node[event.actor.id] = str(e[1]) + '\n'
+                else:
+                    events_per_node[-1] += str(e[1]) + "\n"
+
+            sort_nodes = sorted(list(events_per_node.keys()))
+
+            for key in sort_nodes:
+                if key != -1:
+                    s += color(("-"*30 + "NODE " +
+                               str(key) + '-'*30), 41) + '\n'
+                else:
+                    s += color(("-"*30 + "SYSTEM" + '-'*30), 42) + '\n'
+
+                for e in events_per_node[key]:
+                    s += e
+                s += "\n"
+
         return s
-    else:
-        print(s)
 
-
-def print_indiv_eqs(simulator):
-    for n in simulator.nodes:
-        print(n)
-        for e in reversed(n.queue.event_list):
-            print(e)
-
-
-def print_node_state(simulator):
-    for n in simulator.nodes:
-        print(n)
-        for k in n.state.cp_state.__dict__:
-            if k != 'timeout':
-                print(k, n.state.cp_state.__dict__[k])
-        print()
 
 ####################### YAML ######################
 
