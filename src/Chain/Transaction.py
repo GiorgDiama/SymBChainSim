@@ -50,10 +50,12 @@ class TransactionFactory:
                     instead of moving time by adding 1, reschedule event
                     a second later, this way the generation event can happen
         '''
+        # while we have no transactions progress the time towards the timeout/fail period
         while not current_pool and time + 1 < fail_at:
             time += 1
             current_pool = [t for t in pool if t.timestamp <= time]
 
+        # while the block is not full and there still are txions add them to block
         if current_pool and time < fail_at:
             transactions = []
             size = 0
@@ -67,10 +69,12 @@ class TransactionFactory:
 
             return transactions, size, time
         else:
+            # if we did not find any transactions return an empty list
             return [], -1, time
 
     def execute_transactions(self, pool, time, fail_at):
         if Parameters.application["use_transactions"]:
+            # execute transactions in the mempool
             return self.block_from_pool(pool, time, fail_at)
         else:
             raise (NotImplementedError(
