@@ -1,0 +1,12 @@
+[simulation]
+init_CP  = "PBFT"
+simTime = 600
+interval_switch = False
+interval_mean = 30
+
+[application]
+Nn = 4
+TI_dur = 601
+Tn = 21
+Tsize = 0.01
+use_transactions = True
