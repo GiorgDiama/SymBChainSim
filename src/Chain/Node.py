@@ -208,7 +208,7 @@ class Node():
         block.time_added = time
         self.blockchain.append(block)
 
-        if Parameters.application["use_transactions"]:
+        if Parameters.application["transaction_model"] == "local":
             # update local transaction pool by removing verified transactions (i.e., txions included in the block)
             for t in block.transactions:
                 if t in self.pool:
