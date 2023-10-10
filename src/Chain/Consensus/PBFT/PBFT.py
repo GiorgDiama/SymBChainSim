@@ -1,15 +1,3 @@
-'''
-    Practival Byzantime Fault Tollerance Consensus Protocol
-    
-    PBFT State:
-        round - current round
-        change_to - canditate round to change to
-        state - PBFT node state (new_round, pre-prepared, prepared, committed, round_change)]
-        msgs: list of messages received from other nodes
-        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
-        block -  the current proposed block
-'''
-
 from Chain.Block import Block
 from Chain.Parameters import Parameters
 
@@ -17,10 +5,21 @@ import Chain.Consensus.Rounds as Rounds
 import Chain.Consensus.HighLevelSync as Sync
 
 from random import randint
-from sys import modules
 
 
 class PBFT():
+    '''
+    Practival Byzantime Fault Tollerance Consensus Protocol
+
+    PBFT State:
+        round - current round
+        change_to - canditate round to change to
+        state - PBFT node state (new_round, pre-prepared, prepared, committed, round_change)]
+        msgs: list of messages received from other nodes
+        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
+        block -  the current proposed block
+    '''
+
     NAME = "PBFT"
 
     def __init__(self, node) -> None:
