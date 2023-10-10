@@ -27,7 +27,8 @@ class Network:
 
         for key in msg.payload:
             if key == "block":
-                size += msg.payload[key].size
+                size += msg.payload[key].size + \
+                    Parameters.data["base_block_size"]
             else:
                 size += float(getsizeof(msg.payload[key])/1000000)
 
@@ -70,6 +71,7 @@ class Network:
 
         receiver.add_event(msg)
 
+    ########################## SET UP NETWORK ############################
     @staticmethod
     def init_network(nodes, speeds=None):
         ''' 
@@ -79,6 +81,9 @@ class Network:
                 - Assigns locations and bandwidth to nodes
                 - Assigns neibhours to nodes (Gossip, Sync etc...)
         '''
+        if Parameters.network["gossip"]:
+            raise NotImplementedError("Gossip is currently broken...")
+
         Network.nodes = nodes
 
         Network.parse_latencies()
@@ -135,11 +140,11 @@ class Network:
             dist = dist * 0.621371  # conversion to miles since formula is based on miles
             '''
                 y = 0.022x + 4.862 is fitted to match the round trip latency between 2
-                locations based on distance source: 
+                source: 
                 Goonatilake, Rohitha, and Rafic A. Bachnak. "Modeling latency in a network distribution." Network and Communication Technologies 1.2 (2012): 1
                 
                 / 2 to get the single trip latency
-                / 1000 to get seconds (formula fitted on ms)
+                / 1000 to get seconds (regression fitted on data in ms)
             '''
             delay += ((0.022 * dist + 4.862) / 2) / 1000
 
@@ -172,7 +177,7 @@ class Network:
     @staticmethod
     def parse_latencies():
         '''
-            Initialised the Network.locations list the Network.latency map from the JSON dataset
+            Initialised the Network.locations list and the Network.latency_map from the JSON dataset
         '''
         Network.locations = []
         Network.latency_map = {}
@@ -189,12 +194,15 @@ class Network:
             )
 
     def parse_distances():
+        '''
+            Initialised the Network.locations list and the Network.distance_map from the JSON dataset
+        '''
         Network.locations = []
         Network.distance_map = {}
 
         with open("NetworkLatencies/distance_map.json", "rb") as f:
             Network.distance_map = json.load(f)
 
-        # overwritting the locations is fine to gurantee that they exists
-        # (this is the case if we laoded latencied before and prevents an error if we dont want to use latencies)
+        # overwritting the locations is fine to gurantee that they exist (this is the case if we laoded latencied before)
+        # prevents an error if we dont want to use latencies
         Network.locations = list(Network.distance_map.keys())
