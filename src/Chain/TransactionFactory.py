@@ -42,7 +42,7 @@ class TransactionFactory:
 
                 self.transaction_prop(Transaction(id, timestamp, size))
 
-    def block_from_local_pool(self, node, pool, time, fail_at):
+    def block_from_local_pool(self, pool, time, fail_at):
         # add transactions to the block
         # get current transaction from transaction pool and timeout time
         current_pool = [t for t in pool if t.timestamp <= time]
@@ -117,10 +117,10 @@ class TransactionFactory:
             # if we did not find any transactions return an empty list
             return [], -1, time
 
-    def execute_transactions(self, node, pool, time, fail_at):
+    def execute_transactions(self, pool, time, fail_at):
         if Parameters.application["transaction_model"] == "local":
             # execute transactions in the mempool
-            return self.block_from_local_pool(node, pool, time, fail_at)
+            return self.block_from_local_pool(pool, time, fail_at)
         elif Parameters.application["transaction_model"] == "global":
             return self.block_from_global_pool(time, fail_at)
         else:

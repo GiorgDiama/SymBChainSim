@@ -1,6 +1,6 @@
 from Chain.Node import Node
 from Chain.Block import Block
-from Chain.Transaction import TransactionFactory
+from Chain.TransactionFactory import TransactionFactory
 from Chain.Parameters import Parameters
 from Chain.EventQueue import Queue
 from Chain.Handler import handle_event
