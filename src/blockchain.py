@@ -47,42 +47,4 @@ def run():
     print(tools.color(f"\n SIMULATION EXECUTION TIME: {runtime}", 44))
 
 
-def simple_simulation():
-    from Chain.Simulation import Simulation
-    from Chain.Network import Network
-    from Chain.Parameters import Parameters
-    import Chain.tools as tools
-
-    # load params (cmd and env)
-    tools.set_env_vars_from_config()
-    Parameters.load_params_from_config()
-
-    Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
-
-    sim = Simulation()
-
-    Network.init_network(sim.nodes)
-
-    sim.init_simulation()
-
-    t = datetime.now()
-    sim.run_simulation()
-    runtime = datetime.now() - t
-
-    for n in sim.nodes:
-        print(n, '| Total_blocks:', n.blockchain_length(),
-              '| pbft:', len([x for x in n.blockchain[1:]
-                             if x.consensus.NAME == PBFT.NAME]),
-              '| bf:', len([x for x in n.blockchain[1:]
-                           if x.consensus.NAME == BigFoot.NAME]),
-              )
-
-    SimulationState.store_state(sim)
-
-    Metrics.measure_all(SimulationState.blockchain_state)
-    Metrics.print_metrics()
-
-    print(f"\nSIMULATION EXECUTION TIME: {runtime}")
-
-
 run()
