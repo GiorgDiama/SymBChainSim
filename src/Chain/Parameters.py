@@ -1,8 +1,6 @@
 import yaml
 import os
 
-from collections import namedtuple
-
 
 def read_yaml(path):
     with open(path, 'rb') as f:
