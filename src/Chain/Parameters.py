@@ -25,18 +25,6 @@ class Parameters:
     PBFT = {}
 
     @staticmethod
-    def load_state(state):
-        Parameters.simulation = state["simulation"]
-        Parameters.application = state["application"]
-        Parameters.execution = state["execution"]
-        Parameters.data = state["data"]
-        Parameters.consensus = state["consensus"]
-        Parameters.network = state["network"]
-
-        Parameters.BigFoot = state["BigFoot"]
-        Parameters.PBFT = state["PBFT"]
-
-    @staticmethod
     def load_params_from_config():
         params = read_yaml(f"Configs/{os.environ['config']}.yaml")
 
