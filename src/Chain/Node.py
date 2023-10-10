@@ -1,9 +1,6 @@
-from Chain.EventQueue import Queue
 from Chain.Scheduler import Scheduler
 
 from Chain.Parameters import Parameters
-
-import Chain.Handler as Handler
 
 from types import SimpleNamespace
 
