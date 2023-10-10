@@ -1,11 +1,13 @@
-import bisect
 from Chain.Event import MessageEvent
 
 import heapq
-import itertools
 
 
 class PrioQueue:
+    ''' 
+        Implements a priority queue as a min-heap
+    '''
+
     def __init__(self) -> None:
         self.pq = []
 
@@ -30,10 +32,7 @@ class PrioQueue:
 class Queue:
     '''
         Event queue implementation - holds future events scheduled to be executed
-
-        event_list - holds future node events (in ascending time order)
     '''
-    _MESSAGE_HISTORY_CAP = 100
 
     def __init__(self):
         self.prio_queue = PrioQueue()
@@ -43,31 +42,16 @@ class Queue:
         pass
 
     def add_event(self, event):
-        '''
-            inserts events while mainiting time order
-        '''
         self.prio_queue.add_task(event, event.time)
 
     def remove_event(self, event):
+        '''
+            NOTE: Expensive opperation! Dont use unless you absolutely have to!
+        '''
         self.prio_queue.remove((event.time, event))
 
     def pop_next_event(self):
-        '''
-            REMOVES and returns next event to be executed
-        '''
         return self.prio_queue.pop_task()
 
     def size(self):
         return self.prio_queue.size()
-
-    def isEmpty(self):
-        return self.event_list
-
-    def contains_event_message(self, event):
-        '''
-            Check if node has received message
-        '''
-        def compare(x): return isinstance(x, MessageEvent) and x.id == event.id
-
-        # True if message is in event list or old messages
-        return any(map(compare, self.event_list)) or any(map(compare, self.old_messages))
