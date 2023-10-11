@@ -71,6 +71,10 @@ class Network:
 
         receiver.add_event(msg)
 
+    @staticmethod
+    def receive(node, event):
+        pass
+
     ########################## SET UP NETWORK ############################
     @staticmethod
     def init_network(nodes, speeds=None):
