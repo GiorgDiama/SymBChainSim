@@ -31,18 +31,14 @@ def run():
     t = datetime.now()
     manager.run()
     runtime = datetime.now() - t
-    print()
-    for n in manager.sim.nodes:
-        print(n.__str__(full=True),
-              '\tPBFT blocks in BC:\t', len(
-                  [x for x in n.blockchain[1:]if x.consensus.NAME == PBFT.NAME]),
-              '\n\tBigFoot blocks in BC:\t', len(
-                  [x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]))
+
+    print(
+        tools.color(f"Simulated the blockchain network for {'%.2f'%manager.sim.clock} seconds!", 45))
 
     Metrics.measure_all(manager.sim)
     Metrics.print_metrics()
 
-    print(tools.color(f"\n SIMULATION EXECUTION TIME: {runtime}", 44))
+    print(tools.color(f"SIMULATION EXECUTION TIME: {runtime}", 44))
 
 
 run()
