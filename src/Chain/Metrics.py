@@ -28,20 +28,19 @@ class Metrics:
 
         # latency
         for key, value in Metrics.latency.items():
-            averages[key]["Latency"] = val.format(v=value["AVG"])
+            averages[key]["Latency"] = "%.3f" % value["AVG"]
 
         # throughput
         for key, value in Metrics.throughput.items():
-            averages[key]["Throughput"] = val.format(v=value)
+            averages[key]["Throughput"] = "%.3f" % value
 
         # blockctime
         for key, value in Metrics.blocktime.items():
-            averages[key]["Blocktime"] = val.format(v=value["AVG"])
+            averages[key]["Blocktime"] = "%.3f" % value["AVG"]
 
         # decentralisation
         for key, value in Metrics.decentralisation.items():
-            val = "{v:.6f}"
-            averages[key]["Decentralisation"] = val.format(v=value)
+            averages[key]["Decentralisation"] = "%.6f" % value
 
         print(tools.color(f'{"-"*30} METRICS {"-"*30}', 41))
 
