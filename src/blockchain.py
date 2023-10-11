@@ -8,7 +8,7 @@ import numpy
 from Chain.Consensus.PBFT.PBFT import PBFT
 from Chain.Consensus.BigFoot.BigFoot import BigFoot
 
-from Chain.Metrics import SimulationState, Metrics
+from Chain.Metrics import Metrics
 import Chain.tools as tools
 
 ############### SEEDS ############
@@ -39,9 +39,7 @@ def run():
               '\n\tBigFoot blocks in BC:\t', len(
                   [x for x in n.blockchain[1:] if x.consensus.NAME == BigFoot.NAME]))
 
-    SimulationState.store_state(manager.sim)
-
-    Metrics.measure_all(SimulationState.blockchain_state)
+    Metrics.measure_all(manager.sim)
     Metrics.print_metrics()
 
     print(tools.color(f"\n SIMULATION EXECUTION TIME: {runtime}", 44))

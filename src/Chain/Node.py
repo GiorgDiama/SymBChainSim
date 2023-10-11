@@ -132,31 +132,8 @@ class Node():
 
         return s
 
-    def to_serializable(self):
-        return {
-            "id": self.id,
-            # ignore genesis block
-            "blockchain": [x.to_serializable() for x in self.blockchain[1:]],
-            "pool": self.pool,
-            "blocks": self.blocks,
-
-            "neighbours": [x.id for x in self.neighbours],
-
-            "location": self.location,
-            "bandwidth": self.bandwidth,
-
-            "state": {
-                "synced": self.state.synced,
-                "alive": self.state.alive,
-                "cp": self.cp.NAME
-            },
-
-            "behaviour": self.behaviour
-        }
-
     def update(self, time, round=-1):
         if Parameters.application["CP"].NAME != self.cp.NAME:
-            # print(f"{self.id} changing to {Parameters.application['CP'].NAME} at time {time}")
             self.reset()
             self.cp = Parameters.application["CP"](self)
             self.cp.init(time)

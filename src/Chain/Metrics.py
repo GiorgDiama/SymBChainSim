@@ -7,47 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class SimulationState:
-    '''
-        Stores the state of the simulation.
-    '''
-    blockchain_state = {}
-    simulation_time = None
-    events = {"consensus": {}, "other": {}}
-
-    @staticmethod
-    def store_state(sim):
-        '''
-            store_state can be called given a simulator object.
-            store_state serializes and stores the simulator state
-        '''
-        for n in sim.nodes:
-            SimulationState.blockchain_state[n.id] = n.to_serializable()
-
-        SimulationState.simulation_time = sim.clock
-
-    @staticmethod
-    def load_state(sim):
-        pass
-
-    @staticmethod
-    def store_event(event):
-        if 'block' in event.payload.keys():
-            block_id = event.payload['block'].id
-            if block_id in SimulationState.events["consensus"].keys():
-                SimulationState.events["consensus"][block_id].append(
-                    event.to_serializable())
-            else:
-                SimulationState.events["consensus"][block_id] = [
-                    event.to_serializable()]
-        else:
-            type = event.payload['type']
-            if type in SimulationState.events["other"].keys():
-                SimulationState.events[type].append(event.to_serializable())
-            else:
-                SimulationState.events[type] = [event.to_serializable()]
-
-
 class Metrics:
     latency = {}
     throughput = {}
@@ -56,11 +15,11 @@ class Metrics:
     decentralisation = {}
 
     @staticmethod
-    def measure_all(state):
-        Metrics.measure_latency(state)
-        Metrics.measure_throughput(state)
-        Metrics.measure_interblock_time(state)
-        Metrics.measure_decentralisation_nodes(state)
+    def measure_all(sim):
+        Metrics.measure_latency(sim)
+        Metrics.measure_throughput(sim)
+        Metrics.measure_interblock_time(sim)
+        Metrics.measure_decentralisation_nodes(sim)
 
     @staticmethod
     def print_metrics():
@@ -90,39 +49,37 @@ class Metrics:
             print(f"Node: {key} -> {value}")
 
     @staticmethod
-    def measure_latency(bc_state):
-        for node_id, node_state in bc_state.items():
-            Metrics.latency[node_id] = {"values": {}}
-            for b in node_state["blockchain"]:
-                Metrics.latency[node_id]["values"][b["id"]] = st.mean(
-                    [b["time_added"] - t.timestamp for t in b["transactions"]]
+    def measure_latency(sim):
+        for node in sim.nodes:
+            Metrics.latency[node.id] = {"values": {}}
+            for b in node.blockchain[1:]:
+                Metrics.latency[node.id]["values"][b.id] = st.mean(
+                    [b.time_added - t.timestamp for t in b.transactions]
                 )
 
-            Metrics.latency[node_id]["AVG"] = st.mean(
-                [b_lat for _, b_lat in Metrics.latency[node_id]["values"].items()]
+            Metrics.latency[node.id]["AVG"] = st.mean(
+                [b_lat for _, b_lat in Metrics.latency[node.id]["values"].items()]
             )
 
     @staticmethod
-    def measure_throughput(bc_state):
+    def measure_throughput(sim):
         """
             Measured as:  sum_processed_txions / simTime
 
             TODO: Measure in intervals (possibly missleading??)
         """
-        for node_id, node_state in bc_state.items():
-            sum_tx = sum([len(x["transactions"])
-                         for x in node_state["blockchain"]])
-            Metrics.throughput[node_id] = sum_tx / \
-                SimulationState.simulation_time
+        for node in sim.nodes:
+            sum_tx = sum([len(b.transactions) for b in node.blockchain[1:]])
+            Metrics.throughput[node.id] = sum_tx / sim.clock
 
     @staticmethod
-    def measure_interblock_time(bc_state):
-        for node_id, node_state in bc_state.items():
+    def measure_interblock_time(sim):
+        for node in sim.nodes:
             # for each pair of blocks create the key valie pair "curr -> next": next.time_added - curre.time_added
-            diffs = {f"{curr['id']} -> {next['id']}": next["time_added"] - curr["time_added"]
-                     for curr, next in zip(node_state["blockchain"][:-1], node_state["blockchain"][1:])}
+            diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added
+                     for curr, next in zip(node.blockchain[1:-1], node.blockchain[2:])}
 
-            Metrics.blocktime[node_id] = {
+            Metrics.blocktime[node.id] = {
                 "values": diffs, "AVG": st.mean(diffs.values())}
 
     @staticmethod
@@ -143,14 +100,13 @@ class Metrics:
         return 1 - act_area / lor_area
 
     @staticmethod
-    def measure_decentralisation_nodes(bc_state):
+    def measure_decentralisation_nodes(sim):
         '''
             TODO: 
                 Consider how nodes entering and exiting the consensus can be taken into account
 
             NOTE: 
                 This method assumes all nodes are accounted for in the final system state 
-                and no later added nodes produced blocks and left
 
                 !IF NODES THAT HAVE PRODUCED BLOCKS ARE NOT IN THE GIVEN SYSTEM STATE THIS BREAKS!
 
@@ -160,21 +116,16 @@ class Metrics:
                     -- dont know if this is considered when measuring decentralisation
                        but seems like it should not be since the node was not there so 
                        its not the algorithms faults that the system is "less decentralised"
-
-                NOTE:
-                    possible solution:
-                        Note when nodes enter and left (might be (probably is) hard to know when a node leaves)
-                        calculating decentralisaion seperatatly for each interval where nodes are "stable"
-                        average the decentralisations out
         '''
-        nodes = [int(x) for x in bc_state.keys()]
 
-        for node_id, node_state in bc_state.items():
+        nodes = [node.id for node in sim.nodes]
+
+        for node in sim.nodes:
             block_distribution = {x: 0 for x in nodes}
-            total_blocks = len(node_state["blockchain"])
+            total_blocks = node.blockchain_length()
 
-            for b in node_state["blockchain"]:
-                block_distribution[b["miner"]] += 1
+            for b in node.blockchain[1:]:
+                block_distribution[b.miner] += 1
 
             dist = sorted(
                 [(key, value) for key, value in block_distribution.items()], key=lambda x: x[1])
@@ -186,4 +137,4 @@ class Metrics:
 
             gini = Metrics.gini_coeficient(cumulative_dist)
 
-            Metrics.decentralisation[node_id] = gini
+            Metrics.decentralisation[node.id] = gini

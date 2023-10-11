@@ -153,16 +153,15 @@ class Manager:
     def finished(self):
         # TODO: Move this to metrics
         def confirmed_blocks(simulation):
-            return min([len(n.blockchain) for n in simulation.nodes])
+            return min([n.blockchain_length() for n in simulation.nodes])
 
         # check if we have reached desired time
         times_out = (Parameters.simulation["simTime"] != -1 and
                      self.sim.clock >= Parameters.simulation["simTime"])
 
         # check if desired amount blocks have been confirmed
-        # +1 to account for genesis block which
         reached_blocks = (Parameters.simulation["stop_after_blocks"] != -1 and
-                          confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"] + 1)
+                          confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"])
 
         finish_conditions = [times_out, reached_blocks]
 

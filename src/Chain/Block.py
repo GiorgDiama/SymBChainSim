@@ -42,20 +42,6 @@ class Block:
 
         return new_block
 
-    def to_serializable(self):
-        return {
-            "id": self.id,
-            "depth": self.depth,
-            "previous": self.previous,
-            "time_created": self.time_created,
-            "time_added": self.time_added,
-            "miner": self.miner,
-            "consensus": self.consensus.NAME,
-            "size": self.size,
-            "round": self.extra_data["round"],
-            "transactions": [x for x in self.transactions]
-        }
-
     @staticmethod
     def genesis_block():
         '''

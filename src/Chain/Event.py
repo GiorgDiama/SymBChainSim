@@ -52,13 +52,6 @@ class Event():
 
         self.actor = creator
 
-    def to_serializable(self):
-        return {
-            "creator": self.creator.id,
-            "time": self.time,
-            "type": self.payload["type"]
-        }
-
 
 class MessageEvent(Event):
     '''
@@ -85,14 +78,6 @@ class MessageEvent(Event):
     @staticmethod
     def from_Event(event, receiver):
         return MessageEvent(event.handler, event.creator, event.time, event.payload, event.id, receiver)
-
-    def to_serializable(self):
-        return {
-            "creator": self.creator.id,
-            "receiver": self.receiver.id,
-            "time": self.time,
-            "type": self.payload["type"]
-        }
 
 
 class SystemEvent():
