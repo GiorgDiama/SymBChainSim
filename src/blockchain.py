@@ -42,7 +42,7 @@ def run():
     print(tools.color(s, 41))
     print(Parameters.simulation['events'])
 
-    print(tools.color(f"SIMULATION EXECUTION TIME: {runtime}", 44))
+    print(tools.color(f"SIMULATION EXECUTION TIME: {runtime}", 45))
 
 
 run()
