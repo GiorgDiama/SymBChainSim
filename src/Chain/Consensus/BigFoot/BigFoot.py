@@ -190,13 +190,13 @@ class BigFoot():
                     return 'new_state'
             else:
                 # leader does not issue a prepare message
-                if len(self.msgs['prepare']) == Parameters.application["Nn"]-1:
+                if len(self.msgs['prepare']) == Parameters.application["Nn"] - 1:
                     if self.block is None:
                         self.block = block.copy()
 
                     self.node.add_block(self.block, time)
 
-                    if self.node == self.miner:
+                    if self.node.id == self.miner:
                         payload = {
                             'type': 'new_block',
                             'block': block,
@@ -498,6 +498,9 @@ class BigFoot():
             if add_time:
                 time += float(Parameters.BigFoot["fast_path_timeout"])
 
+            if self.fast_path_timeout is not None and Parameters.simulation["remove_timeouts"]:
+                self.node.queue.remove_event(self.fast_path_timeout)
+
             payload = {
                 'type': 'fast_path_timeout',
                 'round': self.rounds.round,
@@ -509,6 +512,9 @@ class BigFoot():
         else:
             if add_time:
                 time += float(Parameters.BigFoot['timeout'])
+
+            if self.timeout is not None and Parameters.simulation["remove_timeouts"]:
+                self.node.queue.remove_event(self.timeout)
 
             payload = {
                 'type': 'timeout',
