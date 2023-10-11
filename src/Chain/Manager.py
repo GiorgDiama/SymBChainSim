@@ -150,11 +150,30 @@ class Manager:
         if 'start_debug' in os.environ and int(os.environ['start_debug']) <= self.sim.clock:
             os.environ['debug'] = "True"
 
+    def finished(self):
+        # TODO: Move this to metrics
+        def confirmed_blocks(simulation):
+            return min([len(n.blockchain) for n in simulation.nodes])
+
+        # check if we have reached desired time
+        times_out = (Parameters.simulation["simTime"] != -1 and
+                     self.sim.clock >= Parameters.simulation["simTime"])
+
+        # check if desired amount blocks have been confirmed
+        # +1 to account for genesis block which
+        reached_blocks = (Parameters.simulation["stop_after_blocks"] != -1 and
+                          confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"] + 1)
+
+        finish_conditions = [times_out, reached_blocks]
+
+        return any(finish_conditions)
+
     def run(self):
         ''' Managed simulation loop'''
         self.behaviour.update_behaviour()
 
-        while self.sim.clock <= Parameters.simulation['simTime']:
+        # while self.sim.clock <= Parameters.simulation['simTime']:
+        while not self.finished():
             self.sim.sim_next_event()
             self.update_sim()
 
