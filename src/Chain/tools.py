@@ -2,6 +2,7 @@
 import os
 import sys
 import yaml
+import subprocess
 
 from Chain.Parameters import Parameters
 from Chain.Event import SystemEvent, MessageEvent, Event
@@ -21,7 +22,7 @@ def debug_logs(msg, **kwargs):
             47:white
     '''
 
-    if os.environ['debug'] == "True" and "nd" not in sys.argv:
+    if Parameters.simulation["debugging_mode"]:
         if 'col' in kwargs:
             msg = color(msg, kwargs["col"])
 
@@ -58,28 +59,9 @@ def get_named_cmd_arg(name):
         return None
 
 
-def set_env_vars_from_config(name="env_vars.yaml"):
-    '''
-        Sets enviroment variables based on env_vars (cmd_args can overwrite)
-    '''
-    with open(name, 'rb') as f:
-        data = yaml.safe_load(f)
-
-    # YAML file contained ref to other YAML file (dict named config_files)
-    for name, d in data.items():
-        if name == "config_files":
-            for file_name in d:
-                set_env_vars_from_config(name=file_name)
-
-        os.environ[name] = str(d)
-
-    # enable/disable debug from cmd ("True"/"False")
-    if debug := get_named_cmd_arg("--debug"):
-        os.environ["debug"] = debug
-
-    if '--debug_at' in sys.argv:
-        os.environ["start_debug"] = get_named_cmd_arg('--debug_at')
-        os.environ["debug"] = "False"
+def parse_cmd_args():
+    if "nd" in sys.argv:
+        Parameters.simulation["debugging_mode"] = False
 
 
 def exec_cmd(simulator, cmd):
@@ -123,7 +105,9 @@ def exec_cmd(simulator, cmd):
 
 
 def sim_info(simulator, print_event_queues=True):
-    if os.environ['debug'] == "True" and "nd" not in sys.argv:
+    if Parameters.simulation["debugging_mode"]:
+        subprocess.run("clear")
+
         s = ""
         s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
         for n in simulator.nodes:
