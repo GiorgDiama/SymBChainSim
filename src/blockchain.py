@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from Chain.Parameters import Parameters
 from Chain.Manager import Manager
 
 import random
@@ -37,6 +37,10 @@ def run():
 
     Metrics.measure_all(manager.sim)
     Metrics.print_metrics()
+
+    s = f"{'-'*30} EVENTS {'-'*30}"
+    print(tools.color(s, 41))
+    print(Parameters.simulation['events'])
 
     print(tools.color(f"SIMULATION EXECUTION TIME: {runtime}", 44))
 
