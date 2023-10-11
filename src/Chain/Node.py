@@ -86,13 +86,13 @@ class Node():
     def __str__(self, full=False):
         if self.state.alive:
             if full:
-                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids} {len(self.pool)} {len(Parameters.simulation['txion_model'].global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
+                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(Parameters.simulation['txion_model'].global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{color(f'**dead** Node: {self.id}',41)} \n   LATEST_BLOCKS {self.trunc_ids} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
+                return f"{color(f'**dead** Node: {self.id}',41)} \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} global_pool: {len(Parameters.simulation['txion_model'].global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
