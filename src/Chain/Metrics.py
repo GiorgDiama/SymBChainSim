@@ -12,6 +12,7 @@ class SimulationState:
         Stores the state of the simulation.
     '''
     blockchain_state = {}
+    simulation_time = None
     events = {"consensus": {}, "other": {}}
 
     @staticmethod
@@ -22,6 +23,8 @@ class SimulationState:
         '''
         for n in sim.nodes:
             SimulationState.blockchain_state[n.id] = n.to_serializable()
+
+        SimulationState.simulation_time = sim.clock
 
     @staticmethod
     def load_state(sim):
@@ -110,7 +113,7 @@ class Metrics:
             sum_tx = sum([len(x["transactions"])
                          for x in node_state["blockchain"]])
             Metrics.throughput[node_id] = sum_tx / \
-                Parameters.simulation["simTime"]
+                SimulationState.simulation_time
 
     @staticmethod
     def measure_interblock_time(bc_state):
