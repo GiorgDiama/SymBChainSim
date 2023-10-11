@@ -23,8 +23,8 @@ class Parameters:
     PBFT = {}
 
     @staticmethod
-    def load_params_from_config():
-        params = read_yaml(f"Configs/{os.environ['config']}.yaml")
+    def load_params_from_config(config="base"):
+        params = read_yaml(f"Configs/{config}.yaml")
 
         Parameters.simulation = params["simulation"]
         Parameters.simulation["events"] = {}  # cnt events of each type
