@@ -72,34 +72,14 @@ def exec_cmd(simulator, cmd):
     cmd = cmd.split(" ")
     if cmd[0] == "kill":
         kill = int(cmd[1])
-        time = int(cmd[2])
         simulator.nodes[kill].kill()
-        simulator.nodes[kill].behaviour.recover_at = simulator.sim_clock + time
         return f"Killing node {kill}"
     elif cmd[0] == "res":
         res = int(cmd[1])
         simulator.nodes[res].resurect()
         return f"Resurecting node {res}"
-    elif cmd[0] == "round":
-        node = int(cmd[1])
-        round = int(cmd[2])
-        simulator.nodes[node].state.cp_state.round.round = round
-        simulator.nodes[node].state.cp_state.timeout.payload['round'] = round
-        return f"Set nodes {node} round to {round}"
     elif cmd[0] == "stop":
         exit()
-    elif cmd[0] == "CP":
-        if cmd[1] == "PBFT":
-            simulator.manager.change_cp(
-                sys.modules["Chain.Consensus.PBFT.PBFT"])
-        elif cmd[1] == "BigFoot":
-            simulator.manager.change_cp(
-                sys.modules["Chain.Consensus.BigFoot.BigFoot"])
-
-    elif cmd[0] == "add_node":
-        simulator.manager.add_node()
-    elif cmd[0] == "remove_node":
-        simulator.manager.remove_node()
     else:
         return f"No such command: {cmd}"
 
