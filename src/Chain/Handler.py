@@ -24,10 +24,11 @@ def handle_event(event, backlog=False):
             backlog     - future message, add to backlog
     '''
 
-    if event.payload["type"] in Parameters.simulation["events"].keys():
-        Parameters.simulation["events"][event.payload["type"]] += 1
-    else:
-        Parameters.simulation["events"][event.payload["type"]] = 1
+    if not backlog:
+        if event.payload["type"] in Parameters.simulation["events"].keys():
+            Parameters.simulation["events"][event.payload["type"]] += 1
+        else:
+            Parameters.simulation["events"][event.payload["type"]] = 1
 
     # if node is dead - event will not be handled
     if not event.actor.state.alive:

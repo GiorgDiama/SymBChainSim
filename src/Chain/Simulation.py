@@ -38,13 +38,15 @@ class Simulation:
             n.cp.init()
 
     def sim_next_event(self):
+        tools.debug_logs(msg=tools.sim_info(self, print_event_queues=True))
+
         # get next event
         next_event = self.q.pop_next_event()
         # update sim clocks
         self.clock = next_event.time
 
-        tools.debug_logs(msg=tools.sim_info(self, print_event_queues=True),
-                         command=f"Next event: {next_event}", simulator=self)
+        tools.debug_logs(msg=f"Next:{next_event}",
+                         command="Commad:", simulator=self)
 
         # call appropirate handler based on event type
         if isinstance(next_event, SystemEvent):

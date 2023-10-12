@@ -1,12 +1,14 @@
 simulation:
-  init_CP: "BigFoot"
-  simTime: -1
-  stop_after_blocks: 50
+  init_CP: "PBFT"
+  simTime: 600
+  stop_after_blocks: -1
   interval_switch: False
   interval_mean: 30
+  debugging_mode: True
+  remove_timeouts: True
 
 application:
-  Nn: 8
+  Nn: 4
   TI_dur: 25
   Tn: 30
   Tsize: 0.01
@@ -37,7 +39,7 @@ network:
   bandwidth:
     mean: 10_000
     dev: 0
-    debug: True
+    debug: False
 
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml

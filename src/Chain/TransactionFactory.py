@@ -43,9 +43,6 @@ class TransactionFactory:
                 self.transaction_prop(Transaction(id, timestamp, size))
 
     def block_from_local_pool(self, pool, time, fail_at):
-        # add transactions to the block
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in pool if t.timestamp <= time]
         '''
             BUG: This might fail if we go over the interval limit
                 e.g., If we are at time T and the new interval start at T+1, since that event will not be triggered,
@@ -55,9 +52,14 @@ class TransactionFactory:
                     instead of moving time by adding 1, reschedule event
                     a second later, this way the generation event can happen
         '''
+        # add transactions to the block
+        # get current transaction from transaction pool and timeout time
+        current_pool = [t for t in pool if t.timestamp <= time]
+
         # while we have no transactions progress the time towards the timeout/fail period
         while not current_pool and time + 1 < fail_at:
             time += 1
+            current_pool = [t for t in pool if t.timestamp <= time]
 
         # while the block is not full and there still are txions add them to block
         if current_pool and time < fail_at:
@@ -77,9 +79,6 @@ class TransactionFactory:
             return [], -1, time
 
     def block_from_global_pool(self, time, fail_at):
-        # add transactions to the block
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in self.global_mempool if t.timestamp <= time]
         '''
             BUG: This might fail if we go over the interval limit
                 e.g., If we are at time T and the new interval start at T+1, since that event will not be triggered,
@@ -89,9 +88,14 @@ class TransactionFactory:
                     instead of moving time by adding 1, reschedule event
                     a second later, this way the generation event can happen
         '''
+        # get current transaction from transaction pool and timeout time
+        current_pool = [t for t in self.global_mempool if t.timestamp <= time]
+
         # while we have no transactions progress the time towards the timeout/fail period
         while not current_pool and time + 1 < fail_at:
             time += 1
+            current_pool = [
+                t for t in self.global_mempool if t.timestamp <= time]
 
         # while the block is not full and there still are txions add them to block
         if current_pool and time < fail_at:

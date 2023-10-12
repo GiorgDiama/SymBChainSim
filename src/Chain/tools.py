@@ -2,6 +2,7 @@
 import os
 import sys
 import yaml
+import subprocess
 
 from Chain.Parameters import Parameters
 from Chain.Event import SystemEvent, MessageEvent, Event
@@ -21,7 +22,7 @@ def debug_logs(msg, **kwargs):
             47:white
     '''
 
-    if os.environ['debug'] == "True" and "nd" not in sys.argv:
+    if Parameters.simulation["debugging_mode"]:
         if 'col' in kwargs:
             msg = color(msg, kwargs["col"])
 
@@ -58,28 +59,9 @@ def get_named_cmd_arg(name):
         return None
 
 
-def set_env_vars_from_config(name="env_vars.yaml"):
-    '''
-        Sets enviroment variables based on env_vars (cmd_args can overwrite)
-    '''
-    with open(name, 'rb') as f:
-        data = yaml.safe_load(f)
-
-    # YAML file contained ref to other YAML file (dict named config_files)
-    for name, d in data.items():
-        if name == "config_files":
-            for file_name in d:
-                set_env_vars_from_config(name=file_name)
-
-        os.environ[name] = str(d)
-
-    # enable/disable debug from cmd ("True"/"False")
-    if debug := get_named_cmd_arg("--debug"):
-        os.environ["debug"] = debug
-
-    if '--debug_at' in sys.argv:
-        os.environ["start_debug"] = get_named_cmd_arg('--debug_at')
-        os.environ["debug"] = "False"
+def parse_cmd_args():
+    if "nd" in sys.argv:
+        Parameters.simulation["debugging_mode"] = False
 
 
 def exec_cmd(simulator, cmd):
@@ -90,40 +72,22 @@ def exec_cmd(simulator, cmd):
     cmd = cmd.split(" ")
     if cmd[0] == "kill":
         kill = int(cmd[1])
-        time = int(cmd[2])
         simulator.nodes[kill].kill()
-        simulator.nodes[kill].behaviour.recover_at = simulator.sim_clock + time
         return f"Killing node {kill}"
     elif cmd[0] == "res":
         res = int(cmd[1])
         simulator.nodes[res].resurect()
         return f"Resurecting node {res}"
-    elif cmd[0] == "round":
-        node = int(cmd[1])
-        round = int(cmd[2])
-        simulator.nodes[node].state.cp_state.round.round = round
-        simulator.nodes[node].state.cp_state.timeout.payload['round'] = round
-        return f"Set nodes {node} round to {round}"
     elif cmd[0] == "stop":
         exit()
-    elif cmd[0] == "CP":
-        if cmd[1] == "PBFT":
-            simulator.manager.change_cp(
-                sys.modules["Chain.Consensus.PBFT.PBFT"])
-        elif cmd[1] == "BigFoot":
-            simulator.manager.change_cp(
-                sys.modules["Chain.Consensus.BigFoot.BigFoot"])
-
-    elif cmd[0] == "add_node":
-        simulator.manager.add_node()
-    elif cmd[0] == "remove_node":
-        simulator.manager.remove_node()
     else:
         return f"No such command: {cmd}"
 
 
 def sim_info(simulator, print_event_queues=True):
-    if os.environ['debug'] == "True" and "nd" not in sys.argv:
+    if Parameters.simulation["debugging_mode"]:
+        subprocess.run("clear")
+
         s = ""
         s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
         for n in simulator.nodes:

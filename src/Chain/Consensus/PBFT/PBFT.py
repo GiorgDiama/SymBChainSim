@@ -211,7 +211,7 @@ class PBFT():
 
             # if we have enough prepare messages (2f - 2 messages since we trust our self so that makes it 2f (leader does not participate))
             # in the case where the node has entered rounch switch we do not count our own vote then 2f - 2 for prepare
-            if len(self.msgs['prepare']) >= Parameters.application["required_messages"] - 2:
+            if len(self.msgs['prepare']) >= Parameters.application["required_messages"] - 1:
                 time += Parameters.execution["block_val_delay"]
 
                 if block.depth - 1 == node.last_block.depth:
@@ -263,16 +263,6 @@ class PBFT():
             self.process_vote('commit', event.creator)
 
             if len(self.msgs['commit']) >= Parameters.application["required_messages"]:
-                payload = {
-                    'type': 'commit',
-                    'block': block,
-                    'round': self.rounds.round,
-                }
-                node.scheduler.schedule_broadcast_message(
-                    node, time, payload, PBFT.handle_event)
-
-                self.process_vote('commit', node)
-
                 node.add_block(self.block, time)
 
                 payload = {
@@ -300,7 +290,7 @@ class PBFT():
             self.process_vote('commit', event.creator)
 
             # if we have enough commit messages (2f messages since we trust our self so that makes it 2f+1)
-            if len(self.msgs['commit']) >= Parameters.application["required_messages"] - 1:
+            if len(self.msgs['commit']) >= Parameters.application["required_messages"]:
                 time += Parameters.execution["block_val_delay"]
 
                 if block.depth - 1 == node.last_block.depth:
@@ -446,6 +436,9 @@ class PBFT():
             'type': 'timeout',
             'round': self.rounds.round,
         }
+
+        if self.timeout is not None and Parameters.simulation["remove_timeouts"]:
+            self.node.queue.remove_event(self.timeout)
 
         event = self.node.scheduler.schedule_event(
             self.node, time, payload, PBFT.handle_event)

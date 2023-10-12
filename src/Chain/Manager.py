@@ -3,6 +3,7 @@ from Chain.Parameters import Parameters
 from Chain.Network import Network
 from Chain.Node import Node
 from Chain.Event import SystemEvent
+from Chain.Metrics import Metrics
 
 from Chain.Consensus.PBFT.PBFT import PBFT
 from Chain.Consensus.BigFoot.BigFoot import BigFoot
@@ -40,9 +41,9 @@ class Manager:
         '''
             Initial tasks required for the simulation to start
         '''
-        # load params (cmd and env)
-        tools.set_env_vars_from_config()
+        # load params
         Parameters.load_params_from_config()
+        tools.parse_cmd_args()
 
         Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
 
@@ -146,22 +147,23 @@ class Manager:
         '''
             Time based updates that are not controlled by system events can be triggered here
         '''
+
+        if self.sim.clock % 100 == 0:
+            s = f'Clock: {self.sim.clock} \t Confirmed blocks: {Metrics.confirmed_blocks(self.sim)}'
+            print(tools.color(s, 44))
+
         ################ Start debug at time #################
         if 'start_debug' in os.environ and int(os.environ['start_debug']) <= self.sim.clock:
             os.environ['debug'] = "True"
 
     def finished(self):
-        # TODO: Move this to metrics
-        def confirmed_blocks(simulation):
-            return min([n.blockchain_length() for n in simulation.nodes])
-
         # check if we have reached desired time
         times_out = (Parameters.simulation["simTime"] != -1 and
                      self.sim.clock >= Parameters.simulation["simTime"])
 
         # check if desired amount blocks have been confirmed
         reached_blocks = (Parameters.simulation["stop_after_blocks"] != -1 and
-                          confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"])
+                          Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"])
 
         finish_conditions = [times_out, reached_blocks]
 
@@ -176,8 +178,10 @@ class Manager:
             self.sim.sim_next_event()
             self.update_sim()
 
+        print()
+
     ################################################################################################
-            ################ SYSTEM EVENTS #################
+        ################ SYSTEM EVENTS #################
     ################################################################################################
 
     def handle_next_event(self, event):

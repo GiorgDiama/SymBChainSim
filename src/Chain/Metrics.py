@@ -15,6 +15,10 @@ class Metrics:
     decentralisation = {}
 
     @staticmethod
+    def confirmed_blocks(simulation):
+        return min([n.blockchain_length() for n in simulation.nodes])
+
+    @staticmethod
     def measure_all(sim):
         Metrics.measure_latency(sim)
         Metrics.measure_throughput(sim)

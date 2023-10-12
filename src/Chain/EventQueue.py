@@ -20,13 +20,14 @@ class PrioQueue:
     def size(self):
         return len(self.pq)
 
-    def remove(self, tasks):
+    def remove(self, task):
         '''
             IMPORTANT: 
                 Expensive opperation! Dont use unless you absolutely have to!
         '''
-        self.pq.remove(tasks)
-        heapq.heapify(self.pq)
+        if task in self.pq:
+            self.pq.remove(task)
+            heapq.heapify(self.pq)
 
 
 class Queue:
