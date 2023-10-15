@@ -239,7 +239,7 @@ class Metrics:
             'nodes': {},
             'global_pool': [
                 str((t.id, t.timestamp, t.size))
-                for t in Parameters.simulation['txion_model'].global_mempool
+                for t in Parameters.tx_factory.global_mempool
                 if t.timestamp <= sim.clock
             ]
 

@@ -25,7 +25,7 @@ class Simulation:
 
         self.manager = None
 
-        Parameters.simulation['txion_model'] = TransactionFactory(self.nodes)
+        Parameters.tx_factory = TransactionFactory(self.nodes)
 
     def init_simulation(self):
         genesis = Block.genesis_block()

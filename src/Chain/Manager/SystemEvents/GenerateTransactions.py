@@ -17,6 +17,6 @@ def schedule_event(manager, init=False):
 
 
 def handle_event(manager, event):
-    Parameters.simulation['txion_model'].generate_interval_txions(event.time)
+    Parameters.tx_factory.generate_interval_txions(event.time)
 
     schedule_event(manager)

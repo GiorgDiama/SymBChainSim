@@ -82,7 +82,7 @@ class BigFoot():
             'round': self.rounds.round
         }
 
-        transactions, size = Parameters.simulation["txion_model"].execute_transactions(
+        transactions, size = Parameters.tx_factory.execute_transactions(
             self.node.pool, time)
 
         if transactions:

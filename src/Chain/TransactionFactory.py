@@ -38,95 +38,33 @@ class TransactionFactory:
                 timestamp = second
 
                 # size = random.expovariate(1/Parameters.application["Tsize"])
-                size = Parameters.application["Tsize"]
+                size = Parameters.application["Tsize"] + \
+                    Parameters.application["base_transation_size"]
 
                 self.transaction_prop(Transaction(id, timestamp, size))
 
-    def block_from_local_pool(self, pool, time, fail_at):
-        '''
-            BUG: This might fail if we go over the interval limit
-                e.g., If we are at time T and the new interval start at T+1, since that event will not be triggered,
-                we wont find that were supposed to be there at T+1 
+    def get_transactions(self, pool, time):
+        transactions = []
+        size = 0
 
-                SOLUTION:
-                    instead of moving time by adding 1, reschedule event
-                    a second later, this way the generation event can happen
-        '''
-        # add transactions to the block
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in pool if t.timestamp <= time]
+        for tx in pool:
+            if tx.timestamp <= time and size + tx.size <= Parameters.data["Bsize"]:
+                transactions.append(tx)
+                size += tx.size
+            else:
+                break
 
-        # while we have no transactions progress the time towards the timeout/fail period
-        while not current_pool and time + 1 < fail_at:
-            time += 1
-            current_pool = [t for t in pool if t.timestamp <= time]
-
-        # while the block is not full and there still are txions add them to block
-        if current_pool and time < fail_at:
-            transactions = []
-            size = 0
-
-            for tx in current_pool:
-                if size + tx.size <= Parameters.data["Bsize"]:
-                    transactions.append(tx)
-                    size += tx.size
-                else:
-                    break
-
-            return transactions, size, time
+        if transactions:
+            return transactions, size
         else:
             # if we did not find any transactions return an empty list
-            return [], -1, time
+            return [], -1
 
-    def block_from_global_pool(self, time, fail_at):
-        '''
-            BUG: This might fail if we go over the interval limit
-                e.g., If we are at time T and the new interval start at T+1, since that event will not be triggered,
-                we wont find that were supposed to be there at T+1 
-
-                SOLUTION:
-                    instead of moving time by adding 1, reschedule event
-                    a second later, this way the generation event can happen
-        '''
-        # get current transaction from transaction pool and timeout time
-        current_pool = [t for t in self.global_mempool if t.timestamp <= time]
-
-        # while we have no transactions progress the time towards the timeout/fail period
-        while not current_pool and time + 1 < fail_at:
-            time += 1
-            current_pool = [
-                t for t in self.global_mempool if t.timestamp <= time]
-
-        # while the block is not full and there still are txions add them to block
-        if current_pool and time < fail_at:
-            transactions = []
-            size = 0
-            indecies = []
-
-            for i, tx in enumerate(current_pool):
-                if size + tx.size <= Parameters.data["Bsize"]:
-                    transactions.append(tx)
-                    indecies.append(i)
-                    size += tx.size
-                else:
-                    break
-
-            while indecies:
-                remove = indecies.pop(0)
-                indecies = [x-1 for x in indecies]
-                self.global_mempool.pop(remove)
-
-            return transactions, size, time
-        else:
-            # if we did not find any transactions return an empty list
-            return [], -1, time
-
-    def execute_transactions(self, pool, time, fail_at):
+    def execute_transactions(self, pool, time):
         if Parameters.application["transaction_model"] == "local":
-            # execute transactions in the mempool
-            return self.block_from_local_pool(pool, time, fail_at)
+            return self.get_transactions(pool, time)
         elif Parameters.application["transaction_model"] == "global":
-            return self.block_from_global_pool(time, fail_at)
+            return self.get_transactions(self.global_mempool, time)
         else:
             raise (ValueError(
                 f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))

@@ -1,5 +1,4 @@
 import yaml
-import os
 
 
 def read_yaml(path):
@@ -12,6 +11,7 @@ class Parameters:
     '''
         Contains all the parameters defining the simulator
     '''
+    dynamic_sim = {}
     simulation = {}
     application = {}
     execution = {}
@@ -22,20 +22,31 @@ class Parameters:
     BigFoot = {}
     PBFT = {}
 
+    CPs = {}
+
+    tx_factory = None
+
     @staticmethod
     def load_params_from_config(config="base"):
-        params = read_yaml(f"Configs/{config}.yaml")
+        params = read_yaml(f"Configs/{config}")
+
+        Parameters.dynamic_sim = params["dynamic_sim"]
 
         Parameters.simulation = params["simulation"]
         Parameters.simulation["events"] = {}  # cnt events of each type
+
         Parameters.behaiviour = params["behaviour"]
+
         Parameters.network = params["network"]
+
         Parameters.application = params["application"]
-        # incremental txion ids starting on...
         Parameters.application["txIDS"] = 0
         Parameters.calculate_fault_tolerance()
+
         Parameters.execution = params["execution"]
+
         Parameters.data = params["data"]
+
         Parameters.BigFoot = read_yaml(params['consensus']['BigFoot'])
         Parameters.PBFT = read_yaml(params['consensus']['PBFT'])
 

@@ -4,7 +4,7 @@ from Chain.Parameters import Parameters
 
 from types import SimpleNamespace
 
-from Chain.tools import color
+from Chain.tools import color, remove_transactions_from_pool
 
 
 class Behaviour():
@@ -86,13 +86,13 @@ class Node():
     def __str__(self, full=False):
         if self.state.alive:
             if full:
-                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(Parameters.simulation['txion_model'].global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
+                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(Parameters.tx_factory.global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{color(f'**dead** Node: {self.id}',41)} \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} global_pool: {len(Parameters.simulation['txion_model'].global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
+                return f"{color(f'**dead** Node: {self.id}',41)} \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} global_pool: {len(Parameters.tx_factory.global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
@@ -132,7 +132,7 @@ class Node():
 
         return s
 
-    def update(self, time, round=-1):
+    def update(self, time):
         if Parameters.application["CP"].NAME != self.cp.NAME:
             self.reset()
             self.cp = Parameters.application["CP"](self)
@@ -183,10 +183,11 @@ class Node():
         self.blockchain.append(block)
 
         if Parameters.application["transaction_model"] == "local":
-            # update local transaction pool by removing verified transactions (i.e., txions included in the block)
-            for t in block.transactions:
-                if t in self.pool:
-                    self.pool.remove(t)
+            remove_transactions_from_pool(block.transactions, self.pool)
+        elif Parameters.application["transaction_model"] == "global":
+            if self.id == block.miner:
+                remove_transactions_from_pool(
+                    block.transactions, Parameters.tx_factory.global_mempool)
 
     def add_event(self, event):
         ''' adds event to the queue of the node if the node is online'''
