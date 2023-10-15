@@ -1,4 +1,4 @@
-import pickle
+import json
 import statistics as st
 from Chain.Parameters import Parameters
 import Chain.tools as tools
@@ -6,24 +6,32 @@ import Chain.tools as tools
 import matplotlib.pyplot as plt
 import numpy as np
 
+from copy import copy
+
 
 class Metrics:
     latency = {}
     throughput = {}
     blocktime = {}
-
     decentralisation = {}
 
-    @staticmethod
-    def confirmed_blocks(simulation):
-        return min([n.blockchain_length() for n in simulation.nodes])
+    blocks = {}
+    nodes = {}
+
+    time_last_snapshot = 0
+    snapshot_count = 0
+    snapshots = {}
 
     @staticmethod
-    def measure_all(sim):
-        Metrics.measure_latency(sim)
-        Metrics.measure_throughput(sim)
-        Metrics.measure_interblock_time(sim)
-        Metrics.measure_decentralisation_nodes(sim)
+    def confirmed_blocks(sim):
+        return min([n.blockchain_length() for n in sim.nodes])
+
+    @staticmethod
+    def measure_all(sim, start_from=-1, blocks=None):
+        Metrics.measure_latency(sim, start_from, blocks)
+        Metrics.measure_throughput(sim, start_from, blocks)
+        Metrics.measure_interblock_time(sim, start_from, blocks)
+        Metrics.measure_decentralisation_nodes(sim, start_from, blocks)
 
     @staticmethod
     def print_metrics():
@@ -52,10 +60,21 @@ class Metrics:
             print(f"Node: {key} -> {value}")
 
     @staticmethod
-    def measure_latency(sim):
+    def measure_latency(sim, start_from=-1, blocks=None):
         for node in sim.nodes:
+            if blocks is None:
+                if start_from != -1:
+                    blocks = [b for b in node.blockchain[1:]
+                              if b.time_added >= start_from]
+                else:
+                    blocks = node.blockchain[1:]
+
+            if not blocks:
+                return -1
+
             Metrics.latency[node.id] = {"values": {}}
-            for b in node.blockchain[1:]:
+
+            for b in blocks:
                 Metrics.latency[node.id]["values"][b.id] = st.mean(
                     [b.time_added - t.timestamp for t in b.transactions]
                 )
@@ -65,45 +84,66 @@ class Metrics:
             )
 
     @staticmethod
-    def measure_throughput(sim):
-        """
-            Measured as:  sum_processed_txions / simTime
+    def measure_throughput(sim, start_from=-1, blocks=None):
 
-            TODO: Measure in intervals (possibly missleading??)
-        """
         for node in sim.nodes:
-            sum_tx = sum([len(b.transactions) for b in node.blockchain[1:]])
-            Metrics.throughput[node.id] = sum_tx / sim.clock
+            # getting the correct amount of blocks
+            if blocks is None:
+                if start_from != -1:
+                    blocks = [b for b in node.blockchain[1:]
+                              if b.time_added >= start_from]
+                else:
+                    blocks = node.blockchain[1:]
+
+            if not blocks:
+                return -1
+
+            time = blocks[-1].time_added - blocks[0].time_created
+
+            sum_tx = sum([len(b.transactions) for b in blocks])
+
+            Metrics.throughput[node.id] = sum_tx / time
 
     @staticmethod
-    def measure_interblock_time(sim):
+    def measure_interblock_time(sim, start_from=-1, blocks=None):
         for node in sim.nodes:
+            # getting the correct amount of blocks
+            if blocks is None:
+                if start_from != -1:
+                    blocks = [b for b in node.blockchain[1:]
+                              if b.time_added >= start_from]
+                else:
+                    blocks = node.blockchain[1:]
+
+            if not blocks:
+                return -1
+
             # for each pair of blocks create the key valie pair "curr -> next": next.time_added - curre.time_added
             diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added
-                     for curr, next in zip(node.blockchain[1:-1], node.blockchain[2:])}
+                     for curr, next in zip(blocks[:-1], blocks[1:])}
 
             Metrics.blocktime[node.id] = {
                 "values": diffs, "AVG": st.mean(diffs.values())}
 
     @staticmethod
-    def gini_coeficient(cumulative_dist):
-        lorenz_curve = [(x+1)/len(cumulative_dist)
-                        for x in range(len(cumulative_dist))]
-        x_axis = [x for x in range(len(lorenz_curve))]
-        '''
-            TODO: Validate that this is indeed correct
-            NOTE: seems kind of correct
-        '''
+    def gini_coeficient(lorenz_curve):
+        # calculating the perfect equality for the given population
+        perfect_equality = [(x+1)/len(lorenz_curve)
+                            for x in range(len(lorenz_curve))]
 
-        # calculate the area of the lorenze curve
-        lor_area = np.trapz(lorenz_curve, x_axis)
-        # calculate the area of the actual cumulatice distribution
-        act_area = np.trapz(cumulative_dist, x_axis)
-        # calculate what percentage is the area between the lorenze cruve and the actual curve
-        return 1 - act_area / lor_area
+        x_axis = [x for x in range(len(perfect_equality))]
+
+        # calculate the area of the perfect equaility curve
+        perfect_equality_area = np.trapz(perfect_equality, x_axis)
+
+        # calculate the area of the lorenz curve
+        lorenz_area = np.trapz(lorenz_curve, x_axis)
+
+        # gini coeficient
+        return 1 - lorenz_area / perfect_equality_area
 
     @staticmethod
-    def measure_decentralisation_nodes(sim):
+    def measure_decentralisation_nodes(sim, start_from=-1, blocks=None):
         '''
             TODO: 
                 Consider how nodes entering and exiting the consensus can be taken into account
@@ -125,9 +165,20 @@ class Metrics:
 
         for node in sim.nodes:
             block_distribution = {x: 0 for x in nodes}
-            total_blocks = node.blockchain_length()
 
-            for b in node.blockchain[1:]:
+            if blocks is None:
+                if start_from != -1:
+                    blocks = [b for b in node.blockchain[1:]
+                              if b.time_added >= start_from]
+                else:
+                    blocks = node.blockchain[1:]
+
+            if not blocks:
+                return -1
+
+            total_blocks = len(blocks)
+
+            for b in blocks:
                 block_distribution[b.miner] += 1
 
             dist = sorted(
@@ -141,3 +192,99 @@ class Metrics:
             gini = Metrics.gini_coeficient(cumulative_dist)
 
             Metrics.decentralisation[node.id] = gini
+
+    @staticmethod
+    def serialisable_node(node):
+        state = {}
+
+        state["bandwidth"] = node.bandwidth
+        state["location"] = node.location
+        state["neighbours"] = [n.id for n in node.neighbours]
+        state["current_cp"] = node.cp.NAME
+        state["pool"] = [str((t.id, t.timestamp, t.size))
+                         for t in node.pool]
+
+        return state
+
+    @staticmethod
+    def serialisable_block(block):
+        block_info = {}
+        block_info["id"] = block.id
+        block_info["previous"] = block.previous
+        block_info["time_created"] = block.time_created
+        block_info["time_added"] = block.time_added
+        block_info["miner"] = block.miner
+        block_info["transactions"] = [str((t.id, t.timestamp, t.size))
+                                      for t in block.transactions]
+        block_info["size"] = block.size
+
+        return block_info
+
+    @staticmethod
+    def take_snapshot(sim, entire_state: bool):
+        if not entire_state:
+            Metrics.measure_all(sim, start_from=Metrics.time_last_snapshot)
+        else:
+            Metrics.measure_all(sim)
+
+        snapshot = {
+            'time': sim.clock,
+            'time_last': Metrics.time_last_snapshot,
+            'metrics': {
+                'latency': copy(Metrics.latency),
+                'throughput': copy(Metrics.throughput),
+                'block_time': copy(Metrics.blocktime),
+                'decentralisation': copy(Metrics.decentralisation),
+            },
+            'nodes': {},
+            'global_pool': [
+                str((t.id, t.timestamp, t.size))
+                for t in Parameters.simulation['txion_model'].global_mempool
+                if t.timestamp <= sim.clock
+            ]
+
+        }
+
+        for node in sim.nodes:
+            state = Metrics.serialisable_node(node)
+            state["pool"] = [t for t in state["pool"]
+                             if t[1] <= sim.time]
+
+            state["blocks"], state["new_blocks"] = [], []
+            for b in node.blockchain[1:]:
+                block = Metrics.serialisable_block(b)
+
+                if block["time_added"] >= Metrics.time_last_snapshot:
+                    state['new_blocks'].append(block)
+
+                state["blocks"].append(block)
+
+            snapshot['nodes'][node.id] = state
+
+        Metrics.snapshots[Metrics.snapshot_count] = snapshot
+
+        Metrics.time_last_snapshot = sim.clock
+        Metrics.snapshot_count += 1
+
+    @staticmethod
+    def calculate_snapshot_metricts(final_sim):
+        '''
+            TODO: instead of calculating the metrics during simulation
+            do it after
+        '''
+        for snapshot in Metrics.snapshots:
+            start, end = snapshot['time_last'], snapshot['time']
+
+            for node in final_sim.nodes:
+                blocks = []
+
+                for b in node.blockchain:
+                    if b.time_added >= end:
+                        break
+                    if b.time_added >= start:
+                        blocks.append(b)
+
+    @staticmethod
+    def save_snapshots(name="snapsot"):
+        with open(f"results/{name}.json", "w") as f:
+            json.dump(Metrics.snapshots, f, indent=2)
