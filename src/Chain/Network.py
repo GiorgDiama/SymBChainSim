@@ -111,6 +111,9 @@ class Network:
                 node.bandwidth = random.normalvariate(
                     Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
 
+                node.bandwidth = max(
+                    node.bandwidth, Parameters.network["bandwidth"]["min"])
+
             tools.debug_logs(msg=f"Node {node.id}: {node.bandwidth}MB/s")
 
     @staticmethod
