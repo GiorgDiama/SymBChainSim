@@ -64,10 +64,6 @@ class PBFT():
         self.start(starting_round, time)
 
     def create_PBFT_block(self, time):
-        # calculate block creation delays
-        time += Parameters.data["block_interval"] + \
-            Parameters.execution["creation_time"]
-
         # create block according to CP
         block = Block(
             depth=len(self.node.blockchain),
@@ -82,20 +78,22 @@ class PBFT():
             'round': self.rounds.round
         }
 
-        transactions, size, created_time = Parameters.simulation["txion_model"].execute_transactions(
-            self.node.pool, time, time + self.timeout.time)
+        transactions, size = Parameters.simulation["txion_model"].execute_transactions(
+            self.node.pool, time)
 
         if transactions:
             block.transactions = transactions
             block.size = size
-            return block, created_time
+            return block, time + Parameters.execution['creation_time']
         else:
-            return -1, -1
+            return None, time
 
     @staticmethod
     def handle_event(event):
         # specific to PBFT - called by events in Handler.handle_event()
         match event.payload["type"]:
+            case 'propose':
+                return event.actor.cp.propose(event)
             case 'pre_prepare':
                 return event.actor.cp.pre_prepare(event)
             case 'prepare':
@@ -120,8 +118,34 @@ class PBFT():
         return True
 
     def process_vote(self, type, sender):
-        # PBFT does not allow for mutliple blocks to be submitted in 1 round
         self.msgs[type] += [sender.id]
+
+    def propose(self, event):
+        time = event.time
+
+        block, creation_time = self.create_PBFT_block(time)
+
+        if block is None:
+            if creation_time + 1 + Parameters.execution['creation_time'] <= self.timeout.time:
+                payload = {'type': 'propose'}
+                self.node.scheduler.schedule_event(
+                    self.node, creation_time+1, payload, PBFT.handle_event)
+            else:
+                print(f"Block creationg failed at {time} for CP {PBFT.NAME}")
+        else:
+            self.state = 'pre_prepared'
+            self.block = block.copy()
+
+            payload = {
+                'type': 'pre_prepare',
+                'block': block,
+                'round': self.rounds.round,
+            }
+
+            self.node.scheduler.schedule_broadcast_message(
+                self.node, creation_time, payload, PBFT.handle_event)
+
+        return 'handled'
 
     def pre_prepare(self, event):
         node = self.node
@@ -382,30 +406,16 @@ class PBFT():
 
         self.get_miner()
 
+        # taking into account block interval for the propossal round timeout
+        self.schedule_timeout(Parameters.data["block_interval"] + time)
+
+        # if the current node is the miner, schedule propose block event
         if self.miner == self.node.id:
-            # taking into account block interval for the propossal round timeout
-            self.schedule_timeout(Parameters.data["block_interval"] + time)
-
-            block, creation_time = self.create_PBFT_block(time)
-
-            if creation_time == -1:
-                print(f"Block creationg failed at {time} for CP {PBFT.NAME}")
-                return 0
-
-            self.state = 'pre_prepared'
-            self.block = block.copy()
-
             payload = {
-                'type': 'pre_prepare',
-                'block': block,
-                'round': new_round,
+                'type': 'propose',
             }
-
-            self.node.scheduler.schedule_broadcast_message(
-                self.node, creation_time, payload, PBFT.handle_event)
-        else:
-            # taking into account block interval for the propossal round timeout
-            self.schedule_timeout(Parameters.data["block_interval"] + time)
+            self.node.scheduler.schedule_event(
+                self.node, time + Parameters.data["block_interval"], payload, PBFT.handle_event)
 
     ########################## TIMEOUTS ###########################
 

@@ -68,10 +68,6 @@ class BigFoot():
         self.start(starting_round, time)
 
     def create_BigFoot_block(self, time):
-        # calculate block creation delays
-        time += Parameters.data["block_interval"] + \
-            Parameters.execution["creation_time"]
-
         # create block according to CP
         block = Block(
             depth=len(self.node.blockchain),
@@ -79,26 +75,30 @@ class BigFoot():
             previous=self.node.last_block.id,
             time_created=time,
             miner=self.node.id,
-            consensus=BigFoot
+            consensus=BigFoot,
         )
-        block.extra_data = {'proposer': self.node.id,
-                            "round": self.rounds.round}
+        block.extra_data = {
+            'proposer': self.node.id,
+            'round': self.rounds.round
+        }
 
-        transactions, size, created_time = Parameters.simulation["txion_model"].execute_transactions(
-            self.node.pool, time, time + self.timeout.time)
+        transactions, size = Parameters.simulation["txion_model"].execute_transactions(
+            self.node.pool, time)
 
         if transactions:
             block.transactions = transactions
             block.size = size
-            return block, created_time
+            return block, time + Parameters.execution['creation_time']
         else:
-            return -1, -1
+            return None, time
 
     ########################## HANDLERER ###########################
 
     @staticmethod
     def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
         match event.payload["type"]:
+            case 'propose':
+                return event.actor.cp.propose(event)
             case 'pre_prepare':
                 return event.actor.cp.pre_prepare(event)
             case 'prepare':
@@ -119,6 +119,34 @@ class BigFoot():
     def process_vote(self, type, sender):
         # BigFoot does not allow for mutliple blocks to be submitted in 1 round
         self.msgs[type] += [sender.id]
+
+    def propose(self, event):
+        time = event.time
+
+        block, creation_time = self.create_BigFoot_block(time)
+
+        if block is None:
+            if creation_time + 1 + Parameters.execution['creation_time'] <= self.timeout.time:
+                payload = {'type': 'propose'}
+                self.node.scheduler.schedule_event(
+                    self.node, creation_time+1, payload, BigFoot.handle_event)
+            else:
+                print(
+                    f"Block creationg failed at {time} for CP {BigFoot.NAME}")
+        else:
+            self.state = 'pre_prepared'
+            self.block = block.copy()
+
+            payload = {
+                'type': 'pre_prepare',
+                'block': block,
+                'round': self.rounds.round,
+            }
+
+            self.node.scheduler.schedule_broadcast_message(
+                self.node, creation_time, payload, BigFoot.handle_event)
+
+        return 'handled'
 
     def pre_prepare(self, event):
         time = event.time
@@ -413,32 +441,17 @@ class BigFoot():
 
         self.get_miner()
 
+        self.schedule_timeout(Parameters.data["block_interval"] + time)
+        self.schedule_timeout(
+            Parameters.data["block_interval"] + time, fast_path=True)
+
         if self.miner == self.node.id:
-            self.schedule_timeout(Parameters.data["block_interval"] + time)
-            self.schedule_timeout(
-                Parameters.data["block_interval"] + time, fast_path=True)
-
-            block, creation_time = self.create_BigFoot_block(time)
-
-            if creation_time == -1:
-                print(f"Block creationg failed at {time} for CP {self.NAME}")
-                return 0
-
-            self.state = 'pre_prepared'
-            self.block = block.copy()
-
             payload = {
-                'type': 'pre_prepare',
-                'block': block,
-                'round': new_round,
+                'type': 'propose',
             }
 
-            self.node.scheduler.schedule_broadcast_message(
-                self.node, creation_time, payload, self.handle_event)
-        else:
-            self.schedule_timeout(Parameters.data["block_interval"] + time)
-            self.schedule_timeout(
-                Parameters.data["block_interval"] + time, fast_path=True)
+            self.node.scheduler.schedule_event(
+                self.node, time + Parameters.data["block_interval"], payload, BigFoot.handle_event)
 
     ########################## TIMEOUTS ###########################
 
