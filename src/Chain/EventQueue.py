@@ -1,4 +1,4 @@
-from Chain.Event import MessageEvent
+from Chain.Parameters import Parameters
 
 import heapq
 
@@ -12,6 +12,11 @@ class PrioQueue:
         self.pq = []
 
     def add_task(self, task, priority):
+        if task.payload["type"] in Parameters.simulation["events"].keys():
+            Parameters.simulation["events"][task.payload["type"]] += 1
+        else:
+            Parameters.simulation["events"][task.payload["type"]] = 1
+
         heapq.heappush(self.pq, (priority, task))
 
     def pop_task(self):
