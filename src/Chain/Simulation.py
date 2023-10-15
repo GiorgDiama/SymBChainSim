@@ -9,6 +9,9 @@ import Chain.tools as tools
 
 from Chain.Event import SystemEvent
 
+from Chain.Consensus.PBFT.PBFT import PBFT
+from Chain.Consensus.BigFoot.BigFoot import BigFoot
+
 
 class Simulation:
     def __init__(self) -> None:
@@ -26,10 +29,6 @@ class Simulation:
 
     def init_simulation(self):
         genesis = Block.genesis_block()
-
-        # GENERATE THE INITIAL SET OF TRANSACTIONS (the manager takes over after the intial generation)
-        Parameters.simulation['txion_model'].generate_interval_txions(
-            self.clock)
 
         # for each node: add the genesis block, set and initialise CP (NOTE: cp.init() produces the first events to kickstart the simulation)
         for n in self.nodes:
@@ -50,7 +49,7 @@ class Simulation:
 
         # call appropirate handler based on event type
         if isinstance(next_event, SystemEvent):
-            self.manager.handle_next_event(next_event)
+            self.manager.handle_system_event(next_event)
         else:
             handle_event(next_event)
 
