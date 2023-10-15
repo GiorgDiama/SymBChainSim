@@ -68,3 +68,13 @@ class TransactionFactory:
         else:
             raise (ValueError(
                 f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
+
+    @staticmethod
+    def remove_transactions_from_pool(txions, pool):
+        t_idx, p_idx = 0, 0
+        while t_idx < len(txions) and p_idx < len(pool)-1:
+            if txions[t_idx] == pool[p_idx]:
+                t_idx += 1
+                pool.pop(p_idx)
+            else:
+                p_idx += 1

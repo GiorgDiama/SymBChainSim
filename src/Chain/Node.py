@@ -4,7 +4,7 @@ from Chain.Parameters import Parameters
 
 from types import SimpleNamespace
 
-from Chain.tools import color, remove_transactions_from_pool
+from Chain.tools import color
 
 
 class Behaviour():
@@ -183,10 +183,11 @@ class Node():
         self.blockchain.append(block)
 
         if Parameters.application["transaction_model"] == "local":
-            remove_transactions_from_pool(block.transactions, self.pool)
+            Parameters.tx_factory.remove_transactions_from_pool(
+                block.transactions, self.pool)
         elif Parameters.application["transaction_model"] == "global":
             if self.id == block.miner:
-                remove_transactions_from_pool(
+                Parameters.tx_factory.remove_transactions_from_pool(
                     block.transactions, Parameters.tx_factory.global_mempool)
 
     def add_event(self, event):
