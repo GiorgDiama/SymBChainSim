@@ -52,8 +52,7 @@ class Parameters:
 
     @staticmethod
     def calculate_fault_tolerance():
-        Parameters.application["f"] = int(
-            (Parameters.application["Nn"] - 1) / 3)
+        Parameters.application["f"] = int((1/3) * Parameters.application["Nn"])
 
         Parameters.application["required_messages"] = (
             2 * Parameters.application["f"]) + 1

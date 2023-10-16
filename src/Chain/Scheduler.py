@@ -15,10 +15,10 @@ class Scheduler:
         return event
 
     def schedule_event(self, creator, time, payload, handler):
+        payload["CP"] = creator.cp.NAME
+
         # Schedules a local event
         event = Event(handler, creator, time, payload)
 
-        payload["CP"] = creator.cp.NAME
         creator.add_event(event)
-
         return event
