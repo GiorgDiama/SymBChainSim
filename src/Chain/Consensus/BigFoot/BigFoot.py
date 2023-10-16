@@ -1,18 +1,3 @@
-'''
-    BigFoot Consensus Protocol
-    Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with
-    dynamic validator membership"
-
-    BigFoot State:
-        round - round change state defined by the rounds module
-        fast_path - boolean value determining wether the node is in the fast path or not 
-        state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
-        msgs: list of messages received from other nodes
-        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
-        fast_path_timeout - reference to fast_path_timeout event
-        block -  the proposed block in current round
-'''
-
 from Chain.Block import Block
 from Chain.Parameters import Parameters
 
@@ -25,16 +10,34 @@ from random import randint
 
 
 class BigFoot():
+    '''
+    BigFoot Consensus Protocol
+    Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with
+    dynamic validator membership"
+
+    BigFoot State:
+        round - round change state defined by the rounds module
+        fast_path - boolean value determining wether the node is in the fast path or not 
+        state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
+        msgs: list of messages received from other nodes
+        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
+        fast_path_timeout - reference to fast_path_timeout event
+        block -  the proposed block in current round
+    '''
+
     NAME = "BigFoot"
 
     def __init__(self, node) -> None:
         self.rounds = Rounds.round_change_state()
+
         self.fast_path = None
         self.state = ""
         self.miner = ""
         self.msgs = {'prepare': [], 'commit': []}
+
         self.timeout = None
         self.fast_path_timeout = None
+
         self.block = None
 
         self.node = node
@@ -58,10 +61,15 @@ class BigFoot():
         Rounds.reset_votes(self.node)
 
     def get_miner(self, round_robin=False):
-        if round_robin:  # new miner in a round robin fashion
-            self.miner = self.rounds % Parameters.application["Nn"]
-        else:  # get new miner based on the hash of the last block
+        # new miner in a round robin fashion
+        if Parameters.execution["proposer_selection"] == "round_robin":
+            self.miner = self.rounds.round % Parameters.application["Nn"]
+        elif Parameters.execution["proposer_selection"] == "hash":
+            # get new miner based on the hash of the last block
             self.miner = self.node.last_block.id % Parameters.application["Nn"]
+        else:
+            raise (ValueError(
+                f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def init(self, time=0, starting_round=0):
         self.set_state()
@@ -115,9 +123,15 @@ class BigFoot():
                 return 'unhadled'
 
     ########################## PROTOCOL COMMUNICATION ###########################
+    def validate_message(self, event):
+        payload = event.payload
+
+        if payload['round'] < self.rounds.round:
+            return False
+
+        return True
 
     def process_vote(self, type, sender):
-        # BigFoot does not allow for mutliple blocks to be submitted in 1 round
         self.msgs[type] += [sender.id]
 
     def propose(self, event):
@@ -180,7 +194,7 @@ class BigFoot():
 
                 return 'new_state'  # state changed (will check backlog)
             else:
-                # if the block was invalid begin round check
+                # if the block was invalid begin round change
                 Rounds.change_round(self.node, time)
 
             return 'handled'  # event handled but state did not change
@@ -191,6 +205,9 @@ class BigFoot():
         time = event.time
         block = event.payload['block']
 
+        if not self.validate_message(event):
+            return "invalid"
+
         time += Parameters.execution["msg_val_delay"]
 
         if self.state == 'pre_prepared':
@@ -199,7 +216,7 @@ class BigFoot():
 
             # if we have enough prepare messages
             if not self.fast_path:
-                # leader does not issue a prepare message
+                # leader does not issue a prepare message (thus 2f required votes)
                 if len(self.msgs['prepare']) >= Parameters.application["required_messages"] - 1:
                     # change to prepared
                     self.state = 'prepared'
@@ -215,13 +232,11 @@ class BigFoot():
 
                     # count own vote
                     self.process_vote('commit', self.node)
+
                     return 'new_state'
             else:
-                # leader does not issue a prepare message
+                # leader does not issue a prepare message (thus N-1)
                 if len(self.msgs['prepare']) == Parameters.application["Nn"] - 1:
-                    if self.block is None:
-                        self.block = block.copy()
-
                     self.node.add_block(self.block, time)
 
                     if self.node.id == self.miner:
@@ -293,6 +308,9 @@ class BigFoot():
         time = event.time
         block = event.payload['block'].copy()
 
+        if not self.validate_message(event):
+            return "invalid"
+
         time += Parameters.execution["msg_val_delay"]
 
         # if prepared
@@ -300,19 +318,9 @@ class BigFoot():
             self.process_vote('commit', event.creator)
 
             if len(self.msgs['commit']) >= Parameters.application["required_messages"]:
-                payload = {
-                    'type': 'commit',
-                    'block': block,
-                    'round': self.rounds.round,
-                }
-                self.node.scheduler.schedule_broadcast_message(
-                    self.node, time, payload, self.handle_event)
-
-                self.process_vote('commit', self.node)
-
                 self.node.add_block(self.block, time)
 
-                if self.node == self.miner:
+                if self.node.id == self.miner:
                     payload = {
                         'type': 'new_block',
                         'block': block,
@@ -365,7 +373,7 @@ class BigFoot():
                     block.extra_data["votes"] = self.msgs
 
                     # send new block message since we have received enough commit messages
-                    self.node.add_block(block, time)
+                    self.node.add_block(self.block, time)
 
                     payload = {
                         'type': 'new_block',
@@ -394,13 +402,15 @@ class BigFoot():
         block = event.payload['block']
         time = event.time
 
-        time += Parameters.execution["msg_val_delay"] + \
-            Parameters.execution["block_val_delay"]
+        if not self.validate_message(event):
+            return "invalid"
+
+        time += Parameters.execution["msg_val_delay"]
+        time += Parameters.execution["block_val_delay"]
 
         # old block (ignore)
         if block.depth <= self.node.blockchain[-1].depth:
             return "invalid"
-
         # future block (sync)
         elif block.depth > self.node.blockchain[-1].depth + 1:
             if self.node.state.synced:
@@ -431,7 +441,6 @@ class BigFoot():
 
         self.state = 'new_round'
         self.fast_path = True
-
         self.node.backlog = []
 
         self.reset_msgs()
@@ -441,9 +450,11 @@ class BigFoot():
 
         self.get_miner()
 
-        self.schedule_timeout(Parameters.data["block_interval"] + time)
-        self.schedule_timeout(
-            Parameters.data["block_interval"] + time, fast_path=True)
+        # taking into account block interval for the propossal round timeout
+        time += Parameters.data["block_interval"]
+
+        self.schedule_timeout(time)
+        self.schedule_timeout(time, fast_path=True)
 
         if self.miner == self.node.id:
             payload = {
@@ -451,7 +462,7 @@ class BigFoot():
             }
 
             self.node.scheduler.schedule_event(
-                self.node, time + Parameters.data["block_interval"], payload, BigFoot.handle_event)
+                self.node, time, payload, BigFoot.handle_event)
 
     ########################## TIMEOUTS ###########################
 
