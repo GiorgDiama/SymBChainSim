@@ -100,7 +100,6 @@ class Manager:
 
     def handle_system_event(self, event):
         match event.payload["type"]:
-
             case "generate_txions":
                 generate_txionsSE.handle_event(self, event)
             case "update_network":

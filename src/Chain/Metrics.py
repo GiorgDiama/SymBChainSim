@@ -242,7 +242,6 @@ class Metrics:
                 for t in Parameters.tx_factory.global_mempool
                 if t.timestamp <= sim.clock
             ]
-
         }
 
         for node in sim.nodes:
