@@ -86,7 +86,7 @@ class Node():
     def __str__(self, full=False):
         if self.state.alive:
             if full:
-                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(Parameters.tx_factory.global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']}\
+                return f"{color(f'Node: {self.id}',42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(Parameters.tx_factory.global_mempool)} \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']} f: {Parameters.application['f']} \
                         \n   CP: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"Node: {self.id}"
@@ -183,19 +183,16 @@ class Node():
         self.blockchain.append(block)
 
         if Parameters.application["transaction_model"] == "local":
-            Parameters.tx_factory.remove_transactions_from_pool(
+            self.pool = Parameters.tx_factory.remove_transactions_from_pool(
                 block.transactions, self.pool)
         elif Parameters.application["transaction_model"] == "global":
-            if self.id == block.miner:
-                Parameters.tx_factory.remove_transactions_from_pool(
+            # only one node needs to remove the transactions
+            if Parameters.tx_factory.depth_removed < block.depth:
+                Parameters.tx_factory.global_mempool = Parameters.tx_factory.remove_transactions_from_pool(
                     block.transactions, Parameters.tx_factory.global_mempool)
 
-    def add_event(self, event):
-        ''' adds event to the queue of the node if the node is online'''
+                Parameters.tx_factory.depth_removed = block.depth
 
-        '''
-            Is there ever a case where a local event would need to be added
-            even if the node is offline?
-        '''
+    def add_event(self, event):
         if self.state.alive:
             self.queue.add_event(event)
