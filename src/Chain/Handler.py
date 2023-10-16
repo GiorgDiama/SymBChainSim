@@ -28,11 +28,15 @@ def handle_event(event, backlog=False):
     if not event.actor.state.alive:
         return 'dead_node'
 
+    '''
+        TODO: Leave this check to the protocol
+    '''
     # if this event is CP specific and the CP of the event does not mactch the current CP - old message
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
 
     # if we are not handling backlog events and this is a network event
+    # handle actions related with the receiving of the message
     if not backlog and isinstance(event, MessageEvent):
         Network.receive(event.actor, event)
 
@@ -65,7 +69,7 @@ def handle_backlog(node):
         tools.debug_logs(msg=f"event returned {ret}")
 
         if ret == 'handled' or ret == 'new_state' or ret == 'invalid':
-            # if the event was handled, pop the event - i now points to next event so no need to increment
+            # if the event was handled or invalid, pop the event - i now points to next event so no need to increment
             node.backlog.pop(i)
         else:
             # the event was not handled and is not invalid thus must still be "future event" -> stays in backlog
