@@ -16,7 +16,9 @@ class TransactionFactory:
 
     def __init__(self, nodes) -> None:
         self.nodes = nodes
+        # FOR GLOBAL TXION POOL
         self.global_mempool = []
+        self.depth_removed = -1
 
     def transaction_prop(self, tx):
         if Parameters.application["transaction_model"] == "global":
@@ -43,7 +45,20 @@ class TransactionFactory:
 
                 self.transaction_prop(Transaction(id, timestamp, size))
 
-    def get_transactions(self, pool, time):
+    def execute_transactions(self, pool, time):
+        match Parameters.application["transaction_model"]:
+            case "local":
+                # local pool: execute transactions for the local pool of the node
+                return self.get_transactions_from_pool(pool, time)
+            case "global":
+                # global pool: execute transaction for the "global pool" shared amongst the nodes
+                return self.get_transactions_from_pool(self.global_mempool, time)
+            case _:
+                raise (ValueError(
+                    f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
+
+    @staticmethod
+    def get_transactions_from_pool(pool, time):
         transactions = []
         size = 0
 
@@ -60,21 +75,17 @@ class TransactionFactory:
             # if we did not find any transactions return an empty list
             return [], -1
 
-    def execute_transactions(self, pool, time):
-        if Parameters.application["transaction_model"] == "local":
-            return self.get_transactions(pool, time)
-        elif Parameters.application["transaction_model"] == "global":
-            return self.get_transactions(self.global_mempool, time)
-        else:
-            raise (ValueError(
-                f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
-
     @staticmethod
     def remove_transactions_from_pool(txions, pool):
         t_idx, p_idx = 0, 0
+        # for each transactions in txions go over pool: look for it and remove it
         while t_idx < len(txions) and p_idx < len(pool)-1:
             if txions[t_idx] == pool[p_idx]:
-                t_idx += 1
                 pool.pop(p_idx)
+                t_idx += 1
+                # start over looking for the next transaction in txions
+                p_idx = 0
             else:
                 p_idx += 1
+
+        return pool
