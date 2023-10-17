@@ -5,8 +5,8 @@ from Chain.Manager.Manager import Manager
 import random
 import numpy
 
-from Chain.Consensus.PBFT.PBFT import PBFT
-from Chain.Consensus.BigFoot.BigFoot import BigFoot
+from Chain.Consensus.PBFT.PBFT_state import PBFT
+from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 from Chain.Metrics import Metrics
 import Chain.tools as tools
@@ -36,7 +36,7 @@ def run():
     print(tools.color(
         f"Simulated time {'%.2f'%manager.sim.clock} seconds!", 45))
 
-    Metrics.save_snapshots("snapshot")
+    # Metrics.save_snapshots("snapshot")
     Metrics.measure_all(manager.sim)
     Metrics.print_metrics()
 

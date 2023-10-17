@@ -7,7 +7,7 @@ from Chain.Parameters import Parameters
 
 def round_change_state(round=0):
     '''
-        Rounc chage state
+        Round chage state
     '''
     return SimpleNamespace(
         round=round,

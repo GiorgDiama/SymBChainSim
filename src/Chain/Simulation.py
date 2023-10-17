@@ -9,8 +9,8 @@ import Chain.tools as tools
 
 from Chain.Event import SystemEvent
 
-from Chain.Consensus.PBFT.PBFT import PBFT
-from Chain.Consensus.BigFoot.BigFoot import BigFoot
+from Chain.Consensus.PBFT.PBFT_state import PBFT
+from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 
 class Simulation:

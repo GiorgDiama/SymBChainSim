@@ -63,6 +63,10 @@ def parse_cmd_args():
     if "nd" in sys.argv:
         Parameters.simulation["debugging_mode"] = False
 
+    if "d" in sys.argv:
+        Parameters.simulation["debugging_mode"] = True
+        Parameters.simulation['remove_timeouts'] = True
+
 
 def exec_cmd(simulator, cmd):
     ''' When debug mode is on - a command can be given as input (this handles the execution)'''

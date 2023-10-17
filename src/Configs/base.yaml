@@ -14,7 +14,7 @@ simulation:
   snapshots: False
 
 application:
-  Nn: 20
+  Nn: 50
   TI_dur: 25
   Tn: 100
   base_transation_size: 0.005
@@ -45,7 +45,7 @@ network:
 
   bandwidth:
     mean: 100
-    dev: 20
+    dev: 0
     min: 2
     debug: False
 

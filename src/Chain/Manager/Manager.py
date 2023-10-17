@@ -7,8 +7,8 @@ import Chain.Manager.SimulationUpdates as updates
 
 import Chain.tools as tools
 
-from Chain.Consensus.PBFT.PBFT import PBFT
-from Chain.Consensus.BigFoot.BigFoot import BigFoot
+from Chain.Consensus.PBFT.PBFT_state import PBFT
+from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
 import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
