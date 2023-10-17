@@ -54,6 +54,19 @@ class Manager:
         # initialise simulation
         self.sim.init_simulation()
 
+        print(self.simulation_details())
+
+    def simulation_details(self):
+        s = tools.color("-"*28 + "NODE INFO" + '-'*28) + '\n'
+        s += ("NODE \t LOCATION \t BANDWIDTH\tCP\tNEIGHBOURS") + '\n'
+        for n in self.sim.nodes:
+            neigh_list = ','.join([str(n.id) for n in n.neighbours])
+            s += f"{'%3d'%n.id} {'%13s'%Network.locations[n.id]}\t {'%.2f' % n.bandwidth}\t{n.cp.NAME}\t{'%12s'%neigh_list}" + '\n'
+
+        s += tools.color("-"*25 + "SIM PARAMETERS" + '-'*25) + '\n'
+        s += Parameters.parameters_to_string()
+        return s
+
     def finished(self):
         # check if we have reached desired simulation duration
         times_out = (Parameters.simulation["simTime"] != -1 and
