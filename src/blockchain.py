@@ -36,7 +36,6 @@ def run():
     print(tools.color(
         f"Simulated time {'%.2f'%manager.sim.clock} seconds!", 45))
 
-    Metrics.save_snapshots("snapshot")
     Metrics.measure_all(manager.sim)
     Metrics.print_metrics()
 
