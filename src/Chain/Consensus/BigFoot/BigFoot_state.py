@@ -73,10 +73,13 @@ class BigFoot():
     def count_votes(self, type, round):
         return len(self.msgs[round][type])
 
+    def process_vote(self, type, sender, round, time):
+        self.msgs[round][type] += [(sender.id, time)]
+
     def get_miner(self):
-        # new miner in a round robin fashion
         match Parameters.execution["proposer_selection"]:
             case "round_robin":
+                # new miner in a round robin fashion
                 self.miner = self.rounds.round % Parameters.application["Nn"]
             case "hash":
                 # get new miner based on the hash of the last block
@@ -97,9 +100,6 @@ class BigFoot():
 
     def validate_block(self, block):
         return block.depth - 1 == self.node.last_block.depth and block.extra_data["round"] == self.rounds.round
-
-    def process_vote(self, type, sender, round, time):
-        self.msgs[round][type] += [(sender.id, time)]
 
     def init(self, time=0, starting_round=0):
         self.set_state()
@@ -139,8 +139,6 @@ class BigFoot():
 
         self.state = 'new_round'
         self.fast_path = True
-
-        # self.node.backlog = []
 
         self.reset_msgs(new_round)
 
