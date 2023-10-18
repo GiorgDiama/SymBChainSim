@@ -1,6 +1,7 @@
 def schedule_propose(state, time):
     payload = {
-        'type': 'propose'
+        'type': 'propose',
+        'round': state.rounds.round
     }
 
     state.node.scheduler.schedule_event(
