@@ -20,6 +20,11 @@ def print_progress(sim):
         print(tools.color(s, 44))
 
 
+def start_debug(sim):
+    if 'start_debugging_at' in Parameters.simulation and sim.clock >= Parameters.simulation['start_debugging_at']:
+        Parameters.simulation["debugging_mode"] = True
+
+
 def change_cp(cp):
     '''
         changes the CP of the system (cp can be either a reference to a cp protocol or a string)
