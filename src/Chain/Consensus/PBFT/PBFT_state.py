@@ -1,5 +1,6 @@
 from Chain.Block import Block
 from Chain.Parameters import Parameters
+from Chain.Handler import handle_backlog
 
 import Chain.Consensus.Rounds as Rounds
 
@@ -7,6 +8,7 @@ from random import randint
 
 import Chain.Consensus.PBFT.PBFT_transition as state_transitions
 import Chain.Consensus.PBFT.PBFT_timeouts as timeouts
+import Chain.Consensus.PBFT.PBFT_messages as messages
 
 
 class PBFT():
@@ -30,7 +32,7 @@ class PBFT():
         self.state = ""
         self.miner = ""
 
-        self.msgs = {'prepare': [], 'commit': []}
+        self.msgs = {}
 
         self.timeout = None
 
@@ -42,7 +44,7 @@ class PBFT():
         self.rounds = Rounds.round_change_state()
         self.state = ""
         self.miner = ""
-        self.msgs = {'prepare': [], 'commit': []}
+        self.msgs = {}
         self.timeout = None
         self.block = None
 
@@ -50,28 +52,36 @@ class PBFT():
         s = f"{self.rounds.round} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
-    def reset_msgs(self):
-        self.msgs = {'prepare': [], 'commit': []}
+    def reset_msgs(self, round):
+        self.msgs[round] = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
 
-    def process_vote(self, type, sender):
-        self.msgs[type] += [sender.id]
+    def count_votes(self, type, round):
+        return len(self.msgs[round][type])
+
+    def process_vote(self, type, sender, round, time):
+        self.msgs[round][type] += [(sender.id, time)]
 
     def validate_message(self, event):
-        payload = event.payload
+        round, current_round = event.payload['round'], self.rounds.round
 
-        if payload['round'] < self.rounds.round:
-            return False
+        if round < current_round:
+            return False, None
+        elif round == current_round:
+            return True, None
+        else:
+            return True, 'backlog'
 
-        return True
+    def validate_block(self, block):
+        return block.depth - 1 == self.node.last_block.depth and block.extra_data["round"] == self.rounds.round
 
     def init(self, time=0, starting_round=0):
         self.set_state()
         self.start(starting_round, time)
 
     def get_miner(self):
-        # new miner in a round robin fashion
         if Parameters.execution["proposer_selection"] == "round_robin":
+            # new miner in a round robin fashion
             self.miner = self.rounds.round % Parameters.application["Nn"]
         elif Parameters.execution["proposer_selection"] == "hash":
             # get new miner based on the hash of the last block
@@ -105,9 +115,50 @@ class PBFT():
         else:
             return None, time
 
+    def start(self, new_round=0, time=0):
+        if self.node.update(time):
+            return 0
+
+        self.state = 'new_round'
+
+        self.reset_msgs(new_round)
+
+        self.rounds.round = new_round
+        self.block = None
+
+        self.get_miner()
+
+        # taking into account block interval for the propossal round timeout
+        time += Parameters.data["block_interval"]
+
+        timeouts.schedule_timeout(self, time)
+
+        # if the current node is the miner, schedule propose block event
+        if self.miner == self.node.id:
+            messages.schedule_propose(self, time)
+        else:
+            # check if any future events are here for this round
+            # slow nodes might miss pre_prepare vote so its good to check early
+            handle_backlog(self.node)
+
+    def init_round_chage(self, time):
+        timeouts.schedule_timeout(self, time, add_time=True)
+
+    ########################## RESYNC CP SPECIFIC ACTIONS ###########################
+
+    def resync(self, payload, time):
+        '''
+            PBFT specific resync actions
+        '''
+        self.set_state()
+        round = payload['blocks'][-1].extra_data['round']
+
+        self.start(round, time)
+
+    ########################## HANDLERER ###########################
+
     @staticmethod
-    def handle_event(event):
-        # specific to PBFT - called by events in Handler.handle_event()
+    def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
         match event.payload["type"]:
             case 'propose':
                 return state_transitions.propose(event.actor.cp, event)
@@ -123,45 +174,3 @@ class PBFT():
                 return state_transitions.new_block(event.actor.cp, event)
             case _:
                 return 'unhadled'
-
-    def start(self, new_round=0, time=0):
-        if self.node.update(time):
-            return 0
-
-        self.state = 'new_round'
-        self.node.backlog = []
-
-        self.reset_msgs()
-
-        self.rounds.round = new_round
-        self.block = None
-
-        self.get_miner()
-
-        # taking into account block interval for the propossal round timeout
-        time += Parameters.data["block_interval"]
-
-        timeouts.schedule_timeout(self, time)
-
-        # if the current node is the miner, schedule propose block event
-        if self.miner == self.node.id:
-            payload = {
-                'type': 'propose',
-            }
-            self.node.scheduler.schedule_event(
-                self.node, time, payload, PBFT.handle_event)
-
-    def init_round_chage(self, time):
-        timeouts.schedule_timeout(self, time, add_time=True)
-
-    ########################## RESYNC CP SPECIFIC ACTIONS ###########################
-
-    def resync(self, payload, time):
-        '''
-            PBFT specific resync actions
-        '''
-        self.set_state()
-        if self.rounds.round < payload['blocks'][-1].extra_data['round']:
-            self.rounds.round = payload['blocks'][-1].extra_data['round']
-
-        timeouts.schedule_timeout(self, time=time)
