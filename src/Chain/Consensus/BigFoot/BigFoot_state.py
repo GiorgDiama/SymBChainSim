@@ -1,11 +1,12 @@
 from Chain.Block import Block
 from Chain.Parameters import Parameters
+from Chain.Handler import handle_backlog
 
 import Chain.Consensus.Rounds as Rounds
-import Chain.Consensus.HighLevelSync as Sync
 
 import Chain.Consensus.BigFoot.BigFoot_transition as state_transition
 import Chain.Consensus.BigFoot.BigFoot_timeouts as timeouts
+import Chain.Consensus.BigFoot.BigFoot_messages as messages
 
 from random import randint
 
@@ -36,7 +37,7 @@ class BigFoot():
         self.fast_path = None
         self.state = ""
         self.miner = ""
-        self.msgs = {'prepare': [], 'commit': []}
+        self.msgs = {}
 
         self.timeout = None
         self.fast_path_timeout = None
@@ -45,45 +46,60 @@ class BigFoot():
 
         self.node = node
 
+    def state_to_string(self):
+        cur_round = self.rounds.round
+        messages = {
+            'prepare': [x[0] for x in self.msgs[cur_round]['prepare']],
+            'commit': [x[0] for x in self.msgs[cur_round]['commit']]
+        }
+        s = f"  ROUNDS: {Rounds.state_to_string(self.node)}" + '\n'
+        s += f"  CP: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {messages} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1} | FastTO: {round(self.fast_path_timeout.time,3) if self.fast_path_timeout is not None else -1}"
+        return s
+
     def set_state(self):
         self.rounds = Rounds.round_change_state()
         self.fast_path = None
         self.state = ""
         self.miner = ""
-        self.msgs = {'prepare': [], 'commit': []}
+        self.msgs = {}
         self.timeout = None
         self.fast_path_timeout = None
         self.block = None
 
-    def state_to_string(self):
-        s = f"{Rounds.state_to_string(self.node)} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1} | FastTO: {round(self.fast_path_timeout.time,3) if self.fast_path_timeout is not None else -1}"
-        return s
-
-    def reset_msgs(self):
-        self.msgs = {'prepare': [], 'commit': []}
+    def reset_msgs(self, round):
+        self.msgs[round] = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
 
-    def get_miner(self, round_robin=False):
+    def count_votes(self, type, round):
+        return len(self.msgs[round][type])
+
+    def get_miner(self):
         # new miner in a round robin fashion
-        if Parameters.execution["proposer_selection"] == "round_robin":
-            self.miner = self.rounds.round % Parameters.application["Nn"]
-        elif Parameters.execution["proposer_selection"] == "hash":
-            # get new miner based on the hash of the last block
-            self.miner = self.node.last_block.id % Parameters.application["Nn"]
-        else:
-            raise (ValueError(
-                f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
+        match Parameters.execution["proposer_selection"]:
+            case "round_robin":
+                self.miner = self.rounds.round % Parameters.application["Nn"]
+            case "hash":
+                # get new miner based on the hash of the last block
+                self.miner = self.node.last_block.id % Parameters.application["Nn"]
+            case _:
+                raise (ValueError(
+                    f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def validate_message(self, event):
-        payload = event.payload
+        round, current_round = event.payload['round'], self.rounds.round
 
-        if payload['round'] < self.rounds.round:
-            return False
+        if round < current_round:
+            return False, None
+        elif round == current_round:
+            return True, None
+        else:
+            return True, 'backlog'
 
-        return True
+    def validate_block(self, block):
+        return block.depth - 1 == self.node.last_block.depth and block.extra_data["round"] == self.rounds.round
 
-    def process_vote(self, type, sender):
-        self.msgs[type] += [sender.id]
+    def process_vote(self, type, sender, round, time):
+        self.msgs[round][type] += [(sender.id, time)]
 
     def init(self, time=0, starting_round=0):
         self.set_state()
@@ -114,28 +130,6 @@ class BigFoot():
         else:
             return None, time
 
-    ########################## HANDLERER ###########################
-
-    @staticmethod
-    def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
-        match event.payload["type"]:
-            case 'propose':
-                return state_transition.propose(event.actor.cp, event)
-            case 'pre_prepare':
-                return state_transition.pre_prepare(event.actor.cp, event)
-            case 'prepare':
-                return state_transition.prepare(event.actor.cp, event)
-            case 'commit':
-                return state_transition.commit(event.actor.cp, event)
-            case 'timeout':
-                return timeouts.handle_timeout(event.actor.cp, event)
-            case "fast_path_timeout":
-                return timeouts.handle_timeout(event.actor.cp, event)
-            case 'new_block':
-                return state_transition.new_block(event.actor.cp, event)
-            case _:
-                return 'unhadled'
-
     def init_round_chage(self, time):
         timeouts.schedule_timeout(self, time, add_time=True)
 
@@ -145,9 +139,10 @@ class BigFoot():
 
         self.state = 'new_round'
         self.fast_path = True
-        self.node.backlog = []
 
-        self.reset_msgs()
+        # self.node.backlog = []
+
+        self.reset_msgs(new_round)
 
         self.rounds.round = new_round
         self.block = None
@@ -161,12 +156,11 @@ class BigFoot():
         timeouts.schedule_timeout(self, time, fast_path=True)
 
         if self.miner == self.node.id:
-            payload = {
-                'type': 'propose',
-            }
-
-            self.node.scheduler.schedule_event(
-                self.node, time, payload, BigFoot.handle_event)
+            messages.schedule_propose(self, time)
+        else:
+            # check if any future events are here for this round
+            # slow nodes might miss pre_prepare vote so its good to check early
+            handle_backlog(self.node)
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
 
@@ -175,7 +169,32 @@ class BigFoot():
             BigFoot specific resync actions
         '''
         self.set_state()
-        if self.rounds.round < payload['blocks'][-1].extra_data['round']:
-            self.rounds.round = payload['blocks'][-1].extra_data['round']
+        round = payload['blocks'][-1].extra_data['round']
 
-        timeouts.schedule_timeout(self, time=time)
+        self.start(round, time)
+
+    ########################## HANDLERER ###########################
+
+    @staticmethod
+    def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
+        if event.actor.cp.state == "round_chage":
+            print("Ayoo")
+        match event.payload["type"]:
+            case 'propose':
+                ret = state_transition.propose(event.actor.cp, event)
+            case 'pre_prepare':
+                ret = state_transition.pre_prepare(event.actor.cp, event)
+            case 'prepare':
+                ret = state_transition.prepare(event.actor.cp, event)
+            case 'commit':
+                ret = state_transition.commit(event.actor.cp, event)
+            case 'timeout':
+                ret = timeouts.handle_timeout(event.actor.cp, event)
+            case "fast_path_timeout":
+                ret = timeouts.handle_timeout(event.actor.cp, event)
+            case 'new_block':
+                ret = state_transition.new_block(event.actor.cp, event)
+            case _:
+                return 'unhadled'
+
+        return ret
