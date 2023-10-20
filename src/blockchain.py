@@ -5,30 +5,22 @@ from Chain.Manager.Manager import Manager
 import random
 import numpy
 
-from Chain.Consensus.PBFT.PBFT import PBFT
-from Chain.Consensus.BigFoot.BigFoot import BigFoot
-
 from Chain.Metrics import Metrics
 import Chain.tools as tools
+
+import statistics as st
 
 ############### SEEDS ############
 seed = 5
 random.seed(seed)
 numpy.random.seed(seed)
-############### SEEDS ############
-
-
-CPs = {
-    PBFT.NAME: PBFT,
-    BigFoot.NAME: BigFoot
-}
+############## SEEDS ############
 
 
 def run():
     manager = Manager()
 
     manager.set_up()
-
     t = datetime.now()
     manager.run()
     runtime = datetime.now() - t
@@ -41,34 +33,80 @@ def run():
 
     s = f"{'-'*30} EVENTS {'-'*30}"
     print(tools.color(s, 41))
-    print(Parameters.simulation['events'])
+
+    for key, value in Parameters.simulation['events'].items():
+        if isinstance(value, dict):
+            print(key)
+
+            # gourp by value
+            s = ' '.join(f'{node}:{num}' for node, num in value.items())
+            print(s)
+        else:
+            print(key, value)
 
     print(tools.color(f"SIMULATION EXECUTION TIME: {runtime}", 45))
 
+    # for block in manager.sim.nodes[0].blockchain[1:]:
+    #     all_votes = block.extra_data['votes']
+    #     time_pre_prep = block.time_created
+    #     time_prep = all_votes['prepare'][-1][1]
+    #     nodes = {}
+    #     for type, votes in all_votes.items():
+    #         for node, time, size in votes:
+    #             entry = nodes.get(node, [])
+    #             entry.append((type, time, size))
+    #             nodes[node] = entry
+    #     print(block.miner)
+    #     for node_id, votes in nodes.items():
+    #         for type, time, size in votes:
+    #             print(node_id, '->', 0, ':', type, time, size)
+    #             # if type == 'prepare':
+    #             #     delay = time - time_pre_prep
+    #             #     if delay != 0:
+    #             #         print(
+    #             #             f"{type}: It took {delay} to get {size} from node {node_id} speed {size/delay}")
+    #             # elif type == 'commit':
+    #             #     delay = time - time_prep
+    #             #     if delay != 0:
+    #             #         print(
+    #             #             f"{type}: It took {delay} to get {size} from node {node_id} speed {size/delay}")
 
-# def test_plot():
-#     import json
-#     import matplotlib.pyplot as plt
+    #     exit()
+    # import numpy as np
+    # from Chain.Network import Network
+    # res = np.divide(Network.avg_transmission_delay, Network.no_messages)
+    # res = np.nan_to_num(res)
 
-#     with open(f"results/snapshot.json", "r") as f:
-#         data = json.load(f)
+    # import matplotlib.pyplot as plt
 
-#     times = []
-#     throughputs = []
+    # plt.imshow(res)
+    # # plt.show()
 
-#     for key, value in data.items():
-#         times.append(value['time'])
-#         throughputs.append(value["metrics"]['throughput']['0'])
-#         bws = [value['nodes'][key]['bandwidth'] for key in value['nodes']]
+    # import statistics as st
+    # for n in manager.sim.nodes:
+    #     votes = n.cp.msgs
 
-#     import matplotlib.pyplot as plt
-#     import matplotlib as mpl
+    #     for round, votes in votes.items():
+    #         prep = votes['prepare']
+    #         prep = [x[1]-min(prep, key=lambda x:x[1])[1] for x in prep]
+    #         try:
+    #             avg_prep = '%0.2f' % st.mean(prep)
+    #         except:
+    #             avg_prep = -1
 
-#     mpl.use("pgf")
+    #         cnt_prep = len(prep)
 
-#     plt.plot(range(10))
-#     plt.savefig("test.pdf")
+    #         com = votes['commit']
+    #         com = [x[1]-min(com, key=lambda x:x[1])[1] for x in com]
+    #         try:
+    #             avg_com = '%.2f' % st.mean(com)
+    #         except:
+    #             avg_com = -1
+
+    #         cnt_com = len(com)
+
+    #         # print(round, '\t', avg_prep, cnt_prep, '\t', avg_com, cnt_com)
+    #     exit()
 
 
 run()
-# test_plot()

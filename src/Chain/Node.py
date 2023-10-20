@@ -160,12 +160,15 @@ class Node():
         '''
             Comparing the latest block of current node with all neighbours to check sync status
         '''
-        latest_neighbour_block = max(
-            [{"block": n.last_block, "neighbour": n} for n in self.neighbours],
-            key=lambda x: x["block"].depth)
+        # create (neighbour, block, depth) pairs from neighbours that have a later block than us
+        neighbours_ahead = [
+            (n, n.last_block, n.last_block.depth) for n in self.neighbours
+            if n.last_block.depth > self.last_block.depth]
 
-        if latest_neighbour_block["block"].depth > self.last_block.depth:
-            return False, latest_neighbour_block["neighbour"]
+        if neighbours_ahead:
+            # return false and the node that is furthurest ahead
+            node_furthest_ahead = max(neighbours_ahead, key=lambda x: x[2])
+            return False, node_furthest_ahead[0]
         else:
             return True, None
 

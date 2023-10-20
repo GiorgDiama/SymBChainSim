@@ -4,6 +4,7 @@ import sys
 import yaml
 import subprocess
 
+
 from Chain.Parameters import Parameters
 from Chain.Event import SystemEvent, MessageEvent, Event
 
@@ -31,7 +32,6 @@ def debug_logs(msg, **kwargs):
         if 'input' in kwargs:
             if "in_col" in kwargs:
                 kwargs['input'] = color(kwargs['input'], kwargs['in_col'])
-
             input(kwargs['input'])
         if "command" in kwargs:
             if "simulator" not in kwargs:
@@ -62,6 +62,13 @@ def get_named_cmd_arg(name):
 def parse_cmd_args():
     if "nd" in sys.argv:
         Parameters.simulation["debugging_mode"] = False
+
+    if "d" in sys.argv:
+        Parameters.simulation["debugging_mode"] = True
+        Parameters.simulation['remove_timeouts'] = True
+
+    if param := get_named_cmd_arg('da'):
+        Parameters.simulation['start_debugging_at'] = float(param)
 
 
 def exec_cmd(simulator, cmd):
@@ -95,28 +102,42 @@ def sim_info(simulator, print_event_queues=True):
         s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
 
         if print_event_queues:
+            # system events are set to -1 to allow for sorting based on node if later
             events_per_node = {-1: ""}
+
             for e in sorted(simulator.q.prio_queue.pq, key=lambda x: x[0], reverse=True):
+                # get the event (prio_queue stores (priority, event))
                 event = e[1]
+                # decide what todo based on type
                 if isinstance(event, MessageEvent) or isinstance(event, Event):
+                    # simulation events
                     if event.actor.id in events_per_node:
                         events_per_node[event.actor.id] += str(e[1]) + '\n'
                     else:
                         events_per_node[event.actor.id] = str(e[1]) + '\n'
                 else:
+                    # system events
                     events_per_node[-1] += str(e[1]) + "\n"
 
+            # sort the list of nodes to print events in order
             sort_nodes = sorted(list(events_per_node.keys()))
 
             for key in sort_nodes:
                 if key != -1:
                     s += color(("-"*30 + "NODE " +
                                str(key) + '-'*30), 41) + '\n'
+                    s += simulator.nodes[key].cp.state_to_string()+'\n\n'
                 else:
                     s += color(("-"*30 + "SYSTEM" + '-'*30), 42) + '\n'
 
                 for e in events_per_node[key]:
                     s += e
+
+                s += color(("-"*30 + "backlog " + '-'*30), 42) + '\n'
+
+                for e in simulator.nodes[key].backlog:
+                    s += ' ' + str(e) + '\n'
+
                 s += "\n"
 
         return s

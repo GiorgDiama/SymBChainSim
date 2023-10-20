@@ -46,10 +46,11 @@ def handle_event(event, backlog=False):
     if ret == 'backlog' and not backlog:
         # add future event to backlog (not backlog prevents us infinetely adding events to backlog while checking the backlog)
         bisect.insort(event.actor.backlog, event)
-    elif ret == 'new_state' and backlog:
+    elif ret == 'new_state' and not backlog:
         # if the event caused the node to go to a new satate, check the backlog (some future events might be ready to be handled)
         handle_backlog(event.actor)
     elif ret == 'unhadled':
+        print(event)
         raise ValueError("Event was not handled by its own handler!")
 
     return ret
@@ -64,9 +65,12 @@ def handle_backlog(node):
         tools.debug_logs(
             msg=f"{node.__str__(full=True)}", input=f"HANDLING BACKLOOOG: {node.backlog[i]} ", in_col="43", clear=False)
 
-        ret = handle_event(node.backlog[i], backlog=False)
+        ret = handle_event(node.backlog[i], backlog=True)
 
         tools.debug_logs(msg=f"event returned {ret}")
+
+        if not node.backlog:
+            break
 
         if ret == 'handled' or ret == 'new_state' or ret == 'invalid':
             # if the event was handled or invalid, pop the event - i now points to next event so no need to increment

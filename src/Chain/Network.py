@@ -1,5 +1,6 @@
 from Chain.Event import MessageEvent
 from Chain.Parameters import Parameters
+import numpy as np
 
 import Chain.tools as tools
 
@@ -20,6 +21,8 @@ class Network:
     locations = None
     latency_map = None
     distance_map = None
+
+    avg_transmission_delay = None
 
     @staticmethod
     def size(msg):
@@ -75,6 +78,52 @@ class Network:
     def receive(node, event):
         pass
 
+    @staticmethod
+    def calculate_message_propagation_delay(sender, receiver, message_size):
+        '''
+            Calculates the message propagation delay as
+            transmission delay + propagation delay + queueing delay + processing_delay
+        '''
+
+        # transmission delay
+        delay = message_size / Network.get_bandwidth(sender, receiver)
+
+        match Parameters.network["use_latency"]:
+            case "measured":
+                delay += Network.latency_map[sender.location][receiver.location][0] / 1000
+            case "distance":
+                dist = Network.distance_map[sender.location][receiver.location]
+                # conversion to miles (formula fitted on miles)
+                dist = dist * 0.621371
+                '''
+                    y = 0.022x + 4.862 is fitted to match the round trip latency given a distance
+                    source:
+                    Goonatilake, Rohitha, and Rafic A. Bachnak. "Modeling latency in a network distribution." Network and Communication Technologies 1.2 (2012): 1
+
+                    / 2 to get the single trip latency
+                    / 1000 to get seconds (regression fitted on data in ms)
+                '''
+                delay += ((0.022 * dist + 4.862) / 2) / 1000
+            case "local":
+                delay += Parameters.network["same_city_latency_ms"] / 1000
+            case "off":
+                pass
+            case _:
+                raise ValueError(
+                    f"no such latency type '{Parameters.network['use_latency']}'")
+
+        delay += Parameters.network["queueing_delay"] + \
+            Parameters.network["processing_delay"]
+
+        Network.avg_transmission_delay[sender.id, receiver.id] += delay
+        Network.no_messages[sender.id, receiver.id] += 1
+
+        return delay
+
+    @staticmethod
+    def get_bandwidth(sender, receiver):
+        return min(sender.bandwidth, receiver.bandwidth)
+
     ########################## SET UP NETWORK ############################
     @staticmethod
     def init_network(nodes, speeds=None):
@@ -85,6 +134,9 @@ class Network:
                 - Assigns locations and bandwidth to nodes
                 - Assigns neibhours to nodes (Gossip, Sync etc...)
         '''
+        Network.avg_transmission_delay = np.zeros((len(nodes), len(nodes)))
+        Network.no_messages = np.zeros((len(nodes), len(nodes)))
+
         if Parameters.network["gossip"]:
             raise NotImplementedError("Gossip is currently broken...")
 
@@ -105,16 +157,11 @@ class Network:
             for n in Network.nodes:
                 Network.set_bandwidths(n)
         else:
-            if Parameters.network["bandwidth"]["debug"]:
-                node.bandwidth = 1
-            else:
-                node.bandwidth = random.normalvariate(
-                    Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
+            node.bandwidth = random.normalvariate(
+                Parameters.network["bandwidth"]["mean"], Parameters.network["bandwidth"]["dev"])
 
-                node.bandwidth = max(
-                    node.bandwidth, Parameters.network["bandwidth"]["min"])
-
-            tools.debug_logs(msg=f"Node {node.id}: {node.bandwidth}MB/s")
+            node.bandwidth = max(
+                node.bandwidth, Parameters.network["bandwidth"]["min"])
 
     @staticmethod
     def assign_neighbours(node=None):
@@ -132,35 +179,6 @@ class Network:
                 Parameters.network["num_neighbours"])
 
     @staticmethod
-    def calculate_message_propagation_delay(sender, receiver, message_size):
-        '''
-            Calculates the message propagation delay as
-            transmission delay + propagation delay + queueing delay + processing_delay
-        '''
-        # transmission delay
-        delay = message_size / Network.get_bandwidth(sender, receiver)
-
-        if Parameters.network["use_latency"] == "measured":
-            delay += Network.latency_map[sender.location][receiver.location][0] / 1000
-        elif Parameters.network["use_latency"] == "distance":
-            dist = Network.distance_map[sender.location][receiver.location]
-            dist = dist * 0.621371  # conversion to miles since formula is based on miles
-            '''
-                y = 0.022x + 4.862 is fitted to match the round trip latency between 2
-                source: 
-                Goonatilake, Rohitha, and Rafic A. Bachnak. "Modeling latency in a network distribution." Network and Communication Technologies 1.2 (2012): 1
-                
-                / 2 to get the single trip latency
-                / 1000 to get seconds (regression fitted on data in ms)
-            '''
-            delay += ((0.022 * dist + 4.862) / 2) / 1000
-
-        delay += Parameters.network["queueing_delay"] + \
-            Parameters.network["processing_delay"]
-
-        return delay
-
-    @staticmethod
     def assign_location_to_nodes(node=None, location=None):
         '''
             node->Node (default)
@@ -169,17 +187,13 @@ class Network:
         '''
         if node is None:
             for n in Network.nodes:
-                n.location = random.choice(Network.locations)
+                Network.assign_location_to_nodes(n)
                 tools.debug_logs(msg=f"Node {n.id}: {n.location}")
         else:
             if location is None:
                 node.location = random.choice(Network.locations)
             else:
                 node.location = location
-
-    @staticmethod
-    def get_bandwidth(sender, receiver):
-        return min(sender.bandwidth, receiver.bandwidth)
 
     @staticmethod
     def parse_latencies():

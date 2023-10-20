@@ -7,8 +7,8 @@ import Chain.Manager.SimulationUpdates as updates
 
 import Chain.tools as tools
 
-from Chain.Consensus.PBFT.PBFT import PBFT
-from Chain.Consensus.BigFoot.BigFoot import BigFoot
+from Chain.Consensus.PBFT.PBFT_state import PBFT
+from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
 import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
@@ -54,6 +54,8 @@ class Manager:
         # initialise simulation
         self.sim.init_simulation()
 
+        print(self.simulation_details())
+
     def finished(self):
         # check if we have reached desired simulation duration
         times_out = (Parameters.simulation["simTime"] != -1 and
@@ -82,20 +84,24 @@ class Manager:
             Time based updates that are not controlled by system events can be triggered here
         '''
         updates.print_progress(self.sim)
+        updates.start_debug(self.sim)
 
     def init_system_events(self):
         '''
             Sets up initial events 
         '''
+        # generates the transactions every time interval
         generate_txionsSE.schedule_event(self, init=True)
 
         if Parameters.dynamic_sim["use"]:
+            # if we are using dynamic simulation: load events that handle the dynamic updates
             dynamic_simulationSE.DynamicParameters.init_parameters()
             dynamic_simulationSE.schedule_update_network_event(self, init=True)
             dynamic_simulationSE.schedule_update_workload_event(
                 self, init=True)
 
         if Parameters.simulation["snapshots"]:
+            # if snapshots is true, add the event that periodically takes the snapshots
             dynamic_simulationSE.schedule_snapshot_event(self)
 
     def handle_system_event(self, event):
@@ -110,3 +116,14 @@ class Manager:
                 dynamic_simulationSE.handle_snapshot_event(self, event)
             case _:
                 raise ValueError("Event was not handled by its own handler...")
+
+    def simulation_details(self):
+        s = tools.color("-"*28 + "NODE INFO" + '-'*28) + '\n'
+        s += ("NODE\tLOCATION\tBANDWIDTH\tCP\tNEIGHBOURS") + '\n'
+        for n in self.sim.nodes:
+            neigh_list = ','.join([str(n.id) for n in n.neighbours])
+            s += f"{'%3d'%n.id} {'%13s'%n.location}\t{'%.2f' % n.bandwidth}\t{'%10s'%n.cp.NAME}\t{'%12s'%neigh_list}" + '\n'
+
+        s += tools.color("-"*25 + "SIM PARAMETERS" + '-'*25) + '\n'
+        s += Parameters.parameters_to_string()
+        return s
