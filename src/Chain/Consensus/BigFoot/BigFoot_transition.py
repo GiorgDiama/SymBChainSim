@@ -49,7 +49,6 @@ def pre_prepare(state, event):
             if state.validate_block(block):
                 # store block as current block
                 state.block = event.payload['block'].copy()
-
                 # change state to pre_prepared since block was accepted
                 state.state = 'pre_prepared'
 
@@ -139,7 +138,7 @@ def prepare(state, event):
 
 def commit(state, event):
     time = event.time
-    block = event.payload['block'].copy()
+    block = event.payload['block']
     round = state.rounds.round
 
     # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
@@ -201,7 +200,7 @@ def new_block(state, event):
             state.rounds.round = event.payload['round']
 
         # add block and start new round
-        state.node.add_block(block, time)
+        state.node.add_block(block.copy(), time)
 
         state.start(event.payload['round']+1, time)
 

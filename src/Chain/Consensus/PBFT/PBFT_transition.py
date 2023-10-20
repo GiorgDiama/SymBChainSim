@@ -5,6 +5,9 @@ import Chain.Consensus.PBFT.PBFT_messages as PBFT_messages
 import Chain.Consensus.Rounds as Rounds
 
 
+from Chain.Network import Network
+
+
 def propose(state, event):
     time = event.time
 
@@ -22,7 +25,11 @@ def propose(state, event):
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'
         state.block = block.copy()
-
+        # create the votes extra_data field and log votes
+        state.block.extra_data['votes'] = {
+            'pre_prepare': [], 'prepare': [], 'commit': []}
+        state.block.extra_data['votes']['pre_prepare'].append((
+            event.creator.id, time, Network.size(event)))
         PBFT_messages.broadcast_pre_prepare(state, time, block)
 
     return 'handled'
@@ -49,6 +56,12 @@ def pre_prepare(state, event):
             if state.validate_block(block):
                 # store block as current block
                 state.block = event.payload['block'].copy()
+                # create the votes extra_data field and log votes
+                state.block.extra_data['votes'] = {
+                    'pre_prepare': [], 'prepare': [], 'commit': []}
+                state.block.extra_data['votes']['pre_prepare'].append((
+                    event.creator.id, time, Network.size(event)))
+
                 # change state to pre_prepared since block was accepted
                 state.state = 'pre_prepared'
                 # broadcast preare message
@@ -56,6 +69,9 @@ def pre_prepare(state, event):
                 # count own vote
                 state.process_vote('prepare', state.node,
                                    state.rounds.round, time)
+
+                state.block.extra_data['votes']['prepare'].append((
+                    event.actor.id, time, Network.size(event)))
                 return 'new_state'  # state changed (will check backlog)
             else:
                 # if the block was invalid begin round change
@@ -94,6 +110,9 @@ def prepare(state, event):
             state.process_vote('prepare', event.creator,
                                state.rounds.round, time)
 
+            state.block.extra_data['votes']['prepare'].append((
+                event.creator.id, time, Network.size(event)))
+
             # if we have enough prepare messages (2f messages since leader does not participate)
             if state.count_votes('prepare', round) >= Parameters.application["required_messages"] - 1:
                 # change to prepared
@@ -105,6 +124,10 @@ def prepare(state, event):
                 # count own vote
                 state.process_vote('commit', state.node,
                                    state.rounds.round, time)
+
+                state.block.extra_data['votes']['commit'].append((
+                    event.actor.id, time, Network.size(event)))
+
                 return 'new_state'
 
             # not enough votes yet...
@@ -122,7 +145,7 @@ def prepare(state, event):
 
 def commit(state, event):
     time = event.time
-    block = event.payload['block'].copy()
+    block = event.payload['block']
     round = state.rounds.round
 
     # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
@@ -133,11 +156,16 @@ def commit(state, event):
         return future
     time += Parameters.execution["msg_val_delay"]
 
+    if state.block is None:
+        exit()
+
     match state.state:
         case 'prepared':
             # count vote
             state.process_vote('commit', event.creator,
                                state.rounds.round, time)
+            state.block.extra_data['votes']['commit'].append((
+                event.creator.id, time, Network.size(event)))
             # if we have enough votes
             if state.count_votes('commit', round) >= Parameters.application["required_messages"]:
                 # add block to BC
@@ -184,7 +212,7 @@ def new_block(state, event):
             state.rounds.round = event.payload['round']
 
         # add block and start new round
-        state.node.add_block(block, time)
+        state.node.add_block(block.copy(), time)
 
         state.start(event.payload['round']+1, time)
 

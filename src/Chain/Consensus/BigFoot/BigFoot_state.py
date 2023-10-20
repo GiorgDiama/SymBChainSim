@@ -82,8 +82,9 @@ class BigFoot():
                 # new miner in a round robin fashion
                 self.miner = self.rounds.round % Parameters.application["Nn"]
             case "hash":
-                # get new miner based on the hash of the last block
-                self.miner = self.node.last_block.id % Parameters.application["Nn"]
+                # get new miner based on the hash of the last block + the round (to avoid endlessly waiting for offline nodes)
+                self.miner = (self.node.last_block.id +
+                              self.rounds.round) % Parameters.application["Nn"]
             case _:
                 raise (ValueError(
                     f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
@@ -117,7 +118,8 @@ class BigFoot():
         )
         block.extra_data = {
             'proposer': self.node.id,
-            'round': self.rounds.round
+            'round': self.rounds.round,
+            'votes': {}
         }
 
         transactions, size = Parameters.tx_factory.execute_transactions(
