@@ -12,6 +12,7 @@ from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
 import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
+import Chain.Manager.SystemEvents.BehaviourEvents as behaviourSE
 
 
 class Manager:
@@ -26,13 +27,19 @@ class Manager:
     def __init__(self) -> None:
         self.sim = None
 
-    def set_up(self, config="base.yaml"):
-        '''
-            Initial tasks required for the simulation to start
-        '''
+    def load_params(self, config="base.yaml"):
         # load params
         Parameters.load_params_from_config(config)
         tools.parse_cmd_args()
+
+    def set_up(self, num_nodes=-1):
+        '''
+            Initial tasks required for the simulation to start
+        '''
+
+        if num_nodes != -1:
+            Parameters.application['Nn'] = num_nodes
+            Parameters.calculate_fault_tolerance()
 
         Parameters.CPs = CPs = {
             PBFT.NAME: PBFT,
@@ -54,7 +61,8 @@ class Manager:
         # initialise simulation
         self.sim.init_simulation()
 
-        print(self.simulation_details())
+        if Parameters.simulation['print_info']:
+            print(self.simulation_details())
 
     def finished(self):
         # check if we have reached desired simulation duration
@@ -76,8 +84,6 @@ class Manager:
         while not self.finished():
             self.sim.sim_next_event()
             self.update_sim()
-
-        print()
 
     def update_sim(self):
         '''
@@ -104,6 +110,10 @@ class Manager:
             # if snapshots is true, add the event that periodically takes the snapshots
             dynamic_simulationSE.schedule_snapshot_event(self)
 
+        if Parameters.behaiviour['use']:
+            behaviourSE.BehaviourParameters.init_parameters(self)
+            behaviourSE.schedule_random_fault_event(self, self.sim.clock)
+
     def handle_system_event(self, event):
         match event.payload["type"]:
             case "generate_txions":
@@ -114,6 +124,10 @@ class Manager:
                 dynamic_simulationSE.handle_update_workload_event(self, event)
             case "snapshot":
                 dynamic_simulationSE.handle_snapshot_event(self, event)
+            case "random_fault":
+                behaviourSE.handle_random_fault_event(self, event)
+            case "recovery":
+                behaviourSE.handle_recover_event(self, event)
             case _:
                 raise ValueError("Event was not handled by its own handler...")
 
