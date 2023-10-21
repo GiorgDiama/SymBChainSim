@@ -54,31 +54,31 @@ def create_local_sync_event(desynced_node, request_node, time):
         # update time desynced node will recieve missing block
         missing_blocks[i].time_added += time + total_delay
 
-    missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
+    # missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
 
-    # create local sync event on desynced_node
-    if missbehaviour:  # the request node missbehaved
+    # # create local sync event on desynced_node
+    # if missbehaviour:  # the request node missbehaved
 
-        payload = {
-            "request_node": request_node,
-            "type": 'local_fast_sync',
-            "blocks": None,
-            "fail": True,
-        }
+    #     payload = {
+    #         "request_node": request_node,
+    #         "type": 'local_fast_sync',
+    #         "blocks": None,
+    #         "fail": True,
+    #     }
 
-        desynced_node.scheduler.schedule_event(
-            desynced_node, time+missbehave_delay, payload, handler)
-    else:
-        # add an event signifying the end of the transmission of missing blocks
-        payload = {
-            "request_node": request_node,
-            "type": 'local_fast_sync',
-            "blocks": missing_blocks,
-            "fail": False,
-        }
+    #     desynced_node.scheduler.schedule_event(
+    #         desynced_node, time+missbehave_delay, payload, handler)
+    # else:
+    # add an event signifying the end of the transmission of missing blocks
+    payload = {
+        "request_node": request_node,
+        "type": 'local_fast_sync',
+        "blocks": missing_blocks,
+        "fail": False,
+    }
 
-        desynced_node.scheduler.schedule_event(
-            desynced_node, time+total_delay, payload, handler)
+    desynced_node.scheduler.schedule_event(
+        desynced_node, time+total_delay, payload, handler)
 
 
 def handle_local_sync_event(event):
