@@ -115,8 +115,9 @@ class Network:
         delay += Parameters.network["queueing_delay"] + \
             Parameters.network["processing_delay"]
 
-        Network.avg_transmission_delay[sender.id, receiver.id] += delay
-        Network.no_messages[sender.id, receiver.id] += 1
+        if Parameters.network['measure_avg_transmission_delay']:
+            Network.avg_transmission_delay[sender.id, receiver.id] += delay
+            Network.no_messages[sender.id, receiver.id] += 1
 
         return delay
 
