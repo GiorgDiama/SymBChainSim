@@ -1,12 +1,15 @@
 from Chain.Parameters import Parameters
+from Chain.Network import Network
 
 import numpy as np
 
 from collections import namedtuple
 from bisect import insort
 
+import random
+
 ##############################   MODELS TRANSACTION  ##########################################
-Transaction = namedtuple("Transaction", "id timestamp size")
+Transaction = namedtuple("Transaction", "creator id timestamp size")
 
 
 class TransactionFactory:
@@ -25,7 +28,15 @@ class TransactionFactory:
             self.global_mempool.append(tx)
         elif Parameters.application["transaction_model"] == "local":
             for node in self.nodes:
-                node.pool.append(tx)
+                if node.id == tx.creator:
+                    node.pool.append(tx)
+                else:
+                    prop_delay = Network.calculate_message_propagation_delay(
+                        self.nodes[tx.creator], node, tx.size)
+                    new_timestamp = tx.timestamp + prop_delay
+                    tx = Transaction(tx.creator, tx.id,
+                                     new_timestamp, tx.size)
+                    node.pool.append(tx)
         else:
             raise (ValueError(
                 f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
@@ -43,7 +54,9 @@ class TransactionFactory:
                 size = Parameters.application["Tsize"] + \
                     Parameters.application["base_transation_size"]
 
-                self.transaction_prop(Transaction(id, timestamp, size))
+                creator = random.choice(self.nodes)
+                self.transaction_prop(Transaction(
+                    creator.id, id, timestamp, size))
 
     def execute_transactions(self, pool, time):
         match Parameters.application["transaction_model"]:
