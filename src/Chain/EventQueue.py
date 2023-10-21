@@ -5,20 +5,17 @@ import heapq
 
 def log_events(event):
     if isinstance(event, SystemEvent):
-        if event.payload["type"] in Parameters.simulation["events"].keys():
-            Parameters.simulation["events"][event.payload["type"]] += 1
-        else:
-            Parameters.simulation["events"][event.payload["type"]] = 1
+        # count system events
+        Parameters.simulation['events'][event.payload['type']] = Parameters.simulation["events"].get(
+            event.payload['type'], 0) + 1
     else:
-        if event.payload["type"] not in Parameters.simulation["events"].keys():
-            Parameters.simulation["events"][event.payload["type"]] = {}
+        # count Local and Message events per node
+        event_type = Parameters.simulation['events'].get(
+            event.payload['type'], {})
 
-        event_type = Parameters.simulation["events"][event.payload["type"]]
+        event_type[event.actor.id] = event_type.get(event.actor.id, 0) + 1
 
-        if event.actor.id in event_type:
-            event_type[event.actor.id] += 1
-        else:
-            event_type[event.actor.id] = 1
+        Parameters.simulation['events'][event.payload['type']] = event_type
 
 
 class PrioQueue:
@@ -41,8 +38,7 @@ class PrioQueue:
 
     def remove(self, task):
         '''
-            IMPORTANT: 
-                Expensive opperation! Dont use unless you absolutely have to!
+            Expensive opperation!
         '''
         if task in self.pq:
             self.pq.remove(task)
@@ -66,7 +62,7 @@ class Queue:
 
     def remove_event(self, event):
         '''
-            NOTE: Expensive opperation! Dont use unless you absolutely have to!
+            Expensive opperation!
         '''
         self.prio_queue.remove((event.time, event))
 
