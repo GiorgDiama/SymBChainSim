@@ -22,6 +22,8 @@ class Parameters:
     BigFoot = {}
     PBFT = {}
 
+    behaiviour = {}
+
     CPs = {}
 
     tx_factory = None

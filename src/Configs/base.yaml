@@ -5,28 +5,29 @@ dynamic_sim:
 simulation:
   init_CP: "PBFT"
   simTime: -1
-  stop_after_blocks: 5
+  stop_after_blocks: 100
   interval_switch: False
   interval_mean: 30
   debugging_mode: False
   remove_timeouts: True
-  print_every: 50
+  print_every: -1
   snapshots: False
+  print_info: False
 
 application:
-  Nn: 6
+  Nn: 16
   TI_dur: 25
-  Tn: 1000
+  Tn: 400
   base_transation_size: 0
   Tsize: 0.05
-  transaction_model: "global"
+  transaction_model: "local"
 
 execution:
   creation_time: 0.1
   block_val_delay: 0.025
   msg_val_delay: 0.01
   sync_message_request_delay: 1
-  proposer_selection: "hash"
+  proposer_selection: "round_robin"
 
 data:
   Bsize: 5
@@ -37,49 +38,23 @@ network:
   base_msg_size: 0.2
   gossip: False
   num_neighbours: 3
-  use_latency: measured
+  use_latency: local
   same_city_latency_ms: 10
   same_city_dev_ms: 0
   queueing_delay: 0
   processing_delay: 0
 
   bandwidth:
-    mean: 0
-    dev: 1
+    mean: 100
+    dev: 0
     min: 2
+
+  measure_avg_transmission_delay: False
 
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
 
 behaviour:
-  behaviour_interval: 10
-
-  byzantine_nodes:
-    # percent of nodes that will be byzantine
-    # (percentange based on how many faulty nodes the network can tolerate)
-    num_byzantine: 0
-  sync:
-    # define the chance a byzantine node will send bad sync data
-    # (and the delay that will cause)
-    bad_data:
-      delay: 10
-    # define the chance a byzantine node will not responde to a sync message
-    # (and the delay that will cause)
-    no_response:
-      delay: 5
-    probs:
-      low: 5
-      high: 20
-
-  crash_probs:
-    # percent of nodes that can crash (go offiline)
-    faulty_nodes: 0
-    # probabilities for crash
-    mean_fault_time:
-      low: 30
-      high: 60
-    # how long for the node to recover
-    mean_recovery_time:
-      low: 10
-      high: 60
+  use: False
+  config: "Configs/behaviour_config.yaml"
