@@ -156,9 +156,6 @@ def commit(state, event):
         return future
     time += Parameters.execution["msg_val_delay"]
 
-    if state.block is None:
-        exit()
-
     match state.state:
         case 'prepared':
             # count vote
