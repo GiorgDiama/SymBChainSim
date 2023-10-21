@@ -12,7 +12,6 @@ class Behaviour():
     faulty = None
     mean_fault_time = None
     mean_recovery_time = None
-    recover_at = None
     fault_event = None
     recovery_event = None
     byzantine = None
