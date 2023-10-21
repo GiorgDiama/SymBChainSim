@@ -29,6 +29,21 @@ class Parameters:
     tx_factory = None
 
     @staticmethod
+    def reset_params():
+        Parameters.dynamic_sim = {}
+        Parameters.simulation = {}
+        Parameters.application = {}
+        Parameters.execution = {}
+        Parameters.data = {}
+        Parameters.consensus = {}
+        Parameters.network = {}
+        Parameters.BigFoot = {}
+        Parameters.PBFT = {}
+        Parameters.behaiviour = {}
+        Parameters.CPs = {}
+        Parameters.tx_factory = None
+
+    @staticmethod
     def load_params_from_config(config="base"):
         params = read_yaml(f"Configs/{config}")
 
