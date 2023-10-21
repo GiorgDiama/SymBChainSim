@@ -24,7 +24,7 @@ class Metrics:
 
     @staticmethod
     def confirmed_blocks(sim):
-        return min([n.blockchain_length() for n in sim.nodes if n.state.alive])
+        return max([n.blockchain_length() for n in sim.nodes if n.state.alive])
 
     @staticmethod
     def measure_all(sim, start_from=1):
