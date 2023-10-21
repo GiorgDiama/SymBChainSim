@@ -13,7 +13,7 @@ def print_progress(sim):
     if "print_next" not in Parameters.simulation:
         Parameters.simulation["print_next"] = 0
 
-    if sim.clock >= Parameters.simulation["print_next"]:
+    if sim.clock >= Parameters.simulation["print_next"] and Parameters.simulation["print_every"] != -1:
         Parameters.simulation['print_next'] += Parameters.simulation["print_every"]
 
         s = f'Clock: {"%.2f"%sim.clock} \t Confirmed blocks: {Metrics.confirmed_blocks(sim)}'
