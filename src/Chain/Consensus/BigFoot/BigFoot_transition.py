@@ -196,8 +196,7 @@ def new_block(state, event):
         return "handled"
     else:  # valid block
         # update_round if necessary
-        if event.payload['round'] > state.rounds.round:
-            state.rounds.round = event.payload['round']
+        state.rounds.round = event.payload['round']
 
         # add block and start new round
         state.node.add_block(block.copy(), time)
