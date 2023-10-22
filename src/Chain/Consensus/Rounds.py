@@ -7,7 +7,7 @@ from Chain.Parameters import Parameters
 
 def round_change_state(round=0):
     '''
-        Round chage state
+        Rounc chage state
     '''
     return SimpleNamespace(
         round=round,
@@ -54,7 +54,8 @@ def change_round(node, time):
 
     payload = {
         'type': 'round_change',
-        'new_round': new_round
+        'new_round': new_round,
+        'CP': node.cp.NAME
     }
 
     node.scheduler.schedule_broadcast_message(
