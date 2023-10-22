@@ -91,6 +91,7 @@ class Manager:
         '''
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
+        updates.interval_switch(self.sim)
 
     def init_system_events(self):
         '''
@@ -111,7 +112,7 @@ class Manager:
             dynamic_simulationSE.schedule_snapshot_event(self)
 
         if Parameters.behaiviour['use']:
-            behaviourSE.BehaviourParameters.init_parameters(self)
+            behaviourSE.Behaviour.init(self)
             behaviourSE.schedule_random_fault_event(self, self.sim.clock)
 
     def handle_system_event(self, event):

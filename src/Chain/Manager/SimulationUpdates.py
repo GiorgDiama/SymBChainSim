@@ -6,7 +6,7 @@ from Chain.Metrics import Metrics
 
 import Chain.Consensus.HighLevelSync as Sync
 
-from random import choice
+from random import choice, normalvariate
 
 
 def print_progress(sim):
@@ -23,6 +23,20 @@ def print_progress(sim):
 def start_debug(sim):
     if 'start_debugging_at' in Parameters.simulation and sim.clock >= Parameters.simulation['start_debugging_at']:
         Parameters.simulation["debugging_mode"] = True
+
+
+def interval_switch(sim):
+    mean, sigma = Parameters.simulation['interval_mean'], Parameters.simulation['interval_mean']
+    if "switch" not in Parameters.simulation:
+        Parameters.simulation["switch"] = normalvariate(mean, sigma)
+
+    if sim.clock >= Parameters.simulation["switch"] and Parameters.simulation["interval_switch"]:
+        Parameters.simulation['switch'] += normalvariate(mean, sigma)
+
+        prots = [x for x in Parameters.CPs.values() if x.NAME !=
+                 Parameters.application['CP'].NAME]
+
+        Parameters.application['CP'] = choice(prots)
 
 
 def change_cp(cp):
