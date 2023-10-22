@@ -111,12 +111,12 @@ def handle_local_sync_event(event):
         # change state to sync
         node.state.synced = True
 
-        if node.update(event.time):
-            return True
-
         # perform the CP specific resync actions
         if received_blocks:
             node.cp.resync(event.payload, event.time)
+
+        if node.update(event.time):
+            return True
 
 
 def apply_sync_missbehaiviour(sender):
