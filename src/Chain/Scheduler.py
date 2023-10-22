@@ -7,7 +7,6 @@ class Scheduler:
         self.node = node
 
     def schedule_broadcast_message(self, creator, time, payload, handler):
-        payload["CP"] = creator.cp.NAME
         # Schedules a message broadcast from node
         event = Event(handler, creator, time, payload)
 
@@ -15,8 +14,6 @@ class Scheduler:
         return event
 
     def schedule_event(self, creator, time, payload, handler):
-        payload["CP"] = creator.cp.NAME
-
         # Schedules a local event
         event = Event(handler, creator, time, payload)
 

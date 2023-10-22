@@ -44,23 +44,24 @@ class PBFT():
         self.rounds = Rounds.round_change_state()
         self.state = ""
         self.miner = ""
-        self.msgs = {}
+        self.msgs = {'prepare': [], 'commit': []}
         self.timeout = None
         self.block = None
 
     def state_to_string(self):
+        msgs = {'prepare': self.count_votes('prepare', self.rounds.round)}
         s = f"{self.rounds.round} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
     def reset_msgs(self, round):
-        self.msgs[round] = {'prepare': [], 'commit': []}
+        self.msgs = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
 
     def count_votes(self, type, round):
-        return len(self.msgs[round][type])
+        return len(self.msgs[type])
 
     def process_vote(self, type, sender, round, time):
-        self.msgs[round][type] += [(sender.id, time)]
+        self.msgs[type] += [sender.id]
 
     def validate_message(self, event):
         round, current_round = event.payload['round'], self.rounds.round

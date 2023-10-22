@@ -65,6 +65,7 @@ def schedule_timeout(state, time, add_time=True, fast_path=False):
         payload = {
             'type': 'fast_path_timeout',
             'round': state.rounds.round,
+            'CP': state.NAME
         }
         event = state.node.scheduler.schedule_event(
             state.node, time, payload, state.handle_event)
@@ -83,6 +84,7 @@ def schedule_timeout(state, time, add_time=True, fast_path=False):
         payload = {
             'type': 'timeout',
             'round': state.rounds.round,
+            'CP': state.NAME
         }
 
         event = state.node.scheduler.schedule_event(

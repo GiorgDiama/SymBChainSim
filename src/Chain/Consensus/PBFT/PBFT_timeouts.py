@@ -29,6 +29,7 @@ def schedule_timeout(state, time, add_time=True):
     payload = {
         'type': 'timeout',
         'round': state.rounds.round,
+        'CP': state.NAME
     }
 
     if state.timeout is not None and Parameters.simulation["remove_timeouts"]:
