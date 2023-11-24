@@ -1,26 +1,16 @@
-dynamic_sim:
-  use: False
-  config: "Configs/dynamic_config.yaml"
-
 simulation:
   init_CP: "PBFT"
-  simTime: -1
-  stop_after_blocks: 100
-  interval_switch: False
+  interval_switch: True
   interval_mean: 60
   interval_sigma: 10
+
   debugging_mode: False
   remove_timeouts: False
-  print_every: 1
+  print_every: 100
   snapshots: False
   print_info: False
 
 application:
-  Nn: 4
-  TI_dur: 25
-  Tn: 40_000
-  base_transation_size: 0
-  Tsize: 0.001
   transaction_model: "global"
 
 execution:
@@ -31,7 +21,7 @@ execution:
   proposer_selection: "round_robin"
 
 data:
-  Bsize: 5
+  Bsize: 10
   base_block_size: 0
   block_interval: 0
 
@@ -45,17 +35,8 @@ network:
   queueing_delay: 0
   processing_delay: 0
 
-  bandwidth:
-    mean: 100
-    dev: 0
-    min: 2
-
   measure_avg_transmission_delay: False
 
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
-
-behaviour:
-  use: False
-  config: "Configs/behaviour_config.yaml"

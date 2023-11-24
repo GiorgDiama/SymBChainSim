@@ -1,5 +1,6 @@
 .DS_Store
 **/.DS_Store
+src/Scenarios/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

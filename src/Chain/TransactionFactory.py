@@ -33,13 +33,18 @@ class TransactionFactory:
                 else:
                     prop_delay = Network.calculate_message_propagation_delay(
                         self.nodes[tx.creator], node, tx.size)
-                    new_timestamp = tx.timestamp + prop_delay
+                    new_timestamp = tx.timestamp
                     tx = Transaction(tx.creator, tx.id,
                                      new_timestamp, tx.size)
                     node.pool.append(tx)
         else:
             raise (ValueError(
                 f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
+
+    def add_scenario_transactions(self, txion_list):
+        for creator, id, timestamp, size in txion_list:
+            t = Transaction(creator, id, timestamp, size/1000)
+            self.transaction_prop(t)
 
     def generate_interval_txions(self, start):
         for second in range(round(start), round(start + Parameters.application["TI_dur"])):

@@ -142,7 +142,6 @@ def sim_info(simulator, print_event_queues=True):
 
         return s
 
-
 ####################### YAML ######################
 
 

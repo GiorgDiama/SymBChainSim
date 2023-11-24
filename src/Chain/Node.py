@@ -7,6 +7,34 @@ from types import SimpleNamespace
 from Chain.tools import color
 
 
+# class Configuration():
+#     def __init__(self, node) -> None:
+#         self.node = node
+#         self.configurations = []
+#         self.latest = None
+
+#     def initialise(self, cp, time):
+#         self.configurations.append({'cp': cp,
+#                                     "time": time})
+#         self.apply(time)
+
+#     def check_update(self, time):
+#         if self.latest != self.configurations[-1] or self.latest is None:
+#             latest_cp = self.latest['cp'].NAME
+#             if self.node.cp.NAME != latest_cp.NAME or self.node.cp is None:
+#                 return True
+#         return False
+
+#     def apply(self, time):
+#         if self.latest != self.configurations[-1] or self.latest is None:
+#             self.latest = self.configurations[-1]
+#             latest_cp = self.latest['cp'].NAME
+#             if self.node.cp.NAME != latest_cp.NAME or self.node.cp is None:
+#                 self.node.reset()
+#                 self.node.cp = latest_cp.init(self.node)
+#                 self.node.cp.init(time)
+
+
 class Behaviour():
     # model behaiviour of a fautly node
     faulty = None
@@ -76,6 +104,9 @@ class Node():
 
         self.queue = queue
 
+        # reconfiguration
+        self.configuration = []
+
     def __repr__(self):
         if self.state.alive:
             return f"Node: {self.id}"
@@ -133,7 +164,6 @@ class Node():
 
     def update(self, time):
         if Parameters.application["CP"].NAME != self.cp.NAME:
-            self.reset()
             self.cp = Parameters.application["CP"](self)
             self.cp.init(time)
             return True
@@ -141,7 +171,7 @@ class Node():
         return False
 
     def reset(self):
-        self.backlog = []
+        pass
 
     def stored_txions(self, num=None):
         '''

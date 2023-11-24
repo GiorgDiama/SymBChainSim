@@ -19,11 +19,14 @@ class Behaiviour:
         byzantine_params = Parameters.behaiviour["byzantine_nodes"]
         sync_params = Parameters.behaiviour["sync"]
 
+        # Randomly choose which nodes will be byzantine
         self.byzantine = sample(
             self.sim.nodes, byzantine_params["num_byzantine"])
 
+        # for each byzantine node
         for node in self.byzantine:
             node.behaviour.byzantine = True
+            # set probability the node will intentionally make the sync process fail
             node.behaviour.sync_fault_chance = randint(sync_params["probs"]["low"],
                                                        sync_params["probs"]["high"])
 

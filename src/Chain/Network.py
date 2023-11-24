@@ -87,7 +87,6 @@ class Network:
 
         # transmission delay
         delay = message_size / Network.get_bandwidth(sender, receiver)
-
         match Parameters.network["use_latency"]:
             case "measured":
                 delay += Network.latency_map[sender.location][receiver.location][0] / 1000

@@ -15,8 +15,8 @@ byzantine:
 
 faulty:
   # percent of nodes that can crash (go offiline)
-  num: 0
+  num: 5
   # probabilities for crash
-  mean_fault_range: [30, 60]
+  mean_fault_range: [60, 120]
   # how long for the node to recover
-  mean_recovery_range: [10, 60]
+  mean_recovery_range: [10, 50]

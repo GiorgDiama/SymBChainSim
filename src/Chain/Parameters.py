@@ -47,22 +47,45 @@ class Parameters:
     def load_params_from_config(config="base"):
         params = read_yaml(f"Configs/{config}")
 
-        Parameters.dynamic_sim = params["dynamic_sim"]
+        try:
+            Parameters.dynamic_sim = params["dynamic_sim"]
+        except KeyError:
+            print("NO 'dynamic_sim' Parameters")
 
-        Parameters.simulation = params["simulation"]
+        try:
+            Parameters.simulation = params["simulation"]
+        except KeyError:
+            print("NO 'simulation' Parameters")
+
         Parameters.simulation["events"] = {}  # cnt events of each type
 
-        Parameters.behaiviour = params["behaviour"]
+        try:
+            Parameters.behaiviour = params["behaviour"]
+        except KeyError:
+            print("NO 'behaviour' Parameters")
 
-        Parameters.network = params["network"]
+        try:
+            Parameters.network = params["network"]
+        except KeyError:
+            print("NO 'network' Parameters")
 
-        Parameters.application = params["application"]
+        try:
+            Parameters.application = params["application"]
+            Parameters.calculate_fault_tolerance()
+        except KeyError:
+            print("NO 'application' Parameters")
+
         Parameters.application["txIDS"] = 0
-        Parameters.calculate_fault_tolerance()
 
-        Parameters.execution = params["execution"]
+        try:
+            Parameters.execution = params["execution"]
+        except KeyError:
+            print("NO 'execution' Parameters")
 
-        Parameters.data = params["data"]
+        try:
+            Parameters.data = params["data"]
+        except KeyError:
+            print("NO 'data' Parameters")
 
         Parameters.BigFoot = read_yaml(params['consensus']['BigFoot'])
         Parameters.PBFT = read_yaml(params['consensus']['PBFT'])

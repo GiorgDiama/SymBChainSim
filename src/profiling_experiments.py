@@ -112,9 +112,9 @@ def run_profile_events_experiment(name=''):
         json.dump(data, f, indent=4)
 
 
-run_profile_experiment(name='final_parametersA_global(3avg_PBFT)',
-                       cp='PBFT',
-                       mempool='global')
+# run_profile_experiment(name='final_parametersA_global(3avg_PBFT)',
+#                        cp='PBFT',
+#                        mempool='global')
 
 run_profile_experiment(name='final_parametersA_local(3avg_PBFT)',
                        cp='PBFT',

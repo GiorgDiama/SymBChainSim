@@ -13,6 +13,9 @@ from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
 import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
 import Chain.Manager.SystemEvents.BehaviourEvents as behaviourSE
+import Chain.Manager.SystemEvents.ScenarioEvents as scenarioSE
+
+import json
 
 
 class Manager:
@@ -32,21 +35,75 @@ class Manager:
         Parameters.load_params_from_config(config)
         tools.parse_cmd_args()
 
-    def set_up(self, num_nodes=-1):
-        '''
-            Initial tasks required for the simulation to start
-        '''
-
-        if num_nodes != -1:
-            Parameters.application['Nn'] = num_nodes
-            Parameters.calculate_fault_tolerance()
-
-        Parameters.CPs = CPs = {
+        Parameters.CPs = {
             PBFT.NAME: PBFT,
             BigFoot.NAME: BigFoot
         }
 
-        Parameters.application["CP"] = CPs[Parameters.simulation["init_CP"]]
+        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
+
+    def set_up_scenario(self, scenario):
+        self.load_params(config='scenario.yaml')
+
+        with open(scenario, 'r') as f:
+            scenario = json.load(f)
+
+        Parameters.application['Nn'] = scenario['set_up']["num_nodes"]
+        Parameters.calculate_fault_tolerance()
+
+        Parameters.simulation['simTime'] = scenario['set_up']["duration"]
+        Parameters.simulation['stop_after_blocks'] = -1
+
+        self.sim = Simulation()
+        self.sim.manager = self
+
+        # set up network
+        Network.nodes = self.sim.nodes
+        Network.parse_latencies()
+        Network.parse_distances()
+        Network.assign_location_to_nodes()
+        Network.assign_neighbours()
+
+        '''
+            SC Schema
+                'set_up': 
+                    num_nodes
+                    duration
+                    ....
+                'intervals:
+                    '1':
+                        'network':[(node, BW)...]
+                        'behaviour':[(node, failt_at, duration)]
+                        'transactions': [(creator, id, timestamp, size)...]
+                    '2': 
+                        ...
+        '''
+
+        for key in scenario['intervals'].keys():
+            interval = scenario['intervals'][key]
+            start, end = interval['start'], interval['end']
+            for key, value in interval.items():
+                # schedule system events for each update interval
+                match key:
+                    case 'transactions':
+                        scenarioSE.schedule_scenario_transactions_event(
+                            self, value, start)
+                    case 'network':
+                        scenarioSE.schedule_scenario_update_network_event(
+                            self, value, start-0.01)
+                    case 'faults':
+                        scenarioSE.schedule_scenario_fault_and_recovery_events(
+                            self, value)
+
+        self.sim.init_simulation()
+
+    def set_up(self, num_nodes=-1):
+        '''
+            Initial tasks required for the simulation to start
+        '''
+        if num_nodes != -1:
+            Parameters.application['Nn'] = num_nodes
+            Parameters.calculate_fault_tolerance()
 
         # create simulator
         self.sim = Simulation()
@@ -117,20 +174,33 @@ class Manager:
 
     def handle_system_event(self, event):
         match event.payload["type"]:
+            # TRANSACTION GENERATION EVENTS
             case "generate_txions":
                 generate_txionsSE.handle_event(self, event)
+            # DYNAMIC SIMULATION EVENTS
             case "update_network":
                 dynamic_simulationSE.handle_update_network_event(self, event)
             case "update_workload":
                 dynamic_simulationSE.handle_update_workload_event(self, event)
             case "snapshot":
                 dynamic_simulationSE.handle_snapshot_event(self, event)
+            # BEHAVIOUR EVENTS
             case "random_fault":
                 behaviourSE.handle_random_fault_event(self, event)
             case "recovery":
                 behaviourSE.handle_recover_event(self, event)
+            # SCENARIO EVENTS
+            case 'scenario_generate_txions':
+                scenarioSE.handle_scenario_transactions_event(self, event)
+            case 'scenario_update_network':
+                scenarioSE.handle_scenario_update_network_event(self, event)
+            case 'scenario_fault':
+                scenarioSE.handle_scenario_fault_event(self, event)
+            case 'scenario_recovery':
+                scenarioSE.handle_scnario_recovery_event(self, event)
             case _:
-                raise ValueError("Event was not handled by its own handler...")
+                raise ValueError(
+                    f"Event '{event.payload['type']}'was not handled by its own handler...")
 
     def simulation_details(self):
         s = tools.color("-"*28 + "NODE INFO" + '-'*28) + '\n'

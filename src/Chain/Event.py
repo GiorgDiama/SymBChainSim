@@ -107,10 +107,10 @@ class SystemEvent():
         return self.time >= other.time
 
     def __str__(self):
-        return f"SYSTEM: {round(self.time,3)} - payload {self.payload}"
+        return f"SYSTEM: {round(self.time,3)} - payload {self.payload['type']}"
 
     def __repr__(self):
-        return f"SYSTEM: {round(self.time,3)} - payload {self.payload}"
+        return f"SYSTEM: {round(self.time,3)} - payload {self.payload['type']}"
 
     def __init__(self, time, payload) -> None:
         self.id = randint(0, 1000000) if id == -1 else id

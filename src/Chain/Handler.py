@@ -60,21 +60,19 @@ def handle_backlog(node):
     '''
         Tries to handle every event in the backlog - removes handled events
     '''
-    i = 0
-    while i < len(node.backlog):
-        tools.debug_logs(
-            msg=f"{node.__str__(full=True)}", input=f"HANDLING BACKLOOOG: {node.backlog[i]} ", in_col="43", clear=False)
+    remove_list = []
 
-        ret = handle_event(node.backlog[i], backlog=True)
+    for event in node.backlog:
+        tools.debug_logs(
+            msg=f"{node.__str__(full=True)}", input=f"HANDLING BACKLOOOG: {event} ", in_col="43", clear=False)
+
+        ret = handle_event(event, backlog=True)
 
         tools.debug_logs(msg=f"event returned {ret}")
 
-        if not node.backlog:
-            break
-
         if ret == 'handled' or ret == 'new_state' or ret == 'invalid':
-            # if the event was handled or invalid, pop the event - i now points to next event so no need to increment
-            node.backlog.pop(i)
-        else:
-            # the event was not handled and is not invalid thus must still be "future event" -> stays in backlog
-            i += 1
+            remove_list.append(event)
+
+    # if event causes node to enter new round - backlog is cleared and thus this will error out
+    if node.backlog:
+        node.backlog = [e for e in node.backlog if e not in remove_list]
