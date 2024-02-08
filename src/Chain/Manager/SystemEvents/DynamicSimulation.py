@@ -89,6 +89,7 @@ def schedule_snapshot_event(manager):
         time=time,
         payload={
             "type": "snapshot",
+            'time_last': manager.sim.clock
         }
     )
 
@@ -96,6 +97,5 @@ def schedule_snapshot_event(manager):
 
 
 def handle_snapshot_event(manager, event):
-    Metrics.take_snapshot(manager.sim, entire_state=False)
-
+    Metrics.take_snapshot(manager.sim, event.payload['time_last'])
     schedule_snapshot_event(manager)

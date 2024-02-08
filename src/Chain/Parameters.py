@@ -44,7 +44,7 @@ class Parameters:
         Parameters.tx_factory = None
 
     @staticmethod
-    def load_params_from_config(config="base"):
+    def load_params_from_config(config):
         params = read_yaml(f"Configs/{config}")
 
         try:

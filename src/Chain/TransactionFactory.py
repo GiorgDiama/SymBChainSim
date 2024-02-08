@@ -6,6 +6,8 @@ import numpy as np
 from collections import namedtuple
 from bisect import insort
 
+from collections import deque
+
 import random
 
 ##############################   MODELS TRANSACTION  ##########################################
@@ -25,7 +27,16 @@ class TransactionFactory:
 
     def transaction_prop(self, tx):
         if Parameters.application["transaction_model"] == "global":
-            self.global_mempool.append(tx)
+            if Parameters.application["use_tx_prop_model"]:
+                # model transaction propagation based on creators bandwidth
+                prop_delay = Network.calculate_message_propagation_delay(
+                    self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
+                new_timestamp = tx.timestamp + prop_delay
+                tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
+                self.global_mempool.append(tx)
+            else:
+                self.global_mempool.append(tx)
+
         elif Parameters.application["transaction_model"] == "local":
             for node in self.nodes:
                 if node.id == tx.creator:
@@ -33,9 +44,8 @@ class TransactionFactory:
                 else:
                     prop_delay = Network.calculate_message_propagation_delay(
                         self.nodes[tx.creator], node, tx.size)
-                    new_timestamp = tx.timestamp
-                    tx = Transaction(tx.creator, tx.id,
-                                     new_timestamp, tx.size)
+                    new_timestamp = tx.timestamp + prop_delay
+                    tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
                     node.pool.append(tx)
         else:
             raise (ValueError(
@@ -60,6 +70,7 @@ class TransactionFactory:
                     Parameters.application["base_transation_size"]
 
                 creator = random.choice(self.nodes)
+
                 self.transaction_prop(Transaction(
                     creator.id, id, timestamp, size))
 
@@ -98,7 +109,7 @@ class TransactionFactory:
         t_idx, p_idx = 0, 0
         # for each transactions in txions go over pool: look for it and remove it
         while t_idx < len(txions) and p_idx < len(pool)-1:
-            if txions[t_idx] == pool[p_idx]:
+            if txions[t_idx].id == pool[p_idx].id:
                 pool.pop(p_idx)
                 t_idx += 1
                 # start over looking for the next transaction in txions

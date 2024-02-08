@@ -50,7 +50,7 @@ class PBFT():
 
     def state_to_string(self):
         msgs = {'prepare': self.count_votes('prepare', self.rounds.round)}
-        s = f"{self.rounds.round} | CP_state: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
+        s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
     def reset_msgs(self, round):

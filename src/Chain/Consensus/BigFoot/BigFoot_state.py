@@ -47,13 +47,8 @@ class BigFoot():
         self.node = node
 
     def state_to_string(self):
-        cur_round = self.rounds.round
-        messages = {
-            'prepare': [x[0] for x in self.msgs[cur_round]['prepare']],
-            'commit': [x[0] for x in self.msgs[cur_round]['commit']]
-        }
-        s = f"  ROUNDS: {Rounds.state_to_string(self.node)}" + '\n'
-        s += f"  CP: {self.state} | block: {self.block.id if self.block is not None else -1} | msgs: {messages} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1} | FastTO: {round(self.fast_path_timeout.time,3) if self.fast_path_timeout is not None else -1}"
+        msgs = {'prepare': self.count_votes('prepare', self.rounds.round)}
+        s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
     def set_state(self):

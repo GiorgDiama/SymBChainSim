@@ -36,7 +36,7 @@ def create_local_sync_event(desynced_node, request_node, time):
         else:
             break
 
-    total_delay = 0
+    total_delay = Parameters.execution['sync_message_request_delay']
 
     # for each missing block
     for i, b in enumerate(missing_blocks):
@@ -52,7 +52,8 @@ def create_local_sync_event(desynced_node, request_node, time):
         total_delay += delay
 
         # update time desynced node will recieve missing block
-        missing_blocks[i].time_added += time + total_delay
+        missing_blocks[i].time_added = time + total_delay
+        missing_blocks[i].extra_data['synced'] = True
 
     # missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
 

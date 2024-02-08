@@ -94,3 +94,23 @@ def handle_scnario_recovery_event(manager, event):
     if not synced:
         node.state.synced = False
         create_local_sync_event(node, synced_neighbour, time)
+
+
+def schedule_scenario_snapshot_event(manager):
+    time = manager.sim.clock + \
+        Parameters.simulation["snapshot_interval"] - 0.01
+
+    event = SystemEvent(
+        time=time,
+        payload={
+            "type": "scenario_snapshot",
+            'time_last': manager.sim.clock
+        }
+    )
+
+    manager.sim.q.add_event(event)
+
+
+def handle_scenario_snapshot_event(manager, event):
+    Metrics.take_snapshot(manager.sim, event.payload['time_last'])
+    schedule_scenario_snapshot_event(manager)

@@ -3,7 +3,6 @@ import statistics as st
 from Chain.Parameters import Parameters
 import Chain.tools as tools
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from copy import copy
@@ -18,7 +17,6 @@ class Metrics:
     blocks = {}
     nodes = {}
 
-    time_last_snapshot = 0
     snapshot_count = 0
     snapshots = {}
 
@@ -27,9 +25,12 @@ class Metrics:
         return min([n.blockchain_length() for n in sim.nodes])
 
     @staticmethod
-    def measure_all(sim, start_from=1):
+    def measure_all(sim, start_from=0):
         for node in sim.nodes:
-            BC = node.blockchain[start_from:]
+            # get all blocks added to the chain after the 'start_from'
+            BC = [b for b in node.blockchain[1:] if b.time_added >= start_from]
+
+            ###### CALCULATE METRICS ########
             values, avg = Metrics.measure_latency(BC)
             Metrics.latency[node.id] = {"vlues": values, 'AVG': avg}
 
@@ -70,7 +71,11 @@ class Metrics:
 
     @staticmethod
     def measure_latency(blocks):
+        if not blocks:
+            return [], -1
+
         per_block = []
+
         for b in blocks:
             per_block.append(st.mean(
                 [b.time_added - t.timestamp for t in b.transactions])
@@ -79,12 +84,18 @@ class Metrics:
 
     @staticmethod
     def measure_throughput(blocks):
+        if not blocks:
+            return 0
+
         time = blocks[-1].time_added - blocks[0].time_created
         sum_tx = sum([len(b.transactions) for b in blocks])
         return sum_tx / time
 
     @staticmethod
     def measure_interblock_time(blocks):
+        if len(blocks) < 2:
+            return [], 0
+
         # for each pair of blocks create the key valie pair "curr -> next": next.time_added - curre.time_added
         diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added
                  for curr, next in zip(blocks[:-1], blocks[1:])}
@@ -126,6 +137,9 @@ class Metrics:
                        but seems like it should not be since the node was not there so 
                        its not the algorithms faults that the system is "less decentralised"
         '''
+
+        if not blocks:
+            return -1
 
         nodes = [node.id for node in sim.nodes]
 
@@ -174,15 +188,13 @@ class Metrics:
         return block_info
 
     @staticmethod
-    def take_snapshot(sim, entire_state: bool):
-        if not entire_state:
-            Metrics.measure_all(sim, start_from=Metrics.time_last_snapshot)
-        else:
-            Metrics.measure_all(sim)
+    def take_snapshot(sim, start_from=0):
+        # start_from functions the same in meassure_all so no need to invlode conditionals
+        Metrics.measure_all(sim, start_from=start_from)
 
         snapshot = {
             'time': sim.clock,
-            'time_last': Metrics.time_last_snapshot,
+            'time_last': start_from,
             'metrics': {
                 'latency': copy(Metrics.latency),
                 'throughput': copy(Metrics.throughput),
@@ -190,40 +202,35 @@ class Metrics:
                 'decentralisation': copy(Metrics.decentralisation),
             },
             'nodes': {},
-            'global_pool': [
-                str((t.id, t.timestamp, t.size))
-                for t in Parameters.tx_factory.global_mempool
-                if t.timestamp <= sim.clock
-            ]
+            # 'global_pool': [
+            #     str((t.id, t.timestamp, t.size))
+            #     for t in Parameters.tx_factory.global_mempool
+            #     if t.timestamp <= sim.clock
+            # ]
         }
 
         for node in sim.nodes:
             state = Metrics.serialisable_node(node)
-            state["pool"] = [t for t in state["pool"]
-                             if t[1] <= sim.time]
+            # state["pool"] = [t for t in state["pool"]
+            #                  if float(t[1]) <= sim.clock]
 
-            state["blocks"], state["new_blocks"] = [], []
-            for b in node.blockchain[1:]:
-                block = Metrics.serialisable_block(b)
+            # state["blocks"], state["new_blocks"] = [], []
+            # for b in node.blockchain[1:]:
+            #     block = Metrics.serialisable_block(b)
 
-                if block["time_added"] >= Metrics.time_last_snapshot:
-                    state['new_blocks'].append(block)
+            #     if block["time_added"] >= start_from:
+            #         state['new_blocks'].append(block)
 
-                state["blocks"].append(block)
+            #     state["blocks"].append(block)
 
             snapshot['nodes'][node.id] = state
 
         Metrics.snapshots[Metrics.snapshot_count] = snapshot
 
-        Metrics.time_last_snapshot = sim.clock
         Metrics.snapshot_count += 1
 
     @staticmethod
     def calculate_snapshot_metricts(final_sim):
-        '''
-            TODO: instead of calculating the metrics during simulation
-            do it after
-        '''
         for snapshot in Metrics.snapshots:
             start, end = snapshot['time_last'], snapshot['time']
 

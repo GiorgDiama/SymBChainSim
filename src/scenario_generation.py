@@ -94,15 +94,36 @@ def generate(name, parameters_dict):
         json.dump(scenario, f, indent=4)
 
 
+# parameters_dict = {
+#     'dur': 3600,
+#     'ti_mu': 600,
+#     'ti_sigma': 60,
+#     'num_nodes': 16,
+#     'networks': [
+#         (100, 10),  # E.g. Fiber
+#         (50, 20),  # E.g. VDSL
+#         (25, 5)  # E.g. ADSL
+#     ],
+#     'fail_duration': (
+#         (20, 5),
+#         (60, 10),
+#         (120, 20)
+#     ),
+#     'workloads': [
+#         (500, 100),
+#         (1_000, 200),
+#         (2_000, 500)
+#     ],
+#     'sizes': (8, 20.5),
+# }
+
 parameters_dict = {
-    'dur': 3600,
-    'ti_mu': 600,
+    'dur': 3600*2,
+    'ti_mu': 300,
     'ti_sigma': 60,
     'num_nodes': 16,
     'networks': [
-        (100, 10),  # E.g. Fiber
         (50, 20),  # E.g. VDSL
-        (25, 5)  # E.g. ADSL
     ],
     'fail_duration': (
         (20, 5),
@@ -110,11 +131,9 @@ parameters_dict = {
         (120, 20)
     ),
     'workloads': [
-        (500, 100),
-        (1_000, 200),
-        (2_000, 500)
+        (500, 200),
     ],
-    'sizes': (8, 20.5),
+    'sizes': (.5, 3),
 }
 
-generate(name='test1', parameters_dict=parameters_dict)
+generate(name='test2', parameters_dict=parameters_dict)

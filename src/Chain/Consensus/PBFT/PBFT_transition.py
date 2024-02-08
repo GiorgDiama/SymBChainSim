@@ -78,12 +78,9 @@ def pre_prepare(state, event):
                 Rounds.change_round(state.node, time)
                 return 'handled'  # event handled but state did not change
         case 'pre_prepared':
-            # consider raising an error as 2 nodes cannot propose block at
-            # the same round maybe its possible if a node has not realised
-            # its not synced but that node should be on an older round
             return 'invalid'
         case 'prepared':
-            return 'invalid'  # as above
+            return 'invalid'
         case 'round_change':
             return 'invalid'  # node has decided to skip this round
         case _:

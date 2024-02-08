@@ -24,7 +24,7 @@ class Block:
         self.extra_data = {}
 
     def __str__(self) -> str:
-        return f"~block: {self.id} | depth: {self.depth} | created/added: {round(self.time_created,2)}/{round(self.time_added,2)} | size: {round(self.size,2)} | prev {self.previous} | {self.extra_data}~"
+        return f"~block: {self.id} | depth: {self.depth} | created :: added: {round(self.time_created,2)} :: {round(self.time_added,2)} | size: {round(self.size,2)} | prev {self.previous} | {self.extra_data.keys()} | {self.consensus}~"
 
     def __repr__(self) -> str:
         return f"~block: {self.id}~"

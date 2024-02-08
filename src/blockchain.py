@@ -1,14 +1,12 @@
-import sys
 from datetime import datetime
 from Chain.Parameters import Parameters
 from Chain.Manager.Manager import Manager
-
-import random
-import numpy
-
 from Chain.Metrics import Metrics
 import Chain.tools as tools
 
+import random
+import numpy
+import sys
 import statistics as st
 
 ############### SEEDS ############
@@ -95,13 +93,10 @@ def run_scenario(scenario):
         f"SIMULATED TIME {'%.2f'%manager.sim.clock}", 45))
     print(tools.color(f"EXECUTION TIME: {runtime}", 45))
 
-    print(len(Parameters.tx_factory.global_mempool))
 
-
-if '--sc' in sys.argv:
-    scenario = sys.argv[sys.argv.index('--sc') + 1]
-else:
-    scenario = 'SC1'
-
-run_scenario(f"Scenarios/{scenario}.json")
-# run()
+if __name__ == "__main__":
+    if '--sc' in sys.argv:
+        scenario = sys.argv[sys.argv.index('--sc') + 1]
+        run_scenario(f"Scenarios/{scenario}.json")
+    else:
+        run()

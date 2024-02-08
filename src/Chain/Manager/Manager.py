@@ -16,6 +16,7 @@ import Chain.Manager.SystemEvents.BehaviourEvents as behaviourSE
 import Chain.Manager.SystemEvents.ScenarioEvents as scenarioSE
 
 import json
+import sys
 
 
 class Manager:
@@ -42,8 +43,8 @@ class Manager:
 
         Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
 
-    def set_up_scenario(self, scenario):
-        self.load_params(config='scenario.yaml')
+    def set_up_scenario(self, scenario, config='scenario.yaml'):
+        self.load_params(config)
 
         with open(scenario, 'r') as f:
             scenario = json.load(f)
@@ -69,14 +70,12 @@ class Manager:
                 'set_up': 
                     num_nodes
                     duration
-                    ....
                 'intervals:
                     '1':
                         'network':[(node, BW)...]
                         'behaviour':[(node, failt_at, duration)]
                         'transactions': [(creator, id, timestamp, size)...]
-                    '2': 
-                        ...
+                    '2':  ...
         '''
 
         for key in scenario['intervals'].keys():
@@ -92,8 +91,13 @@ class Manager:
                         scenarioSE.schedule_scenario_update_network_event(
                             self, value, start-0.01)
                     case 'faults':
-                        scenarioSE.schedule_scenario_fault_and_recovery_events(
-                            self, value)
+                        if Parameters.simulation['simulate_faults']:
+                            scenarioSE.schedule_scenario_fault_and_recovery_events(
+                                self, value)
+
+        # schedule snapshot evets if we have those in the config
+        if Parameters.simulation["snapshot_interval"] != -1:
+            scenarioSE.schedule_scenario_snapshot_event(self)
 
         self.sim.init_simulation()
 
@@ -142,6 +146,8 @@ class Manager:
             self.sim.sim_next_event()
             self.update_sim()
 
+        self.finalise()
+
     def update_sim(self):
         '''
             Time based updates that are not controlled by system events can be triggered here
@@ -149,6 +155,16 @@ class Manager:
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
         updates.interval_switch(self.sim)
+
+    def finalise(self):
+        if Parameters.simulation.get('snapshots', False) or \
+                Parameters.simulation.get('snapshot_interval', -1) != -1:
+
+            if '-n' in sys.argv:
+                idx = sys.argv.index('-n') + 1
+                name = sys.argv[idx]
+
+            Metrics.save_snapshots(name)
 
     def init_system_events(self):
         '''
@@ -174,22 +190,22 @@ class Manager:
 
     def handle_system_event(self, event):
         match event.payload["type"]:
-            # TRANSACTION GENERATION EVENTS
+            ################## TRANSACTION GENERATION EVENTS ##################
             case "generate_txions":
                 generate_txionsSE.handle_event(self, event)
-            # DYNAMIC SIMULATION EVENTS
+            ################## DYNAMIC SIMULATION EVENTS ##################
             case "update_network":
                 dynamic_simulationSE.handle_update_network_event(self, event)
             case "update_workload":
                 dynamic_simulationSE.handle_update_workload_event(self, event)
             case "snapshot":
                 dynamic_simulationSE.handle_snapshot_event(self, event)
-            # BEHAVIOUR EVENTS
+            ################## BEHAVIOUR EVENTS ##################
             case "random_fault":
                 behaviourSE.handle_random_fault_event(self, event)
             case "recovery":
                 behaviourSE.handle_recover_event(self, event)
-            # SCENARIO EVENTS
+            ################## SCENARIO EVENTS ##################
             case 'scenario_generate_txions':
                 scenarioSE.handle_scenario_transactions_event(self, event)
             case 'scenario_update_network':
@@ -198,6 +214,9 @@ class Manager:
                 scenarioSE.handle_scenario_fault_event(self, event)
             case 'scenario_recovery':
                 scenarioSE.handle_scnario_recovery_event(self, event)
+            case 'scenario_snapshot':
+                scenarioSE.handle_scenario_snapshot_event(self, event)
+            ################## DEFAULT ##################
             case _:
                 raise ValueError(
                     f"Event '{event.payload['type']}'was not handled by its own handler...")
@@ -211,4 +230,5 @@ class Manager:
 
         s += tools.color("-"*25 + "SIM PARAMETERS" + '-'*25) + '\n'
         s += Parameters.parameters_to_string()
+
         return s

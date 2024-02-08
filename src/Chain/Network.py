@@ -106,7 +106,7 @@ class Network:
             case "local":
                 delay += Parameters.network["same_city_latency_ms"] / 1000
             case "off":
-                pass
+                delay += 0
             case _:
                 raise ValueError(
                     f"no such latency type '{Parameters.network['use_latency']}'")
