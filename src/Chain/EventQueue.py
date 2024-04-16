@@ -2,7 +2,6 @@ from Chain.Parameters import Parameters
 from Chain.Event import SystemEvent
 import heapq
 
-
 def log_events(event):
     if isinstance(event, SystemEvent):
         # count system events
@@ -16,7 +15,6 @@ def log_events(event):
         event_type[event.actor.id] = event_type.get(event.actor.id, 0) + 1
 
         Parameters.simulation['events'][event.payload['type']] = event_type
-
 
 class PrioQueue:
     ''' 

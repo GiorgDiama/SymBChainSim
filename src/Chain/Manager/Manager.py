@@ -77,18 +77,13 @@ class Manager:
 
         while not self.finished():
             self.sim.sim_next_event()
+            self.update()
 
-        self.finalise()
-
-    def finalise(self):
-        if Parameters.simulation.get('snapshots', False) or \
-                Parameters.simulation.get('snapshot_interval', -1) != -1:
-
-            if '-n' in sys.argv:
-                idx = sys.argv.index('-n') + 1
-                name = sys.argv[idx]
-
-            Metrics.save_snapshots(name)
+    def update(self):
+        # add logic here to manage the simulation during runtime
+        # idealy runtime updates would be modeled by system events (e.g., transaction generation)
+        # but logic can be added here for conviniance
+        pass
 
     def init_system_events(self):
         '''

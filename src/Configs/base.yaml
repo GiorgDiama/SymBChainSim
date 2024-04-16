@@ -37,7 +37,7 @@ network:
   processing_delay: 0 # models a processing delay
 
   bandwidth: # distribution variables used to generate the badnwidth for each node (normal)
-    mean: 1 # MB/s
+    mean: 10 # MB/s
     dev: 0 # MB/s
     min: 2 # minimum allowed bandwidth (MB/s)
 

@@ -11,7 +11,6 @@ from Chain.Event import Event, MessageEvent
     Handling and running Events
 '''
 
-
 def handle_event(event, backlog=False):
     '''
         Handless events by calling their respctive handlers and backlogs
@@ -28,18 +27,6 @@ def handle_event(event, backlog=False):
     if not event.actor.state.alive:
         return 'dead_node'
 
-    '''
-        TODO: Leave this check to the protocol
-    '''
-    # if this event is CP specific and the CP of the event does not mactch the current CP - old message
-    if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
-        return 'invalid'
-
-    # if we are not handling backlog events and this is a network event
-    # handle actions related with the receiving of the message
-    if not backlog and isinstance(event, MessageEvent):
-        Network.receive(event.actor, event)
-
     # handlle event using it's respective handler
     ret = event.handler(event)
 
@@ -54,7 +41,6 @@ def handle_event(event, backlog=False):
         raise ValueError("Event was not handled by its own handler!")
 
     return ret
-
 
 def handle_backlog(node):
     '''
