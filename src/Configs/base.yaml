@@ -1,13 +1,14 @@
+# IN GENERAL TIME IS IN SECONDS AND SIZE IN MBs UNLESS OTHERWISE SPECIFIED e.g. same_city_latency_ms, same_city_dev_ms ...
 simulation:
   init_CP: "PBFT" # the protocol used by the simulator
   simTime: 300 # stop similation after simTime seconds have been simulated (01 to ignore)
   stop_after_blocks: 100 # stop simulation after stop_after_blocks blocks have been produced (-1 to ignore)
-  debugging_mode: False # turns on debugging mode
+  debugging_mode: True # turns on debugging mode
   remove_timeouts: False # removes timeout events from the event queue after a new round (less efficient but usefull for debugging)
   print_info: True # print information about the simulation at the start of execution
 
 application:
-  Nn: 8 # number of block producing nodes to simulate 
+  Nn: 4 # number of block producing nodes to simulate 
   TI_dur: 25  # transaction generation (and general) update interval
   Tn: 100 # number of transaction produced per second
   base_transation_size: 0 # the base size of each transactions
@@ -26,7 +27,7 @@ data:
   block_interval: 0 # minimun time between two consecutive blocks
 
 network:
-  base_msg_size: 0.2 # size of base message (before any data is added)
+  base_msg_size: 0.01 # size of base message (before any data is added) (MB)
   gossip: False # use a gossip protocol (BROKEN AT THE MOMENT)
   num_neighbours: 3 # how many neighbours per node (gossip and FastSync)
   use_latency: distance # how to calculate the netwrok latency between two nodes (meassured, distance, local, off)
@@ -36,9 +37,9 @@ network:
   processing_delay: 0 # models a processing delay
 
   bandwidth: # distribution variables used to generate the badnwidth for each node (normal)
-    mean: 1
-    dev: 0
-    min: 2 
+    mean: 1 # MB/s
+    dev: 0 # MB/s
+    min: 2 # minimum allowed bandwidth (MB/s)
 
 # paths to files contained parameters specific to implemented conseussu protocols
 consensus:

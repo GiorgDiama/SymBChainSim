@@ -93,7 +93,12 @@ def exec_cmd(simulator, cmd):
 
 def sim_info(simulator, print_event_queues=True):
     if Parameters.simulation["debugging_mode"]:
-        subprocess.run("clear")
+        try:
+            subprocess.run("clear")
+        except:
+            # this does not work in windows and its not important enough to fix atm..
+            pass
+
 
         s = ""
         s += color('-'*30 + 'NODES' + '-'*30, 44) + '\n'
