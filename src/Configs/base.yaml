@@ -3,12 +3,12 @@ simulation:
   init_CP: "PBFT" # the protocol used by the simulator
   simTime: 300 # stop similation after simTime seconds have been simulated (01 to ignore)
   stop_after_blocks: 100 # stop simulation after stop_after_blocks blocks have been produced (-1 to ignore)
-  debugging_mode: True # turns on debugging mode
+  debugging_mode: False # turns on debugging mode
   remove_timeouts: False # removes timeout events from the event queue after a new round (less efficient but usefull for debugging)
   print_info: True # print information about the simulation at the start of execution
 
 application:
-  Nn: 4 # number of block producing nodes to simulate 
+  Nn: 8 # number of block producing nodes to simulate 
   TI_dur: 25  # transaction generation (and general) update interval
   Tn: 100 # number of transaction produced per second
   base_transation_size: 0 # the base size of each transactions
