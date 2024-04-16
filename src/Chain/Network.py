@@ -22,8 +22,6 @@ class Network:
     latency_map = None
     distance_map = None
 
-    avg_transmission_delay = None
-
     @staticmethod
     def size(msg):
         size = Parameters.network["base_msg_size"]
@@ -40,6 +38,7 @@ class Network:
     @staticmethod
     def send_message(creator, event):
         if Parameters.network["gossip"]:
+            raise(NotImplementedError("Gossip is currently a bit borken in this version :|"))
             Network.multicast(creator, event)
         else:
             Network.broadcast(creator, event)
@@ -113,10 +112,6 @@ class Network:
 
         delay += Parameters.network["queueing_delay"] + \
             Parameters.network["processing_delay"]
-
-        if Parameters.network['measure_avg_transmission_delay']:
-            Network.avg_transmission_delay[sender.id, receiver.id] += delay
-            Network.no_messages[sender.id, receiver.id] += 1
 
         return delay
 
