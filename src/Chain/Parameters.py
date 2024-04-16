@@ -85,6 +85,7 @@ class Parameters:
     @staticmethod
     def parameters_to_string():
         p_name_size = 30
+        s = ''
 
         def dict_to_str(x):
             return '\n'.join([f'{f"%{p_name_size}s"%key}: {value}' for key, value in x.items()])
