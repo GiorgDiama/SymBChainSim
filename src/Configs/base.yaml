@@ -1,61 +1,46 @@
-dynamic_sim:
-  use: False
-  config: "Configs/dynamic_config.yaml"
-
 simulation:
-  init_CP: "PBFT"
-  simTime: 300
-  stop_after_blocks: 50
-  interval_switch: False
-  interval_mean: 60
-  interval_sigma: 10
-  debugging_mode: False
-  remove_timeouts: False
-  print_every: 200
-  snapshots: False
-  print_info: False
+  init_CP: "PBFT" # the protocol used by the simulator
+  simTime: 300 # stop similation after simTime seconds have been simulated (01 to ignore)
+  stop_after_blocks: 100 # stop simulation after stop_after_blocks blocks have been produced (-1 to ignore)
+  debugging_mode: False # turns on debugging mode
+  remove_timeouts: False # removes timeout events from the event queue after a new round (less efficient but usefull for debugging)
+  print_info: True # print information about the simulation at the start of execution
 
 application:
-  Nn: 8
-  TI_dur: 25
-  Tn: 100
-  base_transation_size: 0
-  Tsize: 0.001
-  transaction_model: "global"
+  Nn: 8 # number of block producing nodes to simulate 
+  TI_dur: 25  # transaction generation (and general) update interval
+  Tn: 100 # number of transaction produced per second
+  base_transation_size: 0 # the base size of each transactions
+  Tsize: 0.001 # the average size of a transaction (exponential distribution)
 
 execution:
-  creation_time: 0.1
-  block_val_delay: 0.025
-  msg_val_delay: 0.01
-  sync_message_request_delay: 1
-  proposer_selection: "round_robin"
+  creation_time: 0.1 # block creation delay
+  block_val_delay: 0.025 # block validation delay
+  msg_val_delay: 0.01 # message validation delay
+  sync_message_request_delay: 1 # how long a sync message takes to arrive
+  proposer_selection: "round_robin" # proposer selection algorithm (round_robin, hash)
 
 data:
-  Bsize: 1
-  base_block_size: 0
-  block_interval: 0
+  Bsize: 1 # maximum block size
+  base_block_size: 0 # base size of a block
+  block_interval: 0 # minimun time between two consecutive blocks
 
 network:
-  base_msg_size: 0.2
-  gossip: False
-  num_neighbours: 3
-  use_latency: distance
-  same_city_latency_ms: 10
-  same_city_dev_ms: 0
-  queueing_delay: 0
-  processing_delay: 0
+  base_msg_size: 0.2 # size of base message (before any data is added)
+  gossip: False # use a gossip protocol (BROKEN AT THE MOMENT)
+  num_neighbours: 3 # how many neighbours per node (gossip and FastSync)
+  use_latency: distance # how to calculate the netwrok latency between two nodes (meassured, distance, local, off)
+  same_city_latency_ms: 10 # used for local and for nodes in the same city
+  same_city_dev_ms: 0 # deviation of same city latency
+  queueing_delay: 0 # models a queueing delay
+  processing_delay: 0 # models a processing delay
 
-  bandwidth:
+  bandwidth: # distribution variables used to generate the badnwidth for each node (normal)
     mean: 1
     dev: 0
-    min: 2
+    min: 2 
 
-  measure_avg_transmission_delay: False
-
+# paths to files contained parameters specific to implemented conseussu protocols
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
-
-behaviour:
-  use: False
-  config: "Configs/behaviour_config.yaml"
