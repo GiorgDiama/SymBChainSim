@@ -26,30 +26,16 @@ class TransactionFactory:
         self.depth_removed = -1
 
     def transaction_prop(self, tx):
-        if Parameters.application["transaction_model"] == "global":
-            if Parameters.application["use_tx_prop_model"]:
-                # model transaction propagation based on creators bandwidth
+        for node in self.nodes:
+            if node.id == tx.creator:
+                node.pool.append(tx)
+            else:
                 prop_delay = Network.calculate_message_propagation_delay(
-                    self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
+                    self.nodes[tx.creator], node, tx.size)
                 new_timestamp = tx.timestamp + prop_delay
                 tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
-                self.global_mempool.append(tx)
-            else:
-                self.global_mempool.append(tx)
+                node.pool.append(tx)
 
-        elif Parameters.application["transaction_model"] == "local":
-            for node in self.nodes:
-                if node.id == tx.creator:
-                    node.pool.append(tx)
-                else:
-                    prop_delay = Network.calculate_message_propagation_delay(
-                        self.nodes[tx.creator], node, tx.size)
-                    new_timestamp = tx.timestamp + prop_delay
-                    tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
-                    node.pool.append(tx)
-        else:
-            raise (ValueError(
-                f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     def add_scenario_transactions(self, txion_list):
         for creator, id, timestamp, size in txion_list:
@@ -75,19 +61,6 @@ class TransactionFactory:
                     creator.id, id, timestamp, size))
 
     def execute_transactions(self, pool, time):
-        match Parameters.application["transaction_model"]:
-            case "local":
-                # local pool: execute transactions for the local pool of the node
-                return self.get_transactions_from_pool(pool, time)
-            case "global":
-                # global pool: execute transaction for the "global pool" shared amongst the nodes
-                return self.get_transactions_from_pool(self.global_mempool, time)
-            case _:
-                raise (ValueError(
-                    f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
-
-    @staticmethod
-    def get_transactions_from_pool(pool, time):
         transactions = []
         size = 0
 
@@ -103,6 +76,7 @@ class TransactionFactory:
         else:
             # if we did not find any transactions return an empty list
             return [], -1
+
 
     @staticmethod
     def remove_transactions_from_pool(txions, pool):

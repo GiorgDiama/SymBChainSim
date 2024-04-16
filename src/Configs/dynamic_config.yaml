@@ -1,7 +1,0 @@
-network:
-  mu_dist: [200, 50]
-  sigma_dist: [60, 10]
-
-workload:
-  Tn_norm_dist: [200, 50]
-  Tsize_norm_dist: [0.1, 0.1]

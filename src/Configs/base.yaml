@@ -5,7 +5,7 @@ dynamic_sim:
 simulation:
   init_CP: "PBFT"
   simTime: 300
-  stop_after_blocks: -1
+  stop_after_blocks: 50
   interval_switch: False
   interval_mean: 60
   interval_sigma: 10
@@ -16,9 +16,9 @@ simulation:
   print_info: False
 
 application:
-  Nn: 16
+  Nn: 8
   TI_dur: 25
-  Tn: 10_000
+  Tn: 100
   base_transation_size: 0
   Tsize: 0.001
   transaction_model: "global"

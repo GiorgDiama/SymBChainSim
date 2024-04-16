@@ -11,7 +11,6 @@ class Parameters:
     '''
         Contains all the parameters defining the simulator
     '''
-    dynamic_sim = {}
     simulation = {}
     application = {}
     execution = {}
@@ -22,15 +21,12 @@ class Parameters:
     BigFoot = {}
     PBFT = {}
 
-    behaiviour = {}
-
     CPs = {}
 
     tx_factory = None
 
     @staticmethod
     def reset_params():
-        Parameters.dynamic_sim = {}
         Parameters.simulation = {}
         Parameters.application = {}
         Parameters.execution = {}
@@ -39,7 +35,6 @@ class Parameters:
         Parameters.network = {}
         Parameters.BigFoot = {}
         Parameters.PBFT = {}
-        Parameters.behaiviour = {}
         Parameters.CPs = {}
         Parameters.tx_factory = None
 
@@ -48,21 +43,11 @@ class Parameters:
         params = read_yaml(f"Configs/{config}")
 
         try:
-            Parameters.dynamic_sim = params["dynamic_sim"]
-        except KeyError:
-            print("NO 'dynamic_sim' Parameters")
-
-        try:
             Parameters.simulation = params["simulation"]
         except KeyError:
             print("NO 'simulation' Parameters")
 
         Parameters.simulation["events"] = {}  # cnt events of each type
-
-        try:
-            Parameters.behaiviour = params["behaviour"]
-        except KeyError:
-            print("NO 'behaviour' Parameters")
 
         try:
             Parameters.network = params["network"]
@@ -104,9 +89,6 @@ class Parameters:
         def dict_to_str(x):
             return '\n'.join([f'{f"%{p_name_size}s"%key}: {value}' for key, value in x.items()])
 
-        s = '-'*20 + "DYNAMIC" + "-"*20 + '\n'
-        s += dict_to_str(Parameters.dynamic_sim) + '\n'
-
         s += '-'*20 + "SIMULATION" + "-"*20 + '\n'
         s += dict_to_str(Parameters.simulation) + '\n'
 
@@ -121,8 +103,5 @@ class Parameters:
 
         s += '-'*20 + "NETWORK" + "-"*20 + '\n'
         s += dict_to_str(Parameters.network) + '\n'
-
-        s += '-'*20 + "BEHAVIOUR" + "-"*20 + '\n'
-        s += dict_to_str(Parameters.behaiviour) + '\n'
 
         return s

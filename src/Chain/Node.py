@@ -7,44 +7,8 @@ from types import SimpleNamespace
 from Chain.tools import color
 
 
-# class Configuration():
-#     def __init__(self, node) -> None:
-#         self.node = node
-#         self.configurations = []
-#         self.latest = None
-
-#     def initialise(self, cp, time):
-#         self.configurations.append({'cp': cp,
-#                                     "time": time})
-#         self.apply(time)
-
-#     def check_update(self, time):
-#         if self.latest != self.configurations[-1] or self.latest is None:
-#             latest_cp = self.latest['cp'].NAME
-#             if self.node.cp.NAME != latest_cp.NAME or self.node.cp is None:
-#                 return True
-#         return False
-
-#     def apply(self, time):
-#         if self.latest != self.configurations[-1] or self.latest is None:
-#             self.latest = self.configurations[-1]
-#             latest_cp = self.latest['cp'].NAME
-#             if self.node.cp.NAME != latest_cp.NAME or self.node.cp is None:
-#                 self.node.reset()
-#                 self.node.cp = latest_cp.init(self.node)
-#                 self.node.cp.init(time)
-
-
 class Behaviour():
-    # model behaiviour of a fautly node
-    faulty = None
-    mean_fault_time = None
-    mean_recovery_time = None
-    fault_event = None
-    recovery_event = None
-    byzantine = None
-    sync_fault_chance = None
-
+    pass
 
 class Node():
     '''
@@ -149,28 +113,6 @@ class Node():
 
     @property
     def behaviour_state_to_string(self):
-        s = ""
-        if self.behaviour.faulty:
-            s += f"{color('FAULTY',41)} -> mean_fault_time: {self.behaviour.mean_fault_time} | recover_at: {self.behaviour.recovery_event}"
-        else:
-            s += "NOT FAULTY"
-        s += '\t'
-        if self.behaviour.byzantine:
-            s += f"{color('BYZANTINE',41)}  -> fault_chance: {self.behaviour.sync_fault_chance}"
-        else:
-            s += "HONEST"
-
-        return s
-
-    def update(self, time):
-        if Parameters.application["CP"].NAME != self.cp.NAME:
-            self.cp = Parameters.application["CP"](self)
-            self.cp.init(time)
-            return True
-
-        return False
-
-    def reset(self):
         pass
 
     def stored_txions(self, num=None):
@@ -214,17 +156,13 @@ class Node():
         block.time_added = time
         self.blockchain.append(block)
 
-        if Parameters.application["transaction_model"] == "local":
-            self.pool = Parameters.tx_factory.remove_transactions_from_pool(
-                block.transactions, self.pool)
-        elif Parameters.application["transaction_model"] == "global":
-            # only one node needs to remove the transactions
-            if Parameters.tx_factory.depth_removed < block.depth:
-                Parameters.tx_factory.global_mempool = Parameters.tx_factory.remove_transactions_from_pool(
-                    block.transactions, Parameters.tx_factory.global_mempool)
+        self.pool = Parameters.tx_factory.remove_transactions_from_pool(
+            block.transactions, self.pool)
 
-                Parameters.tx_factory.depth_removed = block.depth
 
     def add_event(self, event):
         if self.state.alive:
             self.queue.add_event(event)
+
+    def update(self, time):
+        pass
