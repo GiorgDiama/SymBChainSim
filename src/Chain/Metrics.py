@@ -96,7 +96,7 @@ class Metrics:
         if len(blocks) < 2:
             return [], 0
 
-        # for each pair of blocks create the key valie pair "curr -> next": next.time_added - curre.time_added
+        # for each pair of blocks create the key value pair "curr -> next": next.time_added - current.time_added
         diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added
                  for curr, next in zip(blocks[:-1], blocks[1:])}
 
@@ -110,13 +110,13 @@ class Metrics:
 
         x_axis = [x for x in range(len(perfect_equality))]
 
-        # calculate the area of the perfect equaility curve
+        # calculate the area of the perfect equality curve
         perfect_equality_area = np.trapz(perfect_equality, x_axis)
 
         # calculate the area of the lorenz curve
         lorenz_area = np.trapz(lorenz_curve, x_axis)
 
-        # gini coeficient
+        # gini coefficient
         return 1 - lorenz_area / perfect_equality_area
 
     @staticmethod
@@ -189,7 +189,7 @@ class Metrics:
 
     @staticmethod
     def take_snapshot(sim, start_from=0):
-        # start_from functions the same in meassure_all so no need to invlode conditionals
+        # start_from functions the same in measure_all so no need to include conditionals
         Metrics.measure_all(sim, start_from=start_from)
 
         snapshot = {
@@ -230,7 +230,7 @@ class Metrics:
         Metrics.snapshot_count += 1
 
     @staticmethod
-    def calculate_snapshot_metricts(final_sim):
+    def calculate_snapshot_metrics(final_sim):
         for snapshot in Metrics.snapshots:
             start, end = snapshot['time_last'], snapshot['time']
 
@@ -244,6 +244,6 @@ class Metrics:
                         blocks.append(b)
 
     @staticmethod
-    def save_snapshots(name="snapsot"):
+    def save_snapshots(name="snapshot"):
         with open(f"results/{name}.json", "w") as f:
             json.dump(Metrics.snapshots, f, indent=2)

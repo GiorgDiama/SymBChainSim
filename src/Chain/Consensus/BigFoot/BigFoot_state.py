@@ -24,7 +24,7 @@ class BigFoot():
         fast_path - boolean value determining wether the node is in the fast path or not 
         state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
         msgs: list of messages received from other nodes
-        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
+        timeout - reference to latest timeout event (when node state updates it is used to find event and delete from event queue)
         fast_path_timeout - reference to fast_path_timeout event
         block -  the proposed block in current round
     '''
@@ -127,7 +127,7 @@ class BigFoot():
         else:
             return None, time
 
-    def init_round_chage(self, time):
+    def init_round_change(self, time):
         timeouts.schedule_timeout(self, time, add_time=True)
 
     def start(self, new_round, time):
@@ -144,7 +144,7 @@ class BigFoot():
 
         self.get_miner()
 
-        # taking into account block interval for the propossal round timeout
+        # taking into account block interval for the proposal round timeout
         time += Parameters.data["block_interval"]
 
         timeouts.schedule_timeout(self, time)
@@ -168,12 +168,10 @@ class BigFoot():
 
         self.start(round, time)
 
-    ########################## HANDLERER ###########################
+    ########################## HANDLER ###########################
 
     @staticmethod
     def handle_event(event):  # specific to BigFoot - called by events in Handler.handle_event()
-        if event.actor.cp.state == "round_chage":
-            print("Ayoo")
         match event.payload["type"]:
             case 'propose':
                 ret = state_transition.propose(event.actor.cp, event)
@@ -190,6 +188,6 @@ class BigFoot():
             case 'new_block':
                 ret = state_transition.new_block(event.actor.cp, event)
             case _:
-                return 'unhadled'
+                return 'unhandled'
 
         return ret

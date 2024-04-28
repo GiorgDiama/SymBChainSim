@@ -27,7 +27,7 @@ class TransactionFactory:
 
     def transaction_prop(self, tx):
         if Parameters.application["transaction_model"] == "global":
-            if Parameters.application["use_tx_prop_model"]:
+            if Parameters.application["transaction_model"]:
                 # model transaction propagation based on creators bandwidth
                 prop_delay = Network.calculate_message_propagation_delay(
                     self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
@@ -49,7 +49,7 @@ class TransactionFactory:
                     node.pool.append(tx)
         else:
             raise (ValueError(
-                f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
+                f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     def add_scenario_transactions(self, txion_list):
         for creator, id, timestamp, size in txion_list:
@@ -67,7 +67,7 @@ class TransactionFactory:
 
                 # size = random.expovariate(1/Parameters.application["Tsize"])
                 size = Parameters.application["Tsize"] + \
-                    Parameters.application["base_transation_size"]
+                    Parameters.application["base_transaction_size"]
 
                 creator = random.choice(self.nodes)
 
@@ -84,7 +84,7 @@ class TransactionFactory:
                 return self.get_transactions_from_pool(self.global_mempool, time)
             case _:
                 raise (ValueError(
-                    f"Uknown transaction model: '{Parameters.application['transaction_model']}'"))
+                    f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     @staticmethod
     def get_transactions_from_pool(pool, time):
@@ -112,7 +112,7 @@ class TransactionFactory:
             if txions[t_idx].id == pool[p_idx].id:
                 pool.pop(p_idx)
                 t_idx += 1
-                # start over looking for the next transaction in txions
+                # start over, looking for the next transaction in txions
                 p_idx = 0
             else:
                 p_idx += 1

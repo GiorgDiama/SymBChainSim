@@ -19,7 +19,7 @@ application:
   Nn: 16 # replaced by profiler script
   TI_dur: 25
   Tn: 400 # replaced by profiler script
-  base_transation_size: 0
+  base_transaction_size: 0
   Tsize: 0.05
   transaction_model: "local" # replaced by profiler script
 

@@ -45,6 +45,6 @@ class Block:
     @staticmethod
     def genesis_block():
         '''
-            Generates the gensis block
+            Generates the genesis block
         '''
         return Block(0, random.randint(0, 10_000), size=0)

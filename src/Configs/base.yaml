@@ -4,7 +4,7 @@ dynamic_sim:
 
 simulation:
   init_CP: "PBFT"
-  simTime: 300
+  simTime: 600
   stop_after_blocks: -1
   interval_switch: False
   interval_mean: 60
@@ -16,12 +16,12 @@ simulation:
   print_info: False
 
 application:
-  Nn: 16
+  Nn: 4
   TI_dur: 25
-  Tn: 10_000
-  base_transation_size: 0
-  Tsize: 0.001
-  transaction_model: "global"
+  Tn: 100
+  base_transaction_size: 0
+  Tsize: 0.005
+  transaction_model: "local"
 
 execution:
   creation_time: 0.1
@@ -39,14 +39,14 @@ network:
   base_msg_size: 0.2
   gossip: False
   num_neighbours: 3
-  use_latency: distance
+  use_latency: measured
   same_city_latency_ms: 10
   same_city_dev_ms: 0
   queueing_delay: 0
   processing_delay: 0
 
   bandwidth:
-    mean: 1
+    mean: 5
     dev: 0
     min: 2
 

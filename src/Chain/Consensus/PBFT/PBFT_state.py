@@ -13,14 +13,14 @@ import Chain.Consensus.PBFT.PBFT_messages as messages
 
 class PBFT():
     '''
-    Practival Byzantime Fault Tollerance Consensus Protocol
+    Practical Byzantine Fault Tolerance Consensus Protocol
 
     PBFT State:
         round - current round
-        change_to - canditate round to change to
+        change_to - candidate round to change to
         state - PBFT node state (new_round, pre-prepared, prepared, committed, round_change)]
         msgs: list of messages received from other nodes
-        timeout - reference to latest timeout event (when node state updates it is used to find event and delte from event queue)
+        timeout - reference to latest timeout event (when node state updates it is used to find event and delete from event queue)
         block -  the current proposed block
     '''
 
@@ -28,16 +28,11 @@ class PBFT():
 
     def __init__(self, node) -> None:
         self.rounds = Rounds.round_change_state()
-
         self.state = ""
         self.miner = ""
-
         self.msgs = {}
-
         self.timeout = None
-
         self.block = None
-
         self.node = node
 
     def set_state(self):
@@ -49,7 +44,6 @@ class PBFT():
         self.block = None
 
     def state_to_string(self):
-        msgs = {'prepare': self.count_votes('prepare', self.rounds.round)}
         s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
@@ -122,15 +116,12 @@ class PBFT():
             return 0
 
         self.state = 'new_round'
-
         self.reset_msgs(new_round)
-
         self.rounds.round = new_round
         self.block = None
-
         self.get_miner()
 
-        # taking into account block interval for the propossal round timeout
+        # taking into account block interval for the proposal round timeout
         time += Parameters.data["block_interval"]
 
         timeouts.schedule_timeout(self, time)
@@ -143,7 +134,7 @@ class PBFT():
             # slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node)
 
-    def init_round_chage(self, time):
+    def init_round_change(self, time):
         timeouts.schedule_timeout(self, time, add_time=True)
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
@@ -157,7 +148,7 @@ class PBFT():
 
         self.start(round, time)
 
-    ########################## HANDLERER ###########################
+    ########################## HANDLER ###########################
 
     @staticmethod
     def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
@@ -175,4 +166,4 @@ class PBFT():
             case 'new_block':
                 return state_transitions.new_block(event.actor.cp, event)
             case _:
-                return 'unhadled'
+                return 'unhandled'

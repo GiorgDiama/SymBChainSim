@@ -54,15 +54,15 @@ class Node():
         id: unique node id
         blockchain: list of blocks
         pool: list of new transactions not yet added to blocks
-        bloks: No. of blocks
+        blocks: No. of blocks
         state: A namespace denoting the sate of the node
             synced...
             alive...
             cp: a reference to the CP class
-            cp_state: a namepsace storring CP specific data (defined by the CP)
-            extra_data: a map sotring extra data needed in the node
+            cp_state: a namespace storing CP specific data (defined by the CP)
+            extra_data: a map storing extra data needed in the node
 
-        Queue: The event queue sotring events (used in the simulation)
+        Queue: The event queue stores events (used in the simulation)
 
         Backlog: Stores 'future' events
             When current event cannot be executed (due to message delays

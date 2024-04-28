@@ -3,10 +3,10 @@ from random import randint
 
 class Event():
     '''
-        Models events for the descrete event simulation
+        Models events for the discrete event simulation
 
         Each event contains a reference to it's specific handler
-            Example: an event generated representing an PBFT message will contain a referene to Consensus.PBFT.handle_event()
+            Example: an event generated representing an PBFT message will contain a reference to Consensus.PBFT.handle_event()
             and can be handled by calling event.handler(event)
 
         Event: Models a local event (i.e timeouts) - is added straight into the EventQueue of the node
@@ -42,7 +42,7 @@ class Event():
         return f"LCL: {self.creator.id} {round(self.time,3)} {self.payload['type']}"
 
     def __init__(self, handler, creator, time, payload, id=-1) -> None:
-        # unique id (or hash) used to identeify received messages for gossip
+        # unique id (or hash) used to identify received messages for gossip
         self.id = randint(0, 1000000) if id == -1 else id
 
         self.handler = handler
@@ -55,8 +55,8 @@ class Event():
 
 class MessageEvent(Event):
     '''
-        Models messages betwee nodes (i.e cp message, sync msessage, new blocks etc)
-        is created by the netwrok through a node Event and added to the EQ's of other nodes
+        Models messages between nodes (i.e cp message, sync message, new blocks etc)
+        is created by the network through a node Event and added to the EQ's of other nodes
     '''
 
     def __str__(self):
@@ -82,7 +82,7 @@ class MessageEvent(Event):
 
 class SystemEvent():
     '''
-        Simplified event for simulation managemnt tasks
+        Simplified event for simulation management tasks
     '''
 
     def __hash__(self) -> int:

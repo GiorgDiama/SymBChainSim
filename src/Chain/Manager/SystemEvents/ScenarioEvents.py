@@ -82,11 +82,11 @@ def handle_scenario_fault_event(manager, event):
     event.payload['node'].kill()
 
 
-def handle_scnario_recovery_event(manager, event):
+def handle_scenario_recovery_event(manager, event):
     node = event.payload['node']
     time = event.time
 
-    node.resurect()
+    node.resurrect()
 
     # after the node is online, attempt to resync
     synced, synced_neighbour = node.synced_with_neighbours()

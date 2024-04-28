@@ -17,7 +17,7 @@ def handle_timeout(state, event):
                     state.node, in_sync_neighbour, event.time)
 
         Rounds.change_round(state.node, event.time)
-        return "handled"  # changes state to round_chage but no need to handle backlog
+        return "handled"  # changes state to round_change but no need to handle backlog
 
     return "invalid"
 

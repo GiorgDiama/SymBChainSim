@@ -1,6 +1,6 @@
 '''
-    Models a high-level sync functionality. Caclulates how long it would take for the node to receive the data
-    (missing blocks) and creats a local event which copies the missing blocks to the desynced node saving communication
+    Models a high-level sync functionality. Calculates how long it would take for the node to receive the data
+    (missing blocks) and creates a local event which copies the missing blocks to the de-synced node saving communication
     events
 '''
 
@@ -16,16 +16,16 @@ def handler(event):
     if event.payload["type"] == "local_fast_sync":
         return handle_local_sync_event(event)
     else:
-        return "unhadled"
+        return "unhandled"
 
 
 def create_local_sync_event(desynced_node, request_node, time):
     '''
         get missing blocks from request node
-        (node from which we request missing blocks i.e node whos message made us know we are desynced)
+        (node from which we request missing blocks i.e node whose message made us know we are de-synced)
         Calculate transmission + validation delay and create local sync event after
     '''
-    # get the last block of desynced node
+    # get the last block of de-synced node
     latest_block = desynced_node.last_block
 
     # find missing blocks in blockchain of request_node
@@ -40,7 +40,7 @@ def create_local_sync_event(desynced_node, request_node, time):
 
     # for each missing block
     for i, b in enumerate(missing_blocks):
-        # caclulate the transmission delay + validation delay for the block
+        # calculate the transmission delay + validation delay for the block
         delay_network = Network.calculate_message_propagation_delay(
             request_node, desynced_node, b.size)
 
@@ -55,7 +55,7 @@ def create_local_sync_event(desynced_node, request_node, time):
         missing_blocks[i].time_added = time + total_delay
         missing_blocks[i].extra_data['synced'] = True
 
-    # missbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
+    # misbehave_delay, missbehaviour = apply_sync_missbehaiviour(request_node)
 
     # # create local sync event on desynced_node
     # if missbehaviour:  # the request node missbehaved
@@ -71,6 +71,7 @@ def create_local_sync_event(desynced_node, request_node, time):
     #         desynced_node, time+missbehave_delay, payload, handler)
     # else:
     # add an event signifying the end of the transmission of missing blocks
+
     payload = {
         "request_node": request_node,
         "type": 'local_fast_sync',
@@ -90,7 +91,7 @@ def handle_local_sync_event(event):
         # if the previous request failed - try to sync with a random neighbour
         create_local_sync_event(node, sample(
             node.neighbours, 1)[0], event.time)
-    else:  # sucessfully synced
+    else:  # successfully synced
         received_blocks = event.payload['blocks']
         # update blockchain with received blocks
         for b in received_blocks:
@@ -120,34 +121,34 @@ def handle_local_sync_event(event):
             return True
 
 
-def apply_sync_missbehaiviour(sender):
-    '''
-        Checks whether the requesting node is:
-            - offline: adds no_respoce delay
-            - byzantine: randomly drops message (no_responce delay) or reply with bad data (bad_data delay)
-    '''
-    # if request_node is dead, sync fails with no delay
-    if not sender.state.alive:
-        return Parameters.behaiviour["sync"]["no_response"]["delay"], True
+# def apply_sync_missbehaiviour(sender):
+#     '''
+#         Checks whether the requesting node is:
+#             - offline: adds no_response delay
+#             - byzantine: randomly drops message (no_response delay) or reply with bad data (bad_data delay)
+#     '''
+#     # if request_node is dead, sync fails with no delay
+#     if not sender.state.alive:
+#         return Parameters.behaiviour["sync"]["no_response"]["delay"], True
 
-    # if the request node is byzantine
-    if sender.behaviour.byzantine:
-        # roll for missbehave
-        roll_missbehave = randint(0, 100)
-        if roll_missbehave < sender.behaviour.sync_fault_chance:
-            # if missbehave: roll for type
-            roll_type = randint(0, 100)
-            if roll_type < 50:
-                ########### BAD DATA ############
-                tools.debug_logs(
-                    msg=f"node {sender} sent bad sync data!", col=47)
-                delay = Parameters.behaiviour["sync"]["bad_data"]["delay"]
-            else:
-                ########### NO RESPONSE #########
-                tools.debug_logs(
-                    msg=f"node {sender} did not respond to sync message!", col=47)
-                delay = Parameters.behaiviour["sync"]["no_response"]["delay"]
-            return delay, True
+#     # if the request node is byzantine
+#     if sender.behaviour.byzantine:
+#         # roll for missbehave
+#         roll_missbehave = randint(0, 100)
+#         if roll_missbehave < sender.behaviour.sync_fault_chance:
+#             # if missbehave: roll for type
+#             roll_type = randint(0, 100)
+#             if roll_type < 50:
+#                 ########### BAD DATA ############
+#                 tools.debug_logs(
+#                     msg=f"node {sender} sent bad sync data!", col=47)
+#                 delay = Parameters.behaiviour["sync"]["bad_data"]["delay"]
+#             else:
+#                 ########### NO RESPONSE #########
+#                 tools.debug_logs(
+#                     msg=f"node {sender} did not respond to sync message!", col=47)
+#                 delay = Parameters.behaiviour["sync"]["no_response"]["delay"]
+#             return delay, True
 
-    # node will not missbehaive
-    return 0, False
+#     # node will not missbehaive
+#     return 0, False

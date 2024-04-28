@@ -15,7 +15,7 @@ class Network:
         Models the blockchain p2p network
             nodes: list of BP's
             locations: list of various locations node can be in
-            latency_map: map of propgation latencies between locations
+            latency_map: map of propagation latencies between locations
     '''
     nodes = None
     locations = None
@@ -125,14 +125,15 @@ class Network:
         return min(sender.bandwidth, receiver.bandwidth)
 
     ########################## SET UP NETWORK ############################
+
     @staticmethod
     def init_network(nodes, speeds=None):
         ''' 
-            Initialises the Netowrk modules
-                - Gets a refenrence to the node list
+            Initialise the Network modules
+                - Gets a reference to the node list
                 - Calculates latency_map and locations
                 - Assigns locations and bandwidth to nodes
-                - Assigns neibhours to nodes (Gossip, Sync etc...)
+                - Assigns neighbours to nodes (Gossip, Sync etc...)
         '''
         Network.avg_transmission_delay = np.zeros((len(nodes), len(nodes)))
         Network.no_messages = np.zeros((len(nodes), len(nodes)))
@@ -167,23 +168,23 @@ class Network:
     def assign_neighbours(node=None):
         '''
             (default) node -> None
-            Randomly assing neibhours to all nodes (based on the config)
+            Randomly assign neighbours to all nodes (based on the config)
             if node is provided assign to just that node
         '''
         if node is None:
             for n in Network.nodes:
                 Network.assign_neighbours(n)
         else:
+            num_neighbours = min(Parameters.network["num_neighbours"], Parameters.application['Nn']-1)
             node.neighbours = random.sample(
-                [x for x in Network.nodes if x != node],
-                Parameters.network["num_neighbours"])
+                [x for x in Network.nodes if x != node], num_neighbours)
 
     @staticmethod
     def assign_location_to_nodes(node=None, location=None):
         '''
             node->Node (default)
-            Assings random locations to nodes by default
-            if node is provided assing a random location to just this node
+            Assigns random locations to nodes by default
+            if node is provided assign a random location to just this node
         '''
         if node is None:
             for n in Network.nodes:
@@ -198,7 +199,7 @@ class Network:
     @staticmethod
     def parse_latencies():
         '''
-            Initialised the Network.locations list and the Network.latency_map from the JSON dataset
+            Initialise the Network.locations list and the Network.latency_map from the JSON dataset
         '''
         Network.locations = []
         Network.latency_map = {}
@@ -216,7 +217,7 @@ class Network:
 
     def parse_distances():
         '''
-            Initialised the Network.locations list and the Network.distance_map from the JSON dataset
+            Initialise the Network.locations list and the Network.distance_map from the JSON dataset
         '''
         Network.locations = []
         Network.distance_map = {}
@@ -224,6 +225,4 @@ class Network:
         with open("NetworkLatencies/distance_map.json", "rb") as f:
             Network.distance_map = json.load(f)
 
-        # overwritting the locations is fine to gurantee that they exist (this is the case if we laoded latencied before)
-        # prevents an error if we dont want to use latencies
         Network.locations = list(Network.distance_map.keys())

@@ -21,7 +21,7 @@ import sys
 
 class Manager:
     '''
-        The manager module controlls the 'flow' of the simulation. Through system events
+        The manager module controls the 'flow' of the simulation. Through system events
             - The state of the system can be updated during runtime
             - transactions are generated
             - nodes are added and removed
@@ -73,7 +73,7 @@ class Manager:
                 'intervals:
                     '1':
                         'network':[(node, BW)...]
-                        'behaviour':[(node, failt_at, duration)]
+                        'behaviour':[(node, fail_at, duration)]
                         'transactions': [(creator, id, timestamp, size)...]
                     '2':  ...
         '''
@@ -95,7 +95,7 @@ class Manager:
                             scenarioSE.schedule_scenario_fault_and_recovery_events(
                                 self, value)
 
-        # schedule snapshot evets if we have those in the config
+        # schedule snapshot events if we have those in the config
         if Parameters.simulation["snapshot_interval"] != -1:
             scenarioSE.schedule_scenario_snapshot_event(self)
 
@@ -184,7 +184,7 @@ class Manager:
             # if snapshots is true, add the event that periodically takes the snapshots
             dynamic_simulationSE.schedule_snapshot_event(self)
 
-        if Parameters.behaiviour['use']:
+        if Parameters.behaviour['use']:
             behaviourSE.Behaviour.init(self)
             behaviourSE.schedule_random_fault_event(self, self.sim.clock)
 
@@ -213,7 +213,7 @@ class Manager:
             case 'scenario_fault':
                 scenarioSE.handle_scenario_fault_event(self, event)
             case 'scenario_recovery':
-                scenarioSE.handle_scnario_recovery_event(self, event)
+                scenarioSE.handle_scenario_recovery_event(self, event)
             case 'scenario_snapshot':
                 scenarioSE.handle_scenario_snapshot_event(self, event)
             ################## DEFAULT ##################

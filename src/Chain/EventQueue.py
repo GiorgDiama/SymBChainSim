@@ -38,7 +38,7 @@ class PrioQueue:
 
     def remove(self, task):
         '''
-            Expensive opperation!
+            Expensive operation!
         '''
         if task in self.pq:
             self.pq.remove(task)
@@ -62,7 +62,7 @@ class Queue:
 
     def remove_event(self, event):
         '''
-            Expensive opperation!
+            Expensive operation!
         '''
         self.prio_queue.remove((event.time, event))
 

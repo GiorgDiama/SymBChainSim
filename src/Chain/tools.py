@@ -11,7 +11,7 @@ from Chain.Event import SystemEvent, MessageEvent, Event
 
 def debug_logs(msg, **kwargs):
     '''
-        must set enviroment variable 'debug' to true (env_vars.yaml)] (can overwrite with nd as cmd arg)
+        must set environment variable 'debug' to true (env_vars.yaml)] (can overwrite with nd as cmd arg)
         colors: 
             40:black
             41:red
@@ -36,7 +36,7 @@ def debug_logs(msg, **kwargs):
         if "command" in kwargs:
             if "simulator" not in kwargs:
                 raise ValueError(
-                    "Simulator must be given inorder to use commands")
+                    "Simulator must be given in order to use commands")
             else:
                 if "cmd_col" in kwargs:
                     kwargs['command'] = color(
@@ -83,8 +83,8 @@ def exec_cmd(simulator, cmd):
         return f"Killing node {kill}"
     elif cmd[0] == "res":
         res = int(cmd[1])
-        simulator.nodes[res].resurect()
-        return f"Resurecting node {res}"
+        simulator.nodes[res].resurrect()
+        return f"Resurrecting node {res}"
     elif cmd[0] == "stop":
         exit()
     else:
@@ -161,4 +161,4 @@ def write_yaml(data, path):
 def color(string, c=44):
     return f'\x1b[1;37;{c}m' + string + '\x1b[0m'
 
-###################### Distriburions #############
+###################### Distributions #############

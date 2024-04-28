@@ -17,10 +17,10 @@ class Behaviour:
 
     @staticmethod
     def init(manager):
-        # read paramaters from behaviour config file
-        parms = read_yaml(Parameters.behaiviour["config"])
-        Behaviour.byzantine = parms["byzantine"]
-        Behaviour.faulty = parms["faulty"]
+        # read parameters from behaviour config file
+        params = read_yaml(Parameters.behaviour["config"])
+        Behaviour.byzantine = params["byzantine"]
+        Behaviour.faulty = params["faulty"]
 
         # chose faulty nodes
         Behaviour.faulty_nodes = random.sample(

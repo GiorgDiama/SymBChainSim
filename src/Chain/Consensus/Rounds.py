@@ -1,5 +1,5 @@
 '''
-    Hanldes the logic for consensus rounds
+    Handles the logic for consensus rounds
 '''
 from types import SimpleNamespace
 from Chain.Parameters import Parameters
@@ -7,7 +7,7 @@ from Chain.Parameters import Parameters
 
 def round_change_state(round=0):
     '''
-        Rounc chage state
+        Round change state
     '''
     return SimpleNamespace(
         round=round,
@@ -43,7 +43,7 @@ def change_round(node, time):
     '''
         Begins the round change process in *node*
     '''
-    node.cp.init_round_chage(time)
+    node.cp.init_round_change(time)
     state = node.cp
 
     state.state = 'round_change'

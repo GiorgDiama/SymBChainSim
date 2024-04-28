@@ -22,7 +22,7 @@ class Parameters:
     BigFoot = {}
     PBFT = {}
 
-    behaiviour = {}
+    behaviour = {}
 
     CPs = {}
 
@@ -39,7 +39,7 @@ class Parameters:
         Parameters.network = {}
         Parameters.BigFoot = {}
         Parameters.PBFT = {}
-        Parameters.behaiviour = {}
+        Parameters.behaviour = {}
         Parameters.CPs = {}
         Parameters.tx_factory = None
 
@@ -60,7 +60,7 @@ class Parameters:
         Parameters.simulation["events"] = {}  # cnt events of each type
 
         try:
-            Parameters.behaiviour = params["behaviour"]
+            Parameters.behaviour = params["behaviour"]
         except KeyError:
             print("NO 'behaviour' Parameters")
 
@@ -123,6 +123,6 @@ class Parameters:
         s += dict_to_str(Parameters.network) + '\n'
 
         s += '-'*20 + "BEHAVIOUR" + "-"*20 + '\n'
-        s += dict_to_str(Parameters.behaiviour) + '\n'
+        s += dict_to_str(Parameters.behaviour) + '\n'
 
         return s

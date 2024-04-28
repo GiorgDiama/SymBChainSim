@@ -7,15 +7,15 @@ from random import normalvariate
 
 
 class DynamicParameters:
-    netwrok = {}
+    network = {}
     workload = {}
 
     @staticmethod
     def init_parameters():
-        parms = read_yaml(Parameters.dynamic_sim["config"])
+        params = read_yaml(Parameters.dynamic_sim["config"])
 
-        DynamicParameters.netwrok = parms["network"]
-        DynamicParameters.workload = parms["workload"]
+        DynamicParameters.network = params["network"]
+        DynamicParameters.workload = params["workload"]
 
 ###########################################################################
 #######################     NETWORK    ####################################
@@ -67,7 +67,7 @@ def schedule_update_workload_event(manager, init=False):
 
 
 def handle_update_workload_event(manager, event):
-    # generation aglrithim requires an int
+    # generation algorithm requires an int
     Parameters.application["Tn"] = int(normalvariate(
         *DynamicParameters.workload["Tn_norm_dist"]))
     # since transaction sizes are quire small abs to ensure no negative value transactions

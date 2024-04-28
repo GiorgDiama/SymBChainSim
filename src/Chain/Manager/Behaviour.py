@@ -5,7 +5,7 @@ from random import sample, randint, expovariate
 import sys
 
 
-class Behaiviour:
+class Behaviour:
     def __init__(self, sim) -> None:
         self.sim = sim
         self.faulty = []
@@ -16,8 +16,8 @@ class Behaiviour:
         self.set_byzantine_nodes()
 
     def set_byzantine_nodes(self):
-        byzantine_params = Parameters.behaiviour["byzantine_nodes"]
-        sync_params = Parameters.behaiviour["sync"]
+        byzantine_params = Parameters.behaviour["byzantine_nodes"]
+        sync_params = Parameters.behaviour["sync"]
 
         # Randomly choose which nodes will be byzantine
         self.byzantine = sample(
@@ -31,7 +31,7 @@ class Behaiviour:
                                                        sync_params["probs"]["high"])
 
     def set_faulty_nodes(self, node=None):
-        fault_params = Parameters.behaiviour["crash_probs"]
+        fault_params = Parameters.behaviour["crash_probs"]
 
         self.faulty = sample(self.sim.nodes, fault_params["faulty_nodes"])
 
