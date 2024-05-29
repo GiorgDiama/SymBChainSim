@@ -9,8 +9,7 @@ from Chain.Network import Network
 
 def propose(state, event):
     time = event.time
-
-    print(time, len([x for x in state.node.pool if x.timestamp<= time]))
+    
     # attempt to create block
     block, creation_time = state.create_block(time)
 

@@ -100,7 +100,6 @@ class Tendermint():
             'round': self.rounds.round,
         }
         
-
         if 'votes' in self.node.blockchain[-1].extra_data.keys():
             block.extra_data['last_proof'] = self.node.blockchain[-1].extra_data['votes']['commit']
 
