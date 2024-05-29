@@ -1,5 +1,4 @@
-from random import randint
-
+from Chain.Parameters import Parameters
 
 class Event():
     '''
@@ -43,13 +42,17 @@ class Event():
 
     def __init__(self, handler, creator, time, payload, id=-1) -> None:
         # unique id (or hash) used to identify received messages for gossip
-        self.id = randint(0, 1000000) if id == -1 else id
+        if id == -1:
+            self.id = Parameters.simulation['event_id']
+            Parameters.simulation['event_id'] += 1
+        else:
+            self.id = id
 
         self.handler = handler
         self.creator = creator
         self.time = time
         self.payload = payload
-
+        
         self.actor = creator
 
 
@@ -69,8 +72,9 @@ class MessageEvent(Event):
         super().__init__(handler, creator, time, payload, id)
 
         self.receiver = receiver
-
         self.actor = receiver
+
+        self.forwarded_by = None
 
     def isSame(self, other):
         return self.id == other.id
@@ -113,6 +117,7 @@ class SystemEvent():
         return f"SYSTEM: {round(self.time,3)} - payload {self.payload['type']}"
 
     def __init__(self, time, payload) -> None:
-        self.id = randint(0, 1000000) if id == -1 else id
+        self.id = Parameters.simulation['event_id']
+        Parameters.simulation['event_id'] += 1
         self.time = time
         self.payload = payload

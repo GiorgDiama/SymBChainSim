@@ -70,6 +70,11 @@ def parse_cmd_args():
     if param := get_named_cmd_arg('da'):
         Parameters.simulation['start_debugging_at'] = float(param)
 
+    if param := get_named_cmd_arg('--gossip'):
+        Parameters.network['gossip'] = bool(param)
+
+    if param := get_named_cmd_arg('--num_peers'):
+        Parameters.network['num_neighbours'] = int(param)
 
 def exec_cmd(simulator, cmd):
     ''' When debug mode is on - a command can be given as input (this handles the execution)'''
@@ -114,10 +119,15 @@ def sim_info(simulator, print_event_queues=True):
                 # decide what todo based on type
                 if isinstance(event, MessageEvent) or isinstance(event, Event):
                     # simulation events
-                    if event.actor.id in events_per_node:
-                        events_per_node[event.actor.id] += str(e[1]) + '\n'
+                    if isinstance(event, MessageEvent):
+                        event_string = str(e[1]) + " from: " + str(e[1].forwarded_by) + '\n'
                     else:
-                        events_per_node[event.actor.id] = str(e[1]) + '\n'
+                         event_string = str(e[1]) + '\n'
+
+                    if event.actor.id in events_per_node:
+                        events_per_node[event.actor.id] += event_string
+                    else:
+                        events_per_node[event.actor.id] = event_string
                 else:
                     # system events
                     events_per_node[-1] += str(e[1]) + "\n"

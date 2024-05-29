@@ -1,11 +1,9 @@
 from Chain.Event import MessageEvent
 from Chain.Parameters import Parameters
-import numpy as np
-
 import Chain.tools as tools
 
 from sys import getsizeof
-
+import numpy as np
 import random
 import json
 
@@ -21,6 +19,8 @@ class Network:
     locations = None
     latency_map = None
     distance_map = None
+
+    received = None
 
     avg_transmission_delay = None
 
@@ -48,17 +48,12 @@ class Network:
 
     @staticmethod
     def multicast(node, event):
+        Network.received[node].add(event.id)
+
         for n in node.neighbours:
             msg = MessageEvent.from_Event(event, n)
-            Network.gossip_message(node, n, msg)
-
-    @staticmethod
-    def gossip_message(sender, receiver, msg):
-        # if the receiver has received this event (ignore) or the receiver created the message
-        if receiver.queue.contains_event_message(msg) or msg.creator == receiver:
-            return 0
-
-        Network.message(sender, receiver, msg)
+            msg.forwarded_by = str(node.id) + ' (creator)'
+            Network.message(node, n, msg)
 
     @staticmethod
     def broadcast(node, event):
@@ -71,15 +66,37 @@ class Network:
     def message(sender, receiver, msg, delay=True):
         delay = Network.calculate_message_propagation_delay(
             sender, receiver, Network.size(msg))
-
+        
         msg.time += delay
 
         receiver.add_event(msg)
-
+        
     @staticmethod
-    def receive(node, event):
-        pass
+    def receive(node, msg):
+        if Parameters.network['gossip']:
+            if msg.id in Network.received[node]:
+                return False
+            
+            Network.received[node].add(msg.id) # mark this message as received
 
+            # only forward the message to peers that have not received the messages yet (saves loads of useless events!)
+            neighbours = [n for n in node.neighbours if msg.id not in Network.received[n]]
+
+            for n in neighbours:
+                new_msg = MessageEvent(
+                    handler=msg.handler,
+                    creator=msg.creator,
+                    time=msg.time,
+                    payload=msg.payload, 
+                    id=msg.id,
+                    receiver=n)
+
+                new_msg.forwarded_by = str(node.id) + ' (gossip)'
+
+                Network.message(node, n, new_msg)
+
+        return True
+            
     @staticmethod
     def calculate_message_propagation_delay(sender, receiver, message_size):
         '''
@@ -141,7 +158,7 @@ class Network:
         Network.no_messages = np.zeros((len(nodes), len(nodes)))
 
         if Parameters.network["gossip"]:
-            raise NotImplementedError("Gossip is currently broken...")
+            Network.received = {node: set() for node in nodes}
 
         Network.nodes = nodes
 

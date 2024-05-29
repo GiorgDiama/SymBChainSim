@@ -54,10 +54,13 @@ def get_blocks_by_cp(manager, simple=True):
             print(n, '->'.join([f"{x.split(' ')[0]}:{len(x.split(' '))}"
                                 for x in blocks_by_cp]), f'| TOTAL: {len(bc)}')
 
-
 def run():
     manager = Manager()
-    manager.load_params()
+
+    if (conf := tools.get_named_cmd_arg('--conf')) == None:
+        conf = 'base.yaml'
+
+    manager.load_params(conf)
     manager.set_up()
     t = datetime.now()
     manager.run()

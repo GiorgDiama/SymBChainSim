@@ -45,6 +45,8 @@ class Manager:
 
         Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
 
+        Parameters.simulation['event_id'] = 0 # used to give events incrementing, unique ids
+
     def set_up_scenario(self, scenario, config='scenario.yaml'):
         self.load_params(config)
 
@@ -111,7 +113,6 @@ class Manager:
         Parameters.simulation['simTime'] = -1
         Parameters.simulation['stop_after_blocks'] = -1
         
-
         Parameters.tx_factory.add_scenario_transactions([x.values() for x in data])
 
     def set_up(self, num_nodes=-1):
@@ -140,6 +141,7 @@ class Manager:
 
         if Parameters.simulation['print_info']:
             print(self.simulation_details())
+        
 
     def finished(self):
         # check if we have reached desired simulation duration

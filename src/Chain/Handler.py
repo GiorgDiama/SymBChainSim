@@ -34,7 +34,13 @@ def handle_event(event, backlog=False):
     # if this event is CP specific and the CP of the event does not match the current CP - old message
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
-
+    
+    # check if received message has been received in the past (gossip only)
+    if isinstance(event, MessageEvent):
+        is_new_message = Network.receive(event.actor, event)
+        if not is_new_message:
+            return 'invalid'
+    
     # if we are not handling backlog events and this is a network event
     # handle actions related with the receiving of the message
     if not backlog and isinstance(event, MessageEvent):
