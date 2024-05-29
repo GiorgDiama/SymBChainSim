@@ -18,12 +18,13 @@ class TransactionFactory:
     '''
         Handles the generation and execution of transactions
     '''
-
+    
     def __init__(self, nodes) -> None:
         self.nodes = nodes
         # FOR GLOBAL TXION POOL
         self.global_mempool = []
         self.depth_removed = -1
+        self.produced_tx = 0
 
     def transaction_prop(self, tx):
         if Parameters.application["transaction_model"] == "global":
@@ -55,20 +56,25 @@ class TransactionFactory:
     def generate_interval_txions(self, start):
         for second in range(round(start), round(start + Parameters.application["TI_dur"])):
             for _ in range(Parameters.application["Tn"]):
-                id = Parameters.application["txIDS"]
-                Parameters.application["txIDS"] += 1
+                if Parameters.simulation['stop_after_tx'] != -1 and self.produced_tx == Parameters.simulation['stop_after_tx']:
+                    break
+                else:
+                    id = Parameters.application["txIDS"]
+                    Parameters.application["txIDS"] += 1
 
-                # timestamp = second + random.random()
-                timestamp = second
+                    # timestamp = second + random.random()
+                    timestamp = second
 
-                # size = random.expovariate(1/Parameters.application["Tsize"])
-                size = Parameters.application["Tsize"] + \
-                    Parameters.application["base_transaction_size"]
+                    # size = random.expovariate(1/Parameters.application["Tsize"])
+                    size = Parameters.application["Tsize"] + \
+                        Parameters.application["base_transaction_size"]
 
-                creator = random.choice(self.nodes)
+                    creator = random.choice(self.nodes)
 
-                self.transaction_prop(Transaction(
-                    creator.id, id, timestamp, size))
+                    self.transaction_prop(Transaction(
+                        creator.id, id, timestamp, size))
+                    
+                    self.produced_tx += 1
 
     def execute_transactions(self, pool, time):
         match Parameters.application["transaction_model"]:

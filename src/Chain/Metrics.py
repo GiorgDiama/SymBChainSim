@@ -189,6 +189,19 @@ class Metrics:
         node_info['processed_tx'] = sum(len(b.transactions) for b in node.blockchain)
         return node_info
 
+    @staticmethod
+    def processed_tx_system(sim):
+        processed_tx_nodes = []
+        for node in sim.nodes:
+            tx = []
+            for block in node.blockchain:
+                tx.append(len(block.transactions))
+            processed_tx_nodes.append(sum(tx))
+
+        return st.mean(processed_tx_nodes)
+
+
+
     def measure_block_sizes(blocks):
         return [b.size for b in blocks]
         

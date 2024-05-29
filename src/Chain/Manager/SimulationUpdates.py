@@ -15,8 +15,13 @@ def print_progress(sim):
 
     if sim.clock >= Parameters.simulation["print_next"] and Parameters.simulation["print_every"] != -1:
         Parameters.simulation['print_next'] += Parameters.simulation["print_every"]
+        
+        sim_time = f'Simulation time: {"%.2f"%sim.clock} out of {Parameters.simulation['simTime']}'
+        blocks = f'Confirmed blocks: {Metrics.confirmed_blocks(sim)} out of {Parameters.simulation['stop_after_blocks']}'
+        tx = f'Confirmed Transactions {Metrics.processed_tx_system(sim)} out of {Parameters.simulation['stop_after_tx']}'
 
-        s = f'Clock: {"%.2f"%sim.clock} \t Confirmed blocks: {Metrics.confirmed_blocks(sim)}'
+        s = f'{sim_time}\t{blocks}\t{tx}'
+
         print(tools.color(s, 44))
 
 
