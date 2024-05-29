@@ -21,6 +21,7 @@ class Parameters:
 
     BigFoot = {}
     PBFT = {}
+    Tendermint = {}
 
     behaviour = {}
 
@@ -37,11 +38,14 @@ class Parameters:
         Parameters.data = {}
         Parameters.consensus = {}
         Parameters.network = {}
-        Parameters.BigFoot = {}
-        Parameters.PBFT = {}
         Parameters.behaviour = {}
         Parameters.CPs = {}
         Parameters.tx_factory = None
+
+        Parameters.BigFoot = {}
+        Parameters.PBFT = {}
+        Parameters.Tendermint = {}
+
 
     @staticmethod
     def load_params_from_config(config):
@@ -89,6 +93,7 @@ class Parameters:
 
         Parameters.BigFoot = read_yaml(params['consensus']['BigFoot'])
         Parameters.PBFT = read_yaml(params['consensus']['PBFT'])
+        Parameters.Tendermint = read_yaml(params['consensus']['Tendermint'])
 
     @staticmethod
     def calculate_fault_tolerance():

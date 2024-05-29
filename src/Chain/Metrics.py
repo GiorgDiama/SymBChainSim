@@ -1,18 +1,18 @@
+import Chain.tools as tools
+from Chain.Parameters import Parameters
+
 import json
 import statistics as st
-from Chain.Parameters import Parameters
-import Chain.tools as tools
-
 import numpy as np
-
 from copy import copy
-
 
 class Metrics:
     latency = {}
     throughput = {}
     blocktime = {}
     decentralisation = {}
+    transaction_info = {}
+    block_info = {}
 
     blocks = {}
     nodes = {}
@@ -32,7 +32,7 @@ class Metrics:
 
             ###### CALCULATE METRICS ########
             values, avg = Metrics.measure_latency(BC)
-            Metrics.latency[node.id] = {"vlues": values, 'AVG': avg}
+            Metrics.latency[node.id] = {"values": values, 'AVG': avg}
 
             TPS = Metrics.measure_throughput(BC)
             Metrics.throughput[node.id] = TPS
@@ -41,7 +41,14 @@ class Metrics:
             Metrics.blocktime[node.id] = {"values": values, 'AVG': avg}
 
             gini = Metrics.measure_decentralisation_nodes(sim, BC)
-            Metrics.decentralisation[node.id] = gini
+            Metrics.decentralisation[node.id] = gini\
+        
+            tx_info = Metrics.measure_transactions(node)
+            Metrics.transaction_info[node.id] = tx_info
+
+            sizes = Metrics.measure_block_sizes(BC)
+            Metrics.block_info[node.id] = {"values": sizes, 'AVG': st.mean(sizes)}
+
 
     @staticmethod
     def print_metrics():
@@ -63,6 +70,17 @@ class Metrics:
         # decentralisation
         for key, value in Metrics.decentralisation.items():
             averages[key]["Decentralisation"] = "%.6f" % value
+
+        for key, value in Metrics.transaction_info.items():
+            averages[key]['TX in pool'] = value['pool']
+            averages[key]['Confirmed TX'] = value['processed_tx']
+            try:
+                averages[key]['Unconfirmed ratio'] = round(value['pool'] / value['processed_tx'], 3)
+            except ZeroDivisionError:
+                averages[key]['Unconfirmed ratio'] = 0
+
+        for key, value in Metrics.block_info.items():
+            averages[key]["AVG block size"] = round(value['AVG'], 3)
 
         print(tools.color(f'{"-"*30} METRICS {"-"*30}', 41))
 
@@ -160,6 +178,20 @@ class Metrics:
 
         return Metrics.gini_coeficient(cumulative_dist)
 
+    @staticmethod
+    def measure_transactions(node):    
+        node_info = {}
+        if Parameters.application['transaction_model'] == 'local':
+            node_info['pool'] = len(node.pool)
+        else:
+            node_info['pool'] = len(Parameters.tx_factory.global_mempool)
+
+        node_info['processed_tx'] = sum(len(b.transactions) for b in node.blockchain)
+        return node_info
+
+    def measure_block_sizes(blocks):
+        return [b.size for b in blocks]
+        
     @staticmethod
     def serialisable_node(node):
         state = {}

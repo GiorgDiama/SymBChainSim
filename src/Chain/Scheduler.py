@@ -9,7 +9,6 @@ class Scheduler:
     def schedule_broadcast_message(self, creator, time, payload, handler):
         # Schedules a message broadcast from node
         event = Event(handler, creator, time, payload)
-
         Network.send_message(creator, event)
         return event
 

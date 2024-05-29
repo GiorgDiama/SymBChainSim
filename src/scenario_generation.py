@@ -41,7 +41,7 @@ def generate(name, parameters_dict):
         'intervals': {}
     }
 
-    # each node gets a random network model assinged to it
+    # each node gets a random network model assigned to it
     node_networks = [random.choice(networks) for _ in range(num_nodes)]
 
     tx_id = 0
@@ -53,7 +53,7 @@ def generate(name, parameters_dict):
         scenario['intervals'][interval]['network'] = []
         scenario['intervals'][interval]['transactions'] = []
 
-        # select faulty nodes for current inverval
+        # select faulty nodes for current interval
         f = random.sample(faulty, k=random.randint(0, no_faulty))
         # generate faults
         for node_id in f:
@@ -118,7 +118,7 @@ def generate(name, parameters_dict):
 # }
 
 parameters_dict = {
-    'dur': 3600*2,
+    'dur': 600,
     'ti_mu': 300,
     'ti_sigma': 60,
     'num_nodes': 16,

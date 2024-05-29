@@ -9,6 +9,7 @@ import Chain.tools as tools
 
 from Chain.Consensus.PBFT.PBFT_state import PBFT
 from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
+from Chain.Consensus.Tendermint.TM_state import Tendermint
 
 import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
 import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
@@ -38,7 +39,8 @@ class Manager:
 
         Parameters.CPs = {
             PBFT.NAME: PBFT,
-            BigFoot.NAME: BigFoot
+            BigFoot.NAME: BigFoot,
+            Tendermint.NAME: Tendermint
         }
 
         Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
@@ -101,6 +103,17 @@ class Manager:
 
         self.sim.init_simulation()
 
+    def load_workload(self):
+        with open(Parameters.simulation['workload'],'r') as f:
+            data = json.load(f)
+        
+        Parameters.simulation['stop_after_tx'] = len(data)
+        Parameters.simulation['simTime'] = -1
+        Parameters.simulation['stop_after_blocks'] = -1
+        
+
+        Parameters.tx_factory.add_scenario_transactions([x.values() for x in data])
+
     def set_up(self, num_nodes=-1):
         '''
             Initial tasks required for the simulation to start
@@ -122,19 +135,33 @@ class Manager:
         # initialise simulation
         self.sim.init_simulation()
 
+        if Parameters.simulation['workload'] != 'generate':
+            self.load_workload()
+
         if Parameters.simulation['print_info']:
             print(self.simulation_details())
 
     def finished(self):
         # check if we have reached desired simulation duration
-        times_out = (Parameters.simulation["simTime"] != -1 and
-                     self.sim.clock >= Parameters.simulation["simTime"])
+        if Parameters.simulation["simTime"] != -1:
+            times_out = self.sim.clock >= Parameters.simulation["simTime"]
+        else:
+            times_out = False
 
         # check if the desired amount blocks have been confirmed
-        reached_blocks = (Parameters.simulation["stop_after_blocks"] != -1 and
-                          Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"])
+        if Parameters.simulation["stop_after_blocks"] != -1:
+            reached_blocks = Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"]
+        else:
+            reached_blocks = False
 
-        finish_conditions = [times_out, reached_blocks]
+        # check if we confirmed the desired amount of txs
+        if Parameters.simulation['stop_after_tx'] != -1:
+            curr_processed = [sum([len(block.transactions) for block in node.blockchain]) for node in self.sim.nodes]
+            processed_all = all(map(lambda x: x >= Parameters.simulation['stop_after_tx'], curr_processed))
+        else:
+            processed_all = False
+
+        finish_conditions = [times_out, reached_blocks, processed_all]
 
         # if any finish condition is true, return true else false
         return any(finish_conditions)
@@ -170,8 +197,10 @@ class Manager:
         '''
             Sets up initial events 
         '''
-        # generates the transactions every time interval
-        generate_txionsSE.schedule_event(self, init=True)
+        
+        if Parameters.simulation['workload'] == 'generate':
+            # generates the transactions every time interval
+            generate_txionsSE.schedule_event(self, init=True)
 
         if Parameters.dynamic_sim["use"]:
             # if we are using dynamic simulation: load events that handle the dynamic updates

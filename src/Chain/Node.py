@@ -68,12 +68,12 @@ class Node():
             When current event cannot be executed (due to message delays
             causing lag in state updates) it is added to the backlog. Once
             state is updated the backlogged events are checked to see whether
-            they can be excecuted.
+            they can be executed.
             example in PBFT:
-                Node_1 recieves a valid commit message in pre-prepare state.
-                Node_1 cannot process such a message since he has not received enough prepare messges to move to prepared state
-                Node_1 stores commit message in the backlog (instead of ingoring since it).
-                After node_1 recieves enough prepare messages and its state is updated to prepared the backlog is checked
+                Node_1 receives a valid commit message in pre-prepare state.
+                Node_1 cannot process such a message since he has not received enough prepare messages to move to prepared state
+                Node_1 stores commit message in the backlog (instead of ignoring since it).
+                After node_1 receives enough prepare messages and its state is updated to prepared the backlog is checked
                 The commit message can be handled now
                 Without backlog Node_1 would have not be able to complete the CP protocol
         p: Simulation parameters
@@ -204,7 +204,7 @@ class Node():
     def kill(self):
         self.state.alive = False
 
-    def resurect(self):
+    def resurrect(self):
         self.state.alive = True
 
     def add_block(self, block, time):

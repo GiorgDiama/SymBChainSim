@@ -8,6 +8,7 @@ import random
 import numpy
 import sys
 import statistics as st
+import json
 
 ############### SEEDS ############
 seed = 5
@@ -15,7 +16,20 @@ random.seed(seed)
 numpy.random.seed(seed)
 ############## SEEDS ############
 
+def save_blockchain(sim):
+    blockchains = {}
+    for node in sim.nodes:
+        blockchains[node.id] = []
+        for block in node.blockchain[1:]:
+            blockchains[node.id].append({
+                'size': block.size,
+                'timestamp': block.time_added,
+                'tx': [(x.id, x.timestamp) for x in block.transactions]
+            })
 
+    with open("output/blockchain.json",'w') as f:
+        json.dump(blockchains, f, indent=4)
+    
 def get_blocks_by_cp(manager, simple=True):
     if simple:
         for n in manager.sim.nodes:
@@ -63,10 +77,10 @@ def run():
         else:
             print(f'{key}: {value}')
 
-    print(tools.color(
-        f"SIMULATED TIME {'%.2f'%manager.sim.clock}", 45))
-    print(tools.color(f"EXECUTION TIME: {runtime}", 45))
+    save_blockchain(manager.sim)
 
+    print(tools.color(f"SIMULATED TIME {'%.2f'%manager.sim.clock}", 45))
+    print(tools.color(f"EXECUTION TIME: {runtime}", 45))
 
 def run_scenario(scenario):
     manager = Manager()

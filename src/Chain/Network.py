@@ -26,12 +26,14 @@ class Network:
 
     @staticmethod
     def size(msg):
+        if 'net_msg_size' in msg.payload:
+            return msg.payload['net_msg_size']
+        
         size = Parameters.network["base_msg_size"]
 
         for key in msg.payload:
             if key == "block":
-                size += msg.payload[key].size + \
-                    Parameters.data["base_block_size"]
+                size += msg.payload[key].size + Parameters.data["base_block_size"]
             else:
                 size += float(getsizeof(msg.payload[key])/1000000)
 

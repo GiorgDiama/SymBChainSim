@@ -27,16 +27,12 @@ class TransactionFactory:
 
     def transaction_prop(self, tx):
         if Parameters.application["transaction_model"] == "global":
-            if Parameters.application["transaction_model"]:
-                # model transaction propagation based on creators bandwidth
-                prop_delay = Network.calculate_message_propagation_delay(
-                    self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
-                new_timestamp = tx.timestamp + prop_delay
-                tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
-                self.global_mempool.append(tx)
-            else:
-                self.global_mempool.append(tx)
-
+            # model transaction propagation based on creators bandwidth
+            prop_delay = Network.calculate_message_propagation_delay(
+                self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
+            new_timestamp = tx.timestamp + prop_delay
+            tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
+            self.global_mempool.append(tx)
         elif Parameters.application["transaction_model"] == "local":
             for node in self.nodes:
                 if node.id == tx.creator:
@@ -53,7 +49,7 @@ class TransactionFactory:
 
     def add_scenario_transactions(self, txion_list):
         for creator, id, timestamp, size in txion_list:
-            t = Transaction(creator, id, timestamp, size/1000)
+            t = Transaction(creator, id, timestamp, size / 1e6)
             self.transaction_prop(t)
 
     def generate_interval_txions(self, start):
@@ -87,7 +83,7 @@ class TransactionFactory:
                     f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     @staticmethod
-    def get_transactions_from_pool(pool, time):
+    def get_transactions_from_pool(pool, time):       
         transactions = []
         size = 0
 
@@ -108,7 +104,7 @@ class TransactionFactory:
     def remove_transactions_from_pool(txions, pool):
         t_idx, p_idx = 0, 0
         # for each transactions in txions go over pool: look for it and remove it
-        while t_idx < len(txions) and p_idx < len(pool)-1:
+        while t_idx < len(txions) and p_idx < len(pool):
             if txions[t_idx].id == pool[p_idx].id:
                 pool.pop(p_idx)
                 t_idx += 1

@@ -1,0 +1,4 @@
+timeout: 500
+base_block_size: 2200
+hash_size: 40
+time_per_tx: 0.022

@@ -3,58 +3,61 @@ dynamic_sim:
   config: "Configs/dynamic_config.yaml"
 
 simulation:
-  init_CP: "PBFT"
-  simTime: 600
+  init_CP: "Tendermint"
+  simTime: -1
   stop_after_blocks: -1
+  stop_after_tx: -1
   interval_switch: False
   interval_mean: 60
   interval_sigma: 10
   debugging_mode: False
-  remove_timeouts: False
+  remove_timeouts: True
   print_every: 200
   snapshots: False
   print_info: False
+  workload: 'Workloads/1m-net_5k-tx_1s-bt.json'
 
 application:
   Nn: 4
   TI_dur: 25
-  Tn: 100
+  Tn: 300
   base_transaction_size: 0
-  Tsize: 0.005
+  Tsize: 0
   transaction_model: "local"
 
 execution:
-  creation_time: 0.1
-  block_val_delay: 0.025
-  msg_val_delay: 0.01
-  sync_message_request_delay: 1
+  creation_time: 0.02
+  block_val_delay: 0.01
+  msg_val_delay: 0.001
+  sync_message_request_delay: 0.05
   proposer_selection: "round_robin"
 
 data:
-  Bsize: 1
+  Bsize: 10000000000000000000
   base_block_size: 0
   block_interval: 0
 
 network:
-  base_msg_size: 0.2
+  base_msg_size: 0.1
   gossip: False
   num_neighbours: 3
-  use_latency: measured
-  same_city_latency_ms: 10
+  use_latency: "local"
+  same_city_latency_ms: 5
   same_city_dev_ms: 0
   queueing_delay: 0
   processing_delay: 0
 
   bandwidth:
-    mean: 5
+    mean: .9
     dev: 0
-    min: 2
+    min: 1
 
   measure_avg_transmission_delay: False
 
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
+  Tendermint: Chain/Consensus/Tendermint/TM_config.yaml
 
 behaviour:
   use: False
