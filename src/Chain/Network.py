@@ -22,6 +22,8 @@ class Network:
     latency_map = None
     distance_map = None
 
+    received = None
+
     @staticmethod
     def size(msg):
         size = Parameters.network["base_msg_size"]
@@ -38,24 +40,18 @@ class Network:
     @staticmethod
     def send_message(creator, event):
         if Parameters.network["gossip"]:
-            raise(NotImplementedError("Gossip is currently a bit borken in this version :|"))
             Network.multicast(creator, event)
         else:
             Network.broadcast(creator, event)
 
     @staticmethod
     def multicast(node, event):
+        Network.received[node].add(event.id)
+
         for n in node.neighbours:
             msg = MessageEvent.from_Event(event, n)
-            Network.gossip_message(node, n, msg)
-
-    @staticmethod
-    def gossip_message(sender, receiver, msg):
-        # if the receiver has received this event (ignore) or the receiver created the message
-        if receiver.queue.contains_event_message(msg) or msg.creator == receiver:
-            return 0
-
-        Network.message(sender, receiver, msg)
+            msg.forwarded_by = str(node.id) + ' (creator)'
+            Network.message(node, n, msg)
 
     @staticmethod
     def broadcast(node, event):
@@ -74,8 +70,30 @@ class Network:
         receiver.add_event(msg)
 
     @staticmethod
-    def receive(node, event):
-        pass
+    def receive(node, msg):
+        if Parameters.network['gossip']:
+            if msg.id in Network.received[node]:
+                return False
+            
+            Network.received[node].add(msg.id) # mark this message as received
+
+            # only forward the message to peers that have not received the messages yet (saves loads of useless events!)
+            neighbours = [n for n in node.neighbours if msg.id not in Network.received[n]]
+
+            for n in neighbours:
+                new_msg = MessageEvent(
+                    handler=msg.handler,
+                    creator=msg.creator,
+                    time=msg.time,
+                    payload=msg.payload, 
+                    id=msg.id,
+                    receiver=n)
+
+                new_msg.forwarded_by = str(node.id) + ' (gossip)'
+
+                Network.message(node, n, new_msg)
+
+        return True
 
     @staticmethod
     def calculate_message_propagation_delay(sender, receiver, message_size):
@@ -129,11 +147,8 @@ class Network:
                 - Assigns locations and bandwidth to nodes
                 - Assigns neibhours to nodes (Gossip, Sync etc...)
         '''
-        Network.avg_transmission_delay = np.zeros((len(nodes), len(nodes)))
-        Network.no_messages = np.zeros((len(nodes), len(nodes)))
-
         if Parameters.network["gossip"]:
-            raise NotImplementedError("Gossip is currently broken...")
+            Network.received = {node: set() for node in nodes}
 
         Network.nodes = nodes
 
@@ -169,9 +184,31 @@ class Network:
             for n in Network.nodes:
                 Network.assign_neighbours(n)
         else:
-            node.neighbours = random.sample(
-                [x for x in Network.nodes if x != node],
-                Parameters.network["num_neighbours"])
+            num_neigh = Parameters.network["num_neighbours"]
+
+            # get other nodes in network in a random order
+            other_nodes = [x for x in Network.nodes if x != node]
+            random.shuffle(other_nodes)
+
+            # assign neighbours
+            for other_node in other_nodes:
+                if len(other_node.neighbours) < num_neigh and node not in other_node.neighbours:
+                    node.neighbours.append(other_node)
+                    other_node.neighbours.append(node)
+
+                if len(node.neighbours) == num_neigh:
+                    break
+
+            # if all other nodes have num_neigh neighbours and we could not assing num_neigh neighbours to current node
+            # randomly pick some nodes that will have extra neighbours to ensure node has num_neigh neighbours
+            if len(node.neighbours) < num_neigh:
+                for other_node in other_nodes:
+                    if node not in other_node.neighbours:
+                        node.neighbours.append(other_node)
+                        other_node.neighbours.append(node)
+
+                    if len(node.neighbours) == num_neigh:
+                        break
 
     @staticmethod
     def assign_location_to_nodes(node=None, location=None):

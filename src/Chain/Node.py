@@ -49,7 +49,7 @@ class Node():
         self.pool = []
         self.blocks = 0
 
-        self.neighbours = None
+        self.neighbours = []
         self.location = None
         self.bandwidth = None
 

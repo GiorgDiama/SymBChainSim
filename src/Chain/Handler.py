@@ -23,6 +23,12 @@ def handle_event(event, backlog=False):
             backlog     - future message, add to backlog
     '''
 
+    # check if received message has been received in the past (gossip only)
+    if isinstance(event, MessageEvent):
+        is_new_message = Network.receive(event.actor, event)
+        if not is_new_message:
+            return 'invalid'
+        
     # if node is dead - event will not be handled
     if not event.actor.state.alive:
         return 'dead_node'

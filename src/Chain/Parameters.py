@@ -48,6 +48,7 @@ class Parameters:
             print("NO 'simulation' Parameters")
 
         Parameters.simulation["events"] = {}  # cnt events of each type
+        Parameters.simulation['event_id'] = 0 # used to assing events incremental IDs
 
         try:
             Parameters.network = params["network"]

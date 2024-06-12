@@ -116,10 +116,15 @@ def sim_info(simulator, print_event_queues=True):
                 # decide what todo based on type
                 if isinstance(event, MessageEvent) or isinstance(event, Event):
                     # simulation events
-                    if event.actor.id in events_per_node:
-                        events_per_node[event.actor.id] += str(e[1]) + '\n'
+                    if isinstance(event, MessageEvent):
+                        event_string = str(e[1]) + " from: " + str(e[1].forwarded_by) + '\n'
                     else:
-                        events_per_node[event.actor.id] = str(e[1]) + '\n'
+                         event_string = str(e[1]) + '\n'
+
+                    if event.actor.id in events_per_node:
+                        events_per_node[event.actor.id] += event_string
+                    else:
+                        events_per_node[event.actor.id] = event_string
                 else:
                     # system events
                     events_per_node[-1] += str(e[1]) + "\n"
