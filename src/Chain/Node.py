@@ -19,7 +19,7 @@ class Behaviour():
 
 class Node():
     '''
-    Node - models a blockchain node
+    Node - models a generic blockchain node
 
     Attributes:
         id: unique node id
@@ -33,21 +33,18 @@ class Node():
             cp_state: a namespace storing CP specific data (defined by the CP)
             extra_data: a map storing extra data needed in the node
 
-        Queue: The event queue stores events (used in the simulation)
+        Queue: The event queue of the DES
 
         Backlog: Stores 'future' events
-            When current event cannot be executed (due to message delays
-            causing lag in state updates) it is added to the backlog. Once
-            state is updated the backlogged events are checked to see whether
-            they can be executed.
+            When an event appears to be from the future (e.g. from nodes that are further ahead in the consensus processes) it as added to the backlog.
+            Once the state is updated, the backlogged events are checked to see whether they can be executed.
             example in PBFT:
-                Node_1 receives a valid commit message in pre-prepare state.
-                Node_1 cannot process such a message since he has not received enough prepare messages to move to prepared state
-                Node_1 stores commit message in the backlog (instead of ignoring since it).
-                After node_1 receives enough prepare messages and its state is updated to prepared the backlog is checked
-                The commit message can be handled now
-                Without backlog Node_1 would have not be able to complete the CP protocol
-        p: Simulation parameters
+                Node_1 receives a valid commit message while in the 'pre-prepare' state.
+                Node_1 cannot process such a message since he has not received enough prepare messages to move to the 'prepared' state
+                Node_1 stores the commit message in its backlog (instead of ignoring since it could be valid).
+                After node_1 receives enough prepare messages and its state is updated to 'prepared' the backlog is checked
+                The commit message can now be handled properly
+                Without the backlog mechanism Node_1 might not have been able to complete the CP protocol and could eventually desync!
     '''
 
     def __init__(self, id, queue):
@@ -146,19 +143,22 @@ class Node():
 
     def stored_txions(self, num=None):
         '''
-            Returns the last 'num' txions from the pool - if num is None get everything
+            Returns the last 'num' txions from the pool - if num is None returns a list of all txions in the pool
         '''
-        if num is not None:
-            num = -num
+        num = 0 if num is None else -num
 
         return [x.id for x in self.pool[num:]]
 
     def blockchain_length(self):
+        '''
+            Returns the length of the blockchain (excluding the genesis block)
+        '''
         return len(self.blockchain)-1
 
     def synced_with_neighbours(self):
         '''
-            Comparing the latest block of current node with all neighbours to check sync status
+            Compares the latest block of current node with all peers to check sync status
+            If desynced, returns the node that is furthest (useful to the sync operation)
         '''
         # create (neighbour, block, depth) pairs from neighbours that have a later block than us
         neighbours_ahead = [
@@ -166,21 +166,28 @@ class Node():
             if n.last_block.depth > self.last_block.depth]
 
         if neighbours_ahead:
-            # return false and the node that is furthurest ahead
+            # return false and the node that is furthest ahead
             node_furthest_ahead = max(neighbours_ahead, key=lambda x: x[2])
             return False, node_furthest_ahead[0]
         else:
             return True, None
 
     def kill(self):
+        '''
+            Sets the current node state to offline
+        '''
         self.state.alive = False
 
     def resurrect(self):
+        '''
+            Resurrects an offline nodes
+        '''
         self.state.alive = True
 
     def add_block(self, block, time):
         '''
             Adds 'block' to blockchain at time 'time'
+            Removes included transactions from the memory pool
         '''
         block.time_added = time
         self.blockchain.append(block)
@@ -197,5 +204,8 @@ class Node():
                 Parameters.tx_factory.depth_removed = block.depth
 
     def add_event(self, event):
+        '''
+            Adds an event to the event queue
+        '''
         if self.state.alive:
             self.queue.add_event(event)

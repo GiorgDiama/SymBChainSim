@@ -8,19 +8,28 @@ import subprocess
 from Chain.Parameters import Parameters
 from Chain.Event import SystemEvent, MessageEvent, Event
 
+'''
+    A collection of useful utility functions and tools for SBS
+'''
 
 def debug_logs(msg, **kwargs):
     '''
-        must set environment variable 'debug' to true (env_vars.yaml)] (can overwrite with nd as cmd arg)
-        colors: 
-            40:black
-            41:red
-            42:green
-            43:yellow
-            44:light_blue
-            45:purple
-            46:green
-            47:white
+        Calling debug_logs allows logging messages and stopping simulation and executing commands when the simulation runs in debug mode!
+            - calls are ignored during normal execution
+        
+        Debug mode can be set from the config or by passing the -d command line argument
+            
+        You can use the following colours using the color()  function
+            color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:green | 47:white
+
+        Supported **kwargs:
+            col: prints the messages with the specified color
+            input and in_col: prints the message + an additional message using the input() method essentially stopping the execution until enter is pressed
+                - the input is ignored!
+                example: debug_logs("Hello", input="another message that will stop execution until enter is pressed")
+            command: allows for stopping execution and executing commands
+                - when using the command argument the simulation instance must be passed using the simulation kwarg
+                list of commands can be seen in exec_cmd()
     '''
 
     if Parameters.simulation["debugging_mode"]:
@@ -33,6 +42,7 @@ def debug_logs(msg, **kwargs):
             if "in_col" in kwargs:
                 kwargs['input'] = color(kwargs['input'], kwargs['in_col'])
             input(kwargs['input'])
+    
         if "command" in kwargs:
             if "simulator" not in kwargs:
                 raise ValueError(
@@ -53,13 +63,18 @@ def debug_logs(msg, **kwargs):
 
 
 def get_named_cmd_arg(name):
+    '''
+        Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
+    '''
     if name in sys.argv:
         return sys.argv[sys.argv.index(name)+1]
     else:
         return None
 
-
 def parse_cmd_args():
+    '''
+        Modifies simulation parameters based on cmd arguments
+    '''
     if "nd" in sys.argv:
         Parameters.simulation["debugging_mode"] = False
 
@@ -77,7 +92,9 @@ def parse_cmd_args():
         Parameters.network['num_neighbours'] = int(param)
 
 def exec_cmd(simulator, cmd):
-    ''' When debug mode is on - a command can be given as input (this handles the execution)'''
+    '''
+        Implementation of commands for debug_logs
+    '''
     if cmd == '':
         return ""
 
@@ -97,6 +114,9 @@ def exec_cmd(simulator, cmd):
 
 
 def sim_info(simulator, print_event_queues=True):
+    '''
+        Prints a detailed state of the simulation state
+    '''
     if Parameters.simulation["debugging_mode"]:
         try:
             subprocess.run("clear")
@@ -157,7 +177,6 @@ def sim_info(simulator, print_event_queues=True):
 
 ####################### YAML ######################
 
-
 def read_yaml(path):
     with open(path, 'rb') as f:
         data = yaml.safe_load(f)
@@ -170,8 +189,10 @@ def write_yaml(data, path):
 
 ###################### COLOR #####################
 
-
 def color(string, c=44):
+    '''
+        Prints 'string' with a specific color
+    '''
     return f'\x1b[1;37;{c}m' + string + '\x1b[0m'
 
 ###################### Distributions #############

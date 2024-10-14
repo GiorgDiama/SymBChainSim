@@ -8,21 +8,15 @@ from Chain.Parameters import Parameters
 def round_change_state(round=0):
     '''
         Round change state
+            round: current round the node is on
+            change_to: (default -1) denotes the round number the node wants to change to
+            votes: stores round_change votes from other nodes
     '''
     return SimpleNamespace(
         round=round,
         change_to=-1,
         votes={}
     )
-
-
-def state_to_string(node):
-    '''
-        returns the state of *node* as a string
-    '''
-    s = f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
-    return s
-
 
 def reset_votes(node):
     '''
@@ -35,9 +29,12 @@ def handle_event(event):
     '''
         handles round change events
     '''
-    if event.payload['type'] == "round_change":
-        handle_round_change_msg(event)
-
+    match event.payload['type']:
+        case "round_change":
+            handle_round_change_msg(event)
+        case _:
+            raise ValueError(
+                f"Event '{event.payload['type']}' was not handled by its own handler...")
 
 def change_round(node, time):
     '''
@@ -63,6 +60,9 @@ def change_round(node, time):
 
 
 def handle_round_change_msg(event):
+    '''
+        Logic to handle received round_change messages
+    '''
     node = event.receiver
     time = event.time
     new_round = event.payload['new_round']
@@ -70,12 +70,15 @@ def handle_round_change_msg(event):
 
     msgs = state.rounds.votes
 
+    # ignore messages voting for a round lower than the current round
     if state.rounds.round >= new_round:
         return 'invalid'
 
+    # try to count the vote (if message contains an invalid vote return)
     if ret := count_round_change_vote(node, new_round, event.creator) == 'invalid':
         return ret
 
+    
     if (len(msgs[new_round]) == Parameters.application["f"]+1) and (new_round > state.rounds.change_to):
         state.state = 'round_change'
         state.rounds.change_to = new_round
@@ -91,6 +94,13 @@ def handle_round_change_msg(event):
 
 
 def get_next_round(node):
+    '''
+        analyses the received round changes messages to figure out which round should be 'next_round'
+            if 1/3+1 of the nodes have votes for a round higher than ours:
+                next round: that round
+            otherwise:
+                next round: current_round + 1
+    '''
     change_msgs = node.cp.rounds.votes
 
     new_round_candidates = [
@@ -105,6 +115,9 @@ def get_next_round(node):
 
 
 def count_round_change_vote(node, new_round, voter):
+    '''
+        implements logic that counts votes received from other nodes
+    '''
     msgs = node.cp.rounds.votes
 
     for key in msgs:
@@ -122,3 +135,9 @@ def count_round_change_vote(node, new_round, voter):
         msgs[new_round] = [voter]
 
     return "handled"
+
+def state_to_string(node):
+    '''
+        returns the round change state of *node* as a string
+    '''
+    return f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"

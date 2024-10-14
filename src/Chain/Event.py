@@ -12,7 +12,6 @@ class Event():
 
         actor: reference to the node that this event is meant for - any object inheriting base event *MUST* use the "actor" attribute
     '''
-
     def __hash__(self) -> int:
         return hash((self.id, self.time))
 

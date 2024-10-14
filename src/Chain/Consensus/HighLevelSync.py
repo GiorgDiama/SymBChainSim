@@ -21,9 +21,12 @@ def handler(event):
 
 def create_local_sync_event(desynced_node, request_node, time):
     '''
-        get missing blocks from request node
-        (node from which we request missing blocks i.e node whose message made us know we are de-synced)
-        Calculate transmission + validation delay and create local sync event after
+        Gets missing blocks from request node
+        Request node: node from which we request missing blocks
+            examples: 
+                - the node whose message made us aware that we are de-synced
+                - the peer with the longest chain)
+        Calculates transmission + validation delay and creates a local sync event (local event of the desynced node) at the moment in time when the sync processes would have finished
     '''
     # get the last block of de-synced node
     latest_block = desynced_node.last_block
@@ -84,7 +87,12 @@ def create_local_sync_event(desynced_node, request_node, time):
 
 
 def handle_local_sync_event(event):
-    ''' check for failures and copy missing blocks to end of blockchain and call CP specific resync method '''
+    '''
+        Checks for failures and copies missing blocks to end of the callers blockchain. 
+        Checks if the node we are syncing with has received any blocks while we were waiting for the currents once
+            If so, tried to get the new blocks 
+        Relies on calling the CP specific resync method for the node to rejoin the consensus process 
+    '''
     node = event.creator
 
     if event.payload['fail']:

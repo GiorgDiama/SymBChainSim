@@ -3,7 +3,7 @@ from Chain.Event import SystemEvent
 import heapq
 
 
-def log_events(event):
+def log_events(event):    
     if isinstance(event, SystemEvent):
         # count system events
         Parameters.simulation['events'][event.payload['type']] = Parameters.simulation["events"].get(
@@ -37,9 +37,6 @@ class PrioQueue:
         return len(self.pq)
 
     def remove(self, task):
-        '''
-            Expensive operation!
-        '''
         if task in self.pq:
             self.pq.remove(task)
             heapq.heapify(self.pq)
@@ -61,9 +58,6 @@ class Queue:
         self.prio_queue.add_task(event, event.time)
 
     def remove_event(self, event):
-        '''
-            Expensive operation!
-        '''
         self.prio_queue.remove((event.time, event))
 
     def pop_next_event(self):

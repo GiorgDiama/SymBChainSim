@@ -14,6 +14,17 @@ from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 
 
 class Simulation:
+    '''
+        Basic blockchain simulation instance (must be managed by a Manager object)
+
+        q: The event queue storing simulation events
+        clock: The event driven simulation clock
+
+        nodes: a list of blockchain nodes 
+        current_cp: (string) the name of current consensus protocol
+        manager: a reference to the manager instance managing this simulation
+
+    '''
     def __init__(self) -> None:
         self.q = Queue()
         self.clock = 0
@@ -25,9 +36,17 @@ class Simulation:
 
         self.manager = None
 
+        '''
+            TODO: Move this somewhere else
+                - ideally, stop storing the TX factory in the parameters module!
+        '''
+        # initialise the transaction factory for this simulation and store in the in the Parameters module so that it can be accessed by all models (...)
         Parameters.tx_factory = TransactionFactory(self.nodes)
 
     def init_simulation(self):
+        '''
+            Initialises the simulation (genesis block and consensus protocols)
+        '''
         genesis = Block.genesis_block()
 
         # for each node: add the genesis block, set and initialise CP (NOTE: cp.init() produces the first events to kickstart the simulation)
@@ -37,6 +56,9 @@ class Simulation:
             n.cp.init()
 
     def sim_next_event(self):
+        '''
+            Retrieves and executes the next event in the event queue (q) updating the event driven clock
+        '''
         tools.debug_logs(msg=tools.sim_info(self, print_event_queues=True))
 
         # get next event
@@ -52,7 +74,3 @@ class Simulation:
             self.manager.handle_system_event(next_event)
         else:
             handle_event(next_event)
-
-    def run_simulation(self):
-        while self.clock <= Parameters.simulation['simTime']:
-            self.sim_next_event()

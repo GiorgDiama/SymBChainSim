@@ -16,12 +16,11 @@ from random import randint
 class BigFoot():
     '''
     BigFoot Consensus Protocol
-    Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with
-    dynamic validator membership"
+        Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with dynamic validator membership"
 
     BigFoot State:
         round - round change state defined by the rounds module
-        fast_path - boolean value determining wether the node is in the fast path or not 
+        fast_path - boolean value determining whether the node is in the fast path or not 
         state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
         msgs: list of messages received from other nodes
         timeout - reference to latest timeout event (when node state updates it is used to find event and delete from event queue)

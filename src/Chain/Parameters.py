@@ -9,7 +9,7 @@ def read_yaml(path):
 
 class Parameters:
     '''
-        Contains all the parameters defining the simulator
+        Contains all the parameters defined for the simulator and the simulation
     '''
     dynamic_sim = {}
     simulation = {}
@@ -49,6 +49,9 @@ class Parameters:
 
     @staticmethod
     def load_params_from_config(config):
+        '''
+            Parses config yaml file and initialises parameter dictionaries
+        '''
         params = read_yaml(f"Configs/{config}")
 
         try:
@@ -97,6 +100,9 @@ class Parameters:
 
     @staticmethod
     def calculate_fault_tolerance():
+        '''
+            Calculates f and 2f+1 using number of nodes in the simulation
+        '''
         Parameters.application["f"] = int((1/3) * Parameters.application["Nn"])
 
         Parameters.application["required_messages"] = (
@@ -104,6 +110,9 @@ class Parameters:
 
     @staticmethod
     def parameters_to_string():
+        '''
+            Returns a formatted string of all simulation parameters
+        '''
         p_name_size = 30
 
         def dict_to_str(x):

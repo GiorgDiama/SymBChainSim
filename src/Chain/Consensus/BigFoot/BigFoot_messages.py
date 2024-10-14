@@ -1,3 +1,8 @@
+'''
+    Messages available to BigFoot nodes
+        - Abstracts the DES logic from the consensus implementation 
+'''
+
 def schedule_propose(state, time):
     payload = {
         'type': 'propose',

@@ -14,6 +14,7 @@ class Network:
             nodes: list of BP's
             locations: list of various locations node can be in
             latency_map: map of propagation latencies between locations
+            distance_map: map of distance between locations
     '''
     nodes = None
     locations = None
@@ -26,9 +27,15 @@ class Network:
 
     @staticmethod
     def size(msg):
+        '''
+            Calculates the size of a messages
+        '''
+
+        # if message defines its own size - simple use that
         if 'net_msg_size' in msg.payload:
             return msg.payload['net_msg_size']
         
+        # starting size == base_msg_size
         size = Parameters.network["base_msg_size"]
 
         for key in msg.payload:
@@ -111,15 +118,14 @@ class Network:
                 delay += Network.latency_map[sender.location][receiver.location][0] / 1000
             case "distance":
                 dist = Network.distance_map[sender.location][receiver.location]
-                # conversion to miles (formula fitted on miles)
+                # conversion to miles (regression fitted on miles)
                 dist = dist * 0.621371
                 '''
                     y = 0.022x + 4.862 is fitted to match the round trip latency given a distance
-                    source:
-                    Goonatilake, Rohitha, and Rafic A. Bachnak. "Modeling latency in a network distribution." Network and Communication Technologies 1.2 (2012): 1
+                    source: Goonatilake, Rohitha, and Rafic A. Bachnak. "Modeling latency in a network distribution." Network and Communication Technologies 1.2 (2012): 1
 
-                    / 2 to get the single trip latency
-                    / 1000 to get seconds (regression fitted on data in ms)
+                    / 2: get the single trip latency
+                    / 1000: convert to seconds (regression fitted on data in ms)
                 '''
                 delay += ((0.022 * dist + 4.862) / 2) / 1000
             case "local":
@@ -130,8 +136,7 @@ class Network:
                 raise ValueError(
                     f"no such latency type '{Parameters.network['use_latency']}'")
 
-        delay += Parameters.network["queueing_delay"] + \
-            Parameters.network["processing_delay"]
+        delay += Parameters.network["queueing_delay"] + Parameters.network["processing_delay"]
 
         if Parameters.network['measure_avg_transmission_delay']:
             Network.avg_transmission_delay[sender.id, receiver.id] += delay
@@ -141,9 +146,12 @@ class Network:
 
     @staticmethod
     def get_bandwidth(sender, receiver):
+        '''
+            Calculates the bandwidth between the nodes
+        '''
         return min(sender.bandwidth, receiver.bandwidth)
 
-    ########################## SET UP NETWORK ############################
+    ########################## SET UP ############################
 
     @staticmethod
     def init_network(nodes, speeds=None):
@@ -201,7 +209,7 @@ class Network:
     @staticmethod
     def assign_location_to_nodes(node=None, location=None):
         '''
-            node->Node (default)
+            node->None (default)
             Assigns random locations to nodes by default
             if node is provided assign a random location to just this node
         '''

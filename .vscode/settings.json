@@ -5,6 +5,7 @@
         "getsizeof",
         "neighbour",
         "neighbours",
-        "PBFT"
+        "PBFT",
+        "Tendermint"
     ]
 }
