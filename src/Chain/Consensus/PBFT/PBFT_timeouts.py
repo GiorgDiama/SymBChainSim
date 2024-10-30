@@ -5,6 +5,10 @@ import Chain.Consensus.Rounds as Rounds
 
 
 def handle_timeout(state, event):
+    ''' 
+        Handler for timeout event - initiates round change logic
+        Detects desyncs and initialises resync process 
+    '''
     if event.payload['round'] == state.rounds.round:
         if state.node.update(event.time):
             return 0
@@ -23,6 +27,9 @@ def handle_timeout(state, event):
 
 
 def schedule_timeout(state, time, add_time=True):
+    '''
+        Schedules timeout event at time + PBFT.timeout
+    '''
     if add_time:
         time += Parameters.PBFT['timeout']
 

@@ -6,6 +6,11 @@ import Chain.Consensus.Rounds as Rounds
 
 
 def handle_timeout(state, event):
+    '''
+        Handles a timeout event for a BigFoot node 
+        Specifically for BigFoot, also handles the fast_path logic wherein a node has to check
+        if the node has enough prepare votes (2f+1) to move to the prepared state broadcasting a commit message
+    '''
     # ignore timeout events from old rounds
     if event.payload['round'] == state.rounds.round:
         if event.payload['type'] == "fast_path_timeout":

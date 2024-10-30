@@ -1,3 +1,6 @@
+'''
+    Abstracts creation of simulation events from protocol implementation
+'''
 def schedule_propose(state, time):
     payload = {
         'type': 'propose',

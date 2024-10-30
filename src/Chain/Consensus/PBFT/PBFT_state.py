@@ -44,20 +44,34 @@ class PBFT():
         self.block = None
 
     def state_to_string(self):
-        s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
-        return s
-
+        '''
+            Returns the state of the Protocol instance as a string
+        '''
+        return f"round: {self.rounds.round} | node_state:{self.state} | miner:{self.miner}| block:{self.block.id if self.block is not None else -1} | msgs: {self.msgs} | timeout_event: {(round(self.timeout.time,3), self.timeout.payload['round']) if self.timeout is not None else -1}"
+        
     def reset_msgs(self, round):
+        '''
+            Reset the state of the consensus messages
+        '''
         self.msgs = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
 
     def count_votes(self, type, round):
+        '''
+            Returns the number of votes for specific message type 
+        '''
         return len(self.msgs[type])
 
     def process_vote(self, type, sender, round, time):
+        '''
+            Counts a vote of 'type' by 'sender'
+        '''
         self.msgs[type] += [sender.id]
 
     def validate_message(self, event):
+        '''
+            Defines logic to validate messages (i.e events) according to the protocol
+        '''
         round, current_round = event.payload['round'], self.rounds.round
 
         if round < current_round:
@@ -68,6 +82,9 @@ class PBFT():
             return True, 'backlog'
 
     def validate_block(self, block):
+        '''
+            Logic to validate block 
+        '''
         return block.depth - 1 == self.node.last_block.depth and block.extra_data["round"] == self.rounds.round
 
     def init(self, time=0, starting_round=0):
@@ -75,6 +92,12 @@ class PBFT():
         self.start(starting_round, time)
 
     def get_miner(self):
+        '''
+            Implements proposer selection algorithms used by the block producers to figure out who is the proposer per round
+
+            round_robin: current round mod number of block producers
+            hash_based: (last_block_hash + self.round) mod number of block producers
+        '''
         if Parameters.execution["proposer_selection"] == "round_robin":
             # new miner in a round robin fashion
             self.miner = self.rounds.round % Parameters.application["Nn"]
@@ -87,6 +110,9 @@ class PBFT():
                 f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def create_PBFT_block(self, time):
+        '''
+            Logic to create a PBFT block
+        '''
         # create block according to CP
         block = Block(
             depth=len(self.node.blockchain),
@@ -112,6 +138,10 @@ class PBFT():
             return None, time
 
     def start(self, new_round=0, time=0):
+        '''
+            Entry point into the protocol initialises state and utilises the
+            proposer selection mechanisms to dictate the behaviour of the node
+        '''
         if self.node.update(time):
             return 0
 
@@ -135,6 +165,9 @@ class PBFT():
             handle_backlog(self.node)
 
     def init_round_change(self, time):
+        '''
+            Called by the Rounds module when a node enters the round_change state - handles any protocol specific actions
+        '''
         timeouts.schedule_timeout(self, time, add_time=True)
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
@@ -151,7 +184,10 @@ class PBFT():
     ########################## HANDLER ###########################
 
     @staticmethod
-    def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
+    def handle_event(event):
+        '''
+            Local handler of PBFT handles all event types produced by the protocol
+        '''
         match event.payload["type"]:
             case 'propose':
                 return state_transitions.propose(event.actor.cp, event)
