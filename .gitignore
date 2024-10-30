@@ -1,3 +1,6 @@
+.vscode/
+.output/
+
 .DS_Store
 **/.DS_Store
 src/Scenarios/*
