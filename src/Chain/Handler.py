@@ -79,7 +79,7 @@ def handle_backlog(node):
         tools.debug_logs(
             msg=f"{node.__str__(full=True)}", input=f"HANDLING BACKLOG: {event} ", in_col="43", clear=False)
 
-        ret = handle_event(event, backlog=True)
+        ret = handle_event(event, checking_backlog=True)
 
         tools.debug_logs(msg=f"event returned {ret}")
 
