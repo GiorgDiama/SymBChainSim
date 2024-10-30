@@ -15,8 +15,18 @@ def propose(state, event):
     block, creation_time = state.create_PBFT_block(time)
 
     if block is None:
-        # if there is still time in the round, attempt to reschedule later when txions might be there
-        if creation_time + 1 + Parameters.execution['creation_time'] <= state.timeout.time:
+        # we can be smart and look ahead to directly move to the time transactions will be here 
+        # there is a chance that transactions are there but not generated yet so we cannot abort early
+        when_next = 0.1
+        if Parameters.application["transaction_model"] == "global":
+            if len(Parameters.tx_factory.global_mempool) >= 1:
+                when_next = Parameters.tx_factory.global_mempool[0].timestamp
+        else:
+            if len(state.node.pool) >= 1:
+                when_next = state.node.pool[0].timestamp
+
+        # if there is still time in the round, attempt to reschedule later when txions might be generated
+        if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
             PBFT_messages.schedule_propose(state, creation_time + 1)
         else:
             print(
@@ -25,15 +35,16 @@ def propose(state, event):
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'
         state.block = block.copy()
-        # create the votes extra_data field and log votes
+
+        # create the extra_data field and log votes
         state.block.extra_data['votes'] = {
             'pre_prepare': [], 'prepare': [], 'commit': []}
         state.block.extra_data['votes']['pre_prepare'].append((
             event.creator.id, time, Network.size(event)))
+        
         PBFT_messages.broadcast_pre_prepare(state, time, block)
 
     return 'handled'
-
 
 def pre_prepare(state, event):
     time = event.time
@@ -45,17 +56,18 @@ def pre_prepare(state, event):
         return 'invalid'
     if future is not None:
         return future
+    
     time += Parameters.execution["msg_val_delay"]
 
-    # if node is a new round state (i.e waiting for a new block to be proposed)
     match state.state:
-        case 'new_round':
+        case 'new_round': # if node is a new round state (i.e waiting for a new block to be proposed)
             # validate block
             time += Parameters.execution["block_val_delay"]
 
             if state.validate_block(block):
                 # store block as current block
                 state.block = event.payload['block'].copy()
+
                 # create the votes extra_data field and log votes
                 state.block.extra_data['votes'] = {
                     'pre_prepare': [], 'prepare': [], 'commit': []}
@@ -64,14 +76,17 @@ def pre_prepare(state, event):
 
                 # change state to pre_prepared since block was accepted
                 state.state = 'pre_prepared'
+
                 # broadcast prepare message
                 PBFT_messages.broadcast_prepare(state, time, state.block)
+
                 # count own vote
                 state.process_vote('prepare', state.node,
                                    state.rounds.round, time)
 
                 state.block.extra_data['votes']['prepare'].append((
                     event.actor.id, time, Network.size(event)))
+                
                 return 'new_state'  # state changed (will check backlog)
             else:
                 # if the block was invalid begin round change
@@ -87,7 +102,6 @@ def pre_prepare(state, event):
             raise ValueError(
                 f"Unexpected state '{state.state} for cp PBFT...'")
 
-
 def prepare(state, event):
     time = event.time
     block = event.payload['block']
@@ -99,6 +113,7 @@ def prepare(state, event):
         return 'invalid'
     if future is not None:
         return future
+    
     time += Parameters.execution["msg_val_delay"]
 
     match state.state:
@@ -164,9 +179,11 @@ def commit(state, event):
             if state.count_votes('commit', round) >= Parameters.application["required_messages"]:
                 # add block to BC
                 state.node.add_block(state.block, time)
+
                 # if miner: broadcast new block to nodes
                 if state.node.id == state.miner:
                     PBFT_messages.broadcast_new_block(state, time, block)
+
                 # start new round
                 state.start(state.rounds.round + 1, time)
 
@@ -206,7 +223,6 @@ def new_block(state, event):
 
         # add block and start new round
         state.node.add_block(block.copy(), time)
-
         state.start(event.payload['round']+1, time)
 
         return "handled"

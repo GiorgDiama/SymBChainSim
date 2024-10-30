@@ -12,12 +12,22 @@ def propose(state, event):
     block, creation_time = state.create_BigFoot_block(time)
 
     if block is None:
+        # we can be smart and look ahead to directly move to the time transactions will be here 
+        # there is a chance that transactions are there but not generated yet so we cannot abort early
+        when_next = 0.1
+        if Parameters.application["transaction_model"] == "global":
+            if len(Parameters.tx_factory.global_mempool) >= 1:
+                when_next = Parameters.tx_factory.global_mempool[0].timestamp
+        else:
+            if len(state.node.pool) >= 1:
+                when_next = state.node.pool[0].timestamp
+
         # if there is still time in the round, attempt to reschedule later when txions might be there
-        if creation_time + 1 + Parameters.execution['creation_time'] <= state.timeout.time:
+        if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
             BigFoot_messages.schedule_propose(state, creation_time + 1)
         else:
             print(
-                f"Block creationg failed at {time} for CP {state.NAME}")
+                f"Block creation failed at {time} for CP {state.NAME}")
     else:
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'
@@ -40,8 +50,8 @@ def pre_prepare(state, event):
         return future
     time += Parameters.execution["msg_val_delay"]
 
-    # if node is a new round state (i.e waiting for a new block to be proposed)
     match state.state:
+        # if node is a new round state (i.e waiting for a new block to be proposed)
         case 'new_round':
             # validate block
             time += Parameters.execution["block_val_delay"]
@@ -170,7 +180,7 @@ def commit(state, event):
         case 'new_round':
             return 'backlog'  # node is behind in votes... add to backlog
         case "pre_prepared":
-            return 'backlog'  # node is behind in votes... add to blocklog
+            return 'backlog'  # node is behind in votes... add to backlog
         case 'round_change':
             return 'invalid'  # node has decided to skip this round
         case _:
@@ -186,13 +196,13 @@ def new_block(state, event):
     time += Parameters.execution["block_val_delay"]
 
     if block.depth <= state.node.blockchain[-1].depth:
-        return "invalid"  # old block: ingore
+        return "invalid"  # old block: ignore
     elif block.depth > state.node.blockchain[-1].depth + 1:
         # future block: initiate sync
         if state.node.state.synced:
             state.node.state.synced = False
             Sync.create_local_sync_event(state.node, event.creator, time)
-        # if not synced then we have to wait for ohter blocks in order to validate this so we cannot accept it
+        # if not synced then we have to wait for other blocks in order to validate this so we cannot accept it
         return "handled"
     else:  # valid block
         # update_round if necessary

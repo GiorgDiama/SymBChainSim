@@ -14,22 +14,33 @@ def propose(state, event):
     block, creation_time = state.create_block(time)
 
     if block is None:
+        # we can be smart and look ahead to directly move to the time transactions will be here 
+        # there is a chance that transactions are there but not generated yet so we cannot abort early
         when_next = 0.1
-        if len(state.node.pool) >= 1:
-            when_next = state.node.pool[0].timestamp
+        if Parameters.application["transaction_model"] == "global":
+            if len(Parameters.tx_factory.global_mempool) >= 1:
+                when_next = Parameters.tx_factory.global_mempool[0].timestamp
+        else:
+            if len(state.node.pool) >= 1:
+                when_next = state.node.pool[0].timestamp
+            
         # if there is still time in the round, attempt to reschedule later when txions might be there
         if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
             messages.schedule_propose(state, when_next)
     else:
         time = creation_time
+
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'
         state.block = block.copy()
+
         # create the votes extra_data field and log votes
         state.block.extra_data['votes'] = {
             'pre_prepare': [], 'prepare': [], 'commit': []}
+        
         state.block.extra_data['votes']['pre_prepare'].append((
             event.creator.id, time, Network.size(event)))
+        
         messages.broadcast_pre_prepare(state, time, block)
 
     return 'handled'
