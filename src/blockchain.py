@@ -16,7 +16,7 @@ random.seed(seed)
 numpy.random.seed(seed)
 ############## SEEDS ############
 
-def save_blockchain(sim):
+def save_simulation_results(sim, name='results'):
     blockchains = {}
     for node in sim.nodes:
         blockchains[node.id] = []
@@ -27,7 +27,7 @@ def save_blockchain(sim):
                 'tx': [(x.id, x.timestamp) for x in block.transactions]
             })
 
-    with open("output/blockchain.json",'w') as f:
+    with open(f"output/{name}.json",'w') as f:
         json.dump(blockchains, f, indent=4)
     
 def get_blocks_by_cp(manager, simple=True):
@@ -76,11 +76,14 @@ def run():
     for key, value in Parameters.simulation['events'].items():
         if isinstance(value, dict):
             s = ' | '.join(f'{node}:{num}' for node, num in value.items())
-            print(f'{key}: {s}')
+            print(f'{key:15}: {s} {"TOTAL"} {sum([num for num in value.values()])}')
         else:
             print(f'{key}: {value}')
 
-    save_blockchain(manager.sim)
+    # save_blockchain(manager.sim)
+
+    # for block in manager.sim.nodes[0].blockchain[1:]:
+    #     print(st.mean([block.time_added - x.timestamp for x in block.transactions]))
 
     print(tools.color(f"SIMULATED TIME {'%.2f'%manager.sim.clock}", 45))
     print(tools.color(f"EXECUTION TIME: {runtime}", 45))
