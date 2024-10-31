@@ -48,7 +48,7 @@ class Behaviour:
                 fault_params["mean_recovery_time"]["high"]
             )
 
-    def apply_behavior(self):
+    def apply_behaviour(self):
         if "behaviour-off" in sys.argv:
             return 0
 
@@ -60,9 +60,10 @@ class Behaviour:
 
                 event = SystemEvent(
                     time=next_fault_time,
-                    payload={"type": "node fault",
-                             "node": fnode
-                             }
+                    payload={
+                        "type": "node fault",
+                        "node": fnode
+                    }
                 )
 
                 if fnode.behaviour.fault_event is not None:

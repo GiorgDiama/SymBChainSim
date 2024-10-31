@@ -38,10 +38,10 @@ def schedule_update_network_event(manager, init=False):
 
 def handle_update_network_event(manager, event):
     Parameters.network["bandwidth"]["mean"] = normalvariate(
-        *DynamicParameters.netwrok["mu_dist"])
+        *DynamicParameters.network["mu_dist"])
 
     Parameters.network["bandwidth"]["dev"] = normalvariate(
-        *DynamicParameters.netwrok["sigma_dist"])
+        *DynamicParameters.network["sigma_dist"])
 
     Network.set_bandwidths()
 
@@ -53,8 +53,8 @@ def handle_update_network_event(manager, event):
 ###########################################################################
 
 def schedule_update_workload_event(manager, init=False):
-    time = manager.sim.clock - 0.01 if init else (
-        manager.sim.clock + Parameters.application["TI_dur"] - 0.01)
+    time = manager.sim.clock if init else (
+        manager.sim.clock + Parameters.application["TI_dur"])
 
     event = SystemEvent(
         time=time,
@@ -79,7 +79,6 @@ def handle_update_workload_event(manager, event):
 ###########################################################################
 ######################     SNAPSHOT    ####################################
 ###########################################################################
-
 
 def schedule_snapshot_event(manager):
     # -0.01 snap shot before transactions are generated.

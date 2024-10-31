@@ -28,10 +28,10 @@ class Network:
     @staticmethod
     def size(msg):
         '''
-            Calculates the size of a messages
+            Calculates the size of a message. When the payload contains the key 'block' uses the block.size otherwise uses getsizeof.
+            Event payloads can define net_msg_size to bypass this check using that value instead
         '''
-
-        # if message defines its own size - simple use that
+        # if message defines its own size - simply use that
         if 'net_msg_size' in msg.payload:
             return msg.payload['net_msg_size']
         
@@ -48,6 +48,9 @@ class Network:
 
     @staticmethod
     def send_message(creator, event):
+        '''
+            Schedule a broadcast message to the network - abstract broadcasting approach from the rest of the system
+        '''
         if Parameters.network["gossip"]:
             Network.multicast(creator, event)
         else:
@@ -60,17 +63,17 @@ class Network:
         for n in node.neighbours:
             msg = MessageEvent.from_Event(event, n)
             msg.forwarded_by = str(node.id) + ' (creator)'
-            Network.message(node, n, msg)
+            Network._message(node, n, msg)
 
     @staticmethod
     def broadcast(node, event):
         for n in Network.nodes:
             if n != node:
                 msg = MessageEvent.from_Event(event, n)
-                Network.message(node, n, msg)
+                Network._message(node, n, msg)
 
     @staticmethod
-    def message(sender, receiver, msg, delay=True):
+    def _message(sender, receiver, msg, delay=True):
         delay = Network.calculate_message_propagation_delay(
             sender, receiver, Network.size(msg))
         
@@ -79,36 +82,50 @@ class Network:
         receiver.add_event(msg)
         
     @staticmethod
-    def receive(node, msg):
-        if Parameters.network['gossip']:
-            if msg.id in Network.received[node]:
-                return False
-            
-            Network.received[node].add(msg.id) # mark this message as received
+    def on_receive(node, msg):
+        '''
+            Handles logic of receiving a network message on a node. Returns 'process' if message should be  processed
+            otherwise returns the reason the message should not be processed e.g., 'gossiped'
+        '''
+        if not Parameters.network['gossip']:
+            return 'process' 
+                
+        if msg.id in Network.received[node]:
+            return 'gossiped'
+        
+        Network.received[node].add(msg.id) # mark this message as received
 
-            # only forward the message to peers that have not received the messages yet (saves loads of useless events!)
-            neighbours = [n for n in node.neighbours if msg.id not in Network.received[n]]
+        # only forward the message to peers that have not received the messages yet (saves loads of useless events!)
+        # this is fast due to hash_maps 
+        # short resembles a mechanism where nodes ask nodes if they have some data before bother sending it over although we dont model the delay of that
+        # If measuring the network traffic is important you can remove this
+        neighbours = [n for n in node.neighbours if msg.id not in Network.received[n]]
 
-            for n in neighbours:
-                new_msg = MessageEvent(
-                    handler=msg.handler,
-                    creator=msg.creator,
-                    time=msg.time,
-                    payload=msg.payload, 
-                    id=msg.id,
-                    receiver=n)
+        for n in neighbours:
+            new_msg = MessageEvent(
+                handler=msg.handler,
+                creator=msg.creator,
+                time=msg.time,
+                payload=msg.payload, 
+                id=msg.id,
+                receiver=n)
 
-                new_msg.forwarded_by = str(node.id) + ' (gossip)'
+            new_msg.forwarded_by = str(node.id) + ' (gossip)'
 
-                Network.message(node, n, new_msg)
+            Network._message(node, n, new_msg)
 
-        return True
+        return 'process'
             
     @staticmethod
     def calculate_message_propagation_delay(sender, receiver, message_size):
         '''
-            Calculates the message propagation delay as
-            transmission delay + propagation delay + queueing delay + processing_delay
+            Calculates the message propagation delay as:
+                transmission delay + propagation delay + queueing delay + processing_delay
+            supports 4 latency models: 
+                'measured': based collected latency data
+                'distance': formula based on distance
+                'local': based on set value in config
+                'off': latency = 0                
         '''
 
         # transmission delay
@@ -158,9 +175,9 @@ class Network:
         ''' 
             Initialise the Network modules
                 - Gets a reference to the node list
-                - Calculates latency_map and locations
+                - parses latency_map and distance_map and extracts locations
                 - Assigns locations and bandwidth to nodes
-                - Assigns neighbours to nodes (Gossip, Sync etc...)
+                - Assigns neighbour peers to nodes (used for Gossip, Sync etc...)
         '''
         Network.avg_transmission_delay = np.zeros((len(nodes), len(nodes)))
         Network.no_messages = np.zeros((len(nodes), len(nodes)))
@@ -181,6 +198,10 @@ class Network:
 
     @staticmethod
     def set_bandwidths(node=None):
+        '''
+            Set the bandwidth for a node (if node is given) otherwise set the bandwidth for all nodes
+            Bandwidth is set  based on the values specified in config
+        '''
         if node is None:
             for n in Network.nodes:
                 Network.set_bandwidths(n)

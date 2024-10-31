@@ -43,7 +43,7 @@ class Tendermint():
         self.block = None
 
     def state_to_string(self):
-        s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
+        s = f"round: {self.rounds.round} | round_votes: {self.rounds.votes}| CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
         return s
 
     def reset_msgs(self, round):
@@ -85,7 +85,7 @@ class Tendermint():
             raise (ValueError(
                 f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
-    def create_block(self, time):
+    def create_TM_block(self, time):
         # create block according to CP
         block = Block(
             depth=len(self.node.blockchain),
@@ -108,8 +108,11 @@ class Tendermint():
 
         if transactions:
             block.transactions = transactions
-            block.size = size
-            return block, time + Parameters.execution['creation_time'] + (Parameters.Tendermint['time_per_tx'] * len(transactions))
+            block.size = size + Parameters.data['base_block_size']
+            time += Parameters.execution['creation_time']
+            time += len(transactions) * Parameters.execution['time_per_tx']
+
+            return block, time
         else:
             return None, time
 
@@ -126,7 +129,7 @@ class Tendermint():
         # taking into account block interval for the proposal round timeout
         time += Parameters.data["block_interval"]
 
-        timeouts.schedule_timeout(self, time)
+        timeouts.schedule_timeout(self, time, add_time=True)
 
         # if the current node is the miner, schedule propose block event
         if self.miner == self.node.id:
@@ -134,7 +137,7 @@ class Tendermint():
         else:
             # check if any future events are here for this round
             # slow nodes might miss pre_prepare vote so its good to check early
-            handle_backlog(self.node)
+            handle_backlog(self.node, time)
 
     def init_round_change(self, time):
         timeouts.schedule_timeout(self, time, add_time=True)

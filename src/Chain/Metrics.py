@@ -201,7 +201,6 @@ class Metrics:
         return st.mean(processed_tx_nodes)
 
 
-
     def measure_block_sizes(blocks):
         return [b.size for b in blocks]
         

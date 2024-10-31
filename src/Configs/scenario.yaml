@@ -16,7 +16,7 @@ simulation:
   simulate_faults: False
 
 application:
-  transaction_model: "global"
+  transaction_model: "local"
 
 execution:
   creation_time: 0.1
@@ -45,3 +45,4 @@ network:
 consensus:
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
+  Tendermint: Chain/Consensus/Tendermint/TM_config.yaml

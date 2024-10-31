@@ -23,8 +23,8 @@ class Simulation:
         nodes: a list of blockchain nodes 
         current_cp: (string) the name of current consensus protocol
         manager: a reference to the manager instance managing this simulation
-
     '''
+    
     def __init__(self) -> None:
         self.q = Queue()
         self.clock = 0
@@ -63,11 +63,15 @@ class Simulation:
 
         # get next event
         next_event = self.q.pop_next_event()
+        
+        # SANITY: this should NEVER happen
+        if self.clock > next_event.time:
+            raise RuntimeError(f"Next event: {next_event} is in the past! current clock: {self.clock}")
+
         # update sim clocks
         self.clock = next_event.time
 
-        tools.debug_logs(msg=f"Next:{next_event}",
-                         command="Command:", simulator=self)
+        tools.debug_logs(msg=f"Next:{next_event}", command="Command:", simulator=self)
 
         # call appropriate handler based on event type
         if isinstance(next_event, SystemEvent):

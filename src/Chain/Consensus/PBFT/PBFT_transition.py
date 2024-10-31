@@ -27,10 +27,7 @@ def propose(state, event):
 
         # if there is still time in the round, attempt to reschedule later when txions might be generated
         if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
-            PBFT_messages.schedule_propose(state, creation_time + 1)
-        else:
-            print(
-                f"Block creation failed at {time} for CP {state.NAME}")
+            PBFT_messages.schedule_propose(state, creation_time + when_next)
     else:
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'
@@ -39,6 +36,7 @@ def propose(state, event):
         # create the extra_data field and log votes
         state.block.extra_data['votes'] = {
             'pre_prepare': [], 'prepare': [], 'commit': []}
+        
         state.block.extra_data['votes']['pre_prepare'].append((
             event.creator.id, time, Network.size(event)))
         
@@ -60,7 +58,8 @@ def pre_prepare(state, event):
     time += Parameters.execution["msg_val_delay"]
 
     match state.state:
-        case 'new_round': # if node is a new round state (i.e waiting for a new block to be proposed)
+        # if node is a new round state (i.e waiting for a new block to be proposed)
+        case 'new_round':
             # validate block
             time += Parameters.execution["block_val_delay"]
 
@@ -71,6 +70,7 @@ def pre_prepare(state, event):
                 # create the votes extra_data field and log votes
                 state.block.extra_data['votes'] = {
                     'pre_prepare': [], 'prepare': [], 'commit': []}
+                
                 state.block.extra_data['votes']['pre_prepare'].append((
                     event.creator.id, time, Network.size(event)))
 
@@ -141,7 +141,6 @@ def prepare(state, event):
                     event.actor.id, time, Network.size(event)))
 
                 return 'new_state'
-
             # not enough votes yet...
             return 'handled'
         case 'new_round':
@@ -171,10 +170,10 @@ def commit(state, event):
     match state.state:
         case 'prepared':
             # count vote
-            state.process_vote('commit', event.creator,
-                               state.rounds.round, time)
-            state.block.extra_data['votes']['commit'].append((
-                event.creator.id, time, Network.size(event)))
+            state.process_vote('commit', event.creator,state.rounds.round, time)
+            state.block.extra_data['votes']['commit'].append(
+                (event.creator.id, time, Network.size(event)))
+            
             # if we have enough votes
             if state.count_votes('commit', round) >= Parameters.application["required_messages"]:
                 # add block to BC
@@ -198,7 +197,7 @@ def commit(state, event):
             return 'invalid'  # node has decided to skip this round
         case _:
             raise ValueError(
-                f"Unexpected state '{state.state} for cp BigFoot...'")
+                f"Unexpected state '{state.state} for cp PBFT...'")
 
 
 def new_block(state, event):

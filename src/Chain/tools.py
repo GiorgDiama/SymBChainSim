@@ -80,7 +80,6 @@ def parse_cmd_args():
 
     if "d" in sys.argv:
         Parameters.simulation["debugging_mode"] = True
-        Parameters.simulation['remove_timeouts'] = True
 
     if param := get_named_cmd_arg('da'):
         Parameters.simulation['start_debugging_at'] = float(param)
@@ -88,8 +87,11 @@ def parse_cmd_args():
     if param := get_named_cmd_arg('--gossip'):
         Parameters.network['gossip'] = bool(param)
 
-    if param := get_named_cmd_arg('--num_peers'):
+    if param := get_named_cmd_arg('--peers'):
         Parameters.network['num_neighbours'] = int(param)
+    
+    if param := get_named_cmd_arg('--cp'):
+        Parameters.simulation['init_CP'] = param
 
 def exec_cmd(simulator, cmd):
     '''
@@ -159,7 +161,7 @@ def sim_info(simulator, print_event_queues=True):
                 if key != -1:
                     s += color(("-"*30 + "NODE " +
                                str(key) + '-'*30), 41) + '\n'
-                    s += simulator.nodes[key].cp.state_to_string()+'\n\n'
+                    s += f"({simulator.nodes[key].state.alive}) CP_STATE:" + simulator.nodes[key].cp.state_to_string()+'\n\n'
                 else:
                     s += color(("-"*30 + "SYSTEM" + '-'*30), 42) + '\n'
 
@@ -172,7 +174,7 @@ def sim_info(simulator, print_event_queues=True):
                     s += ' ' + str(e) + '\n'
 
                 s += "\n"
-
+                
         return s
 
 ####################### YAML ######################

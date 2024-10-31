@@ -30,7 +30,6 @@ def handle_scenario_update_network_event(manager, event):
 
 ##################### transactions ##################
 
-
 def schedule_scenario_transactions_event(manager, txion_list, time):
     event = SystemEvent(
         time=time,
@@ -52,7 +51,6 @@ def handle_scenario_transactions_event(manager, event):
 
 def schedule_scenario_fault_and_recovery_events(manager, fault_list):
     for entry in fault_list:
-
         fail_at = entry[1]
         node = manager.sim.nodes[entry[0]]
 

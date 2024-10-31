@@ -11,7 +11,7 @@ def propose(state, event):
     time = event.time
     
     # attempt to create block
-    block, creation_time = state.create_block(time)
+    block, creation_time = state.create_TM_block(time)
 
     if block is None:
         # we can be smart and look ahead to directly move to the time transactions will be here 
@@ -25,8 +25,8 @@ def propose(state, event):
                 when_next = state.node.pool[0].timestamp
             
         # if there is still time in the round, attempt to reschedule later when txions might be there
-        if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
-            messages.schedule_propose(state, when_next)
+        if creation_time + when_next + Parameters.execution['creation_time'] < state.timeout.time - 5:
+            messages.schedule_propose(state, creation_time + when_next)
     else:
         time = creation_time
 
@@ -59,8 +59,8 @@ def pre_prepare(state, event):
     
     time += Parameters.execution["msg_val_delay"]
 
-    # if node is a new round state (i.e waiting for a new block to be proposed)
     match state.state:
+        # if node is a new round state (i.e waiting for a new block to be proposed)
         case 'new_round':
             # validate block
             time += Parameters.execution["block_val_delay"]
@@ -68,6 +68,7 @@ def pre_prepare(state, event):
             if state.validate_block(block):
                 # store block as current block
                 state.block = event.payload['block'].copy()
+
                 # create the votes extra_data field and log votes
                 state.block.extra_data['votes'] = {
                     'pre_prepare': [], 'prepare': [], 'commit': []}
@@ -101,7 +102,7 @@ def pre_prepare(state, event):
             return 'invalid'  # node has decided to skip this round
         case _:
             raise ValueError(
-                f"Unexpected state '{state.state} for cp PBFT...'")
+                f"Unexpected state '{state.state} for cp TM...'")
 
 
 def prepare(state, event):
@@ -122,19 +123,25 @@ def prepare(state, event):
             # count prepare vote
             state.process_vote('prepare', event.creator,
                                state.rounds.round, time)
+            
             state.block.extra_data['votes']['prepare'].append((
                 event.creator.id, time, Network.size(event)))
+            
             # if we have enough prepare messages (2f messages since leader does not participate)
             if state.count_votes('prepare', round) >= Parameters.application["required_messages"] - 1:
                 # change to prepared
                 state.state = 'prepared'
+
                 # broadcast commit message
                 messages.broadcast_commit(state, time, block)
+
                 # count own vote
                 state.process_vote('commit', state.node,
                                    state.rounds.round, time)
+                
                 state.block.extra_data['votes']['commit'].append((
                     event.actor.id, time, Network.size(event)))
+                
                 return 'new_state'
             # not enough votes yet...
             return 'handled'
@@ -146,7 +153,7 @@ def prepare(state, event):
             return 'invalid'  # node has decided to skip this round
         case _:
             raise ValueError(
-                f"Unexpected state '{state.state} for cp PBFT...'")
+                f"Unexpected state '{state.state} for cp TM...'")
 
 
 def commit(state, event):
@@ -170,6 +177,10 @@ def commit(state, event):
             # if we have enough votes
             if state.count_votes('commit', round) >= Parameters.application["required_messages"]: 
                 state.node.add_block(state.block, time) # add block to BC
+
+                if state.node.id == state.miner:
+                    messages.broadcast_new_block(state, time, state.block.copy())
+
                 state.start(state.rounds.round + 1, time) # start new round
                 return 'new_state'
             return 'handled' # not enough votes yet...
@@ -181,11 +192,11 @@ def commit(state, event):
             return 'invalid'  # node has decided to skip this round
         case _:
             raise ValueError(
-                f"Unexpected state '{state.state} for cp BigFoot...'")
+                f"Unexpected state '{state.state} for cp TM...'")
 
 
 def new_block(state, event):
-    block = state.block
+    block = event.payload['block']
     time = event.time
 
     time += Parameters.execution["msg_val_delay"]
@@ -206,7 +217,6 @@ def new_block(state, event):
 
         # add block and start new round
         state.node.add_block(block.copy(), time)
-
         state.start(event.payload['round']+1, time)
 
         return "handled"

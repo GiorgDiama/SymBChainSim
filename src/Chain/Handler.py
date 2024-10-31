@@ -21,6 +21,7 @@ def handle_event(event, checking_backlog=False):
             invalid     - Invalid message
             unhandled   - Could not handle (error message)
             backlog     - future message, add to backlog
+            gossiped    - message has been gossiped
 
         Successful handling of events is split into two responses (handled and new_state) to reduce the number of times check_back log is called.
         If we know an event did not change the state of a node enough - checking if any messages in the backlog can now be handled will be a waste of computation
@@ -31,26 +32,19 @@ def handle_event(event, checking_backlog=False):
     # if node is 'dead' - event will not be handled
     if not event.actor.state.alive:
         return 'dead_node'
-
+    
     '''
-        TODO: Leave this check to the protocol
+        TODO: Leave this check to the protocols
     '''
     # if this event is CP specific and the CP of the event does not match the current CP of the node - old/old message
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
     
-    # check if received message has been received in the past
-    # PREVENTS GOSSIPING ALREADY GOSSIPED MESSAGES
-    if isinstance(event, MessageEvent):
-        is_new_message = Network.receive(event.actor, event)
-        if not is_new_message:
-            return 'invalid'
-    
-    # if we are not handling backlogged events and this is a network event
-    # handle actions related with receiving a network message
+    # calls on receive method to handle receiving logic specified by the Network (should not gossip backlogged messages)
     if not checking_backlog and isinstance(event, MessageEvent):
-        Network.receive(event.actor, event)
-
+        if (result := Network.on_receive(event.actor, event)) != 'process':
+            return result
+    
     # handle event using it's respective handler
     ret = event.handler(event)
 
@@ -59,7 +53,7 @@ def handle_event(event, checking_backlog=False):
         bisect.insort(event.actor.backlog, event)
     elif ret == 'new_state' and not checking_backlog:
         # event caused a new sate, check the backlog (some stored events could be handled now)
-        handle_backlog(event.actor)
+        handle_backlog(event.actor, event.time)
     elif ret == 'unhandled':
         raise ValueError(
                 f"Event '{event.payload['type']}' was not handled by its own handler...")
@@ -67,8 +61,7 @@ def handle_event(event, checking_backlog=False):
     # return the status of handling the event. Might be useful to the caller
     return ret
 
-
-def handle_backlog(node):
+def handle_backlog(node, call_time):
     '''
         Tries to handle events in the backlog of this node
             Events successfully handled are removed
@@ -79,6 +72,7 @@ def handle_backlog(node):
         tools.debug_logs(
             msg=f"{node.__str__(full=True)}", input=f"HANDLING BACKLOG: {event} ", in_col="43", clear=False)
 
+        event.time = call_time # ensure the message is replayed at call_time
         ret = handle_event(event, checking_backlog=True)
 
         tools.debug_logs(msg=f"event returned {ret}")
@@ -86,7 +80,6 @@ def handle_backlog(node):
         if ret == 'handled' or ret == 'new_state' or ret == 'invalid':
             remove_list.append(event)
 
-    # this condition is required since some actions (like starting a new round) will clear the backlog 
-    #   thus we need to check that the backlog was not already cleared before attempting to remove handled events 
+    #  some events may clear the backlog - this prevents trying to remove already removed events 
     if node.backlog: 
         node.backlog = [e for e in node.backlog if e not in remove_list]

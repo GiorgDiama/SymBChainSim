@@ -28,7 +28,7 @@ class TransactionFactory:
                 - the pool is managed by the current block producer in each round
                 - an approximate transaction propagation model is utilised to model transaction propagation delay
                     - The model is explained and evaluated in detail in: 
-                        TODO: add TOMACS reference when text is available
+                        TODO: add TOMACS reference when available online
 
         global_mempool: stores uncommitted transactions when the global mempool option is utilised
         depth_removed: latest block depth (height) for which committed transactions have been removed from the global_mempool

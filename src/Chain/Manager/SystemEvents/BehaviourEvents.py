@@ -3,10 +3,8 @@ from Chain.Event import SystemEvent
 from Chain.Network import Network
 from Chain.Metrics import Metrics
 
-from Chain.Consensus.HighLevelSync import create_local_sync_event
 
 import random
-
 
 class Behaviour:
     byzantine = {}
@@ -91,13 +89,6 @@ def handle_recover_event(manager, event):
     node = event.payload['node']
     time = event.time
 
-    node.resurect()
-
-    # after the node is online, attempt to resync
-    synced, synced_neighbour = node.synced_with_neighbours()
-
-    if not synced:
-        node.state.synced = False
-        create_local_sync_event(node, synced_neighbour, time)
+    node.resurrect(time)
 
     schedule_random_fault_event(manager, event.time, event.payload['node'])

@@ -12,20 +12,18 @@ from random import randint
 
 ########################## PROTOCOL CHARACTERISTICS ###########################
 
-
 class BigFoot():
-    '''
-    BigFoot Consensus Protocol
-        Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with dynamic validator membership"
+    '''BigFoot Consensus Protocol
+            Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with dynamic validator membership"
 
-    BigFoot State:
-        round - round change state defined by the rounds module
-        fast_path - boolean value determining whether the node is in the fast path or not 
-        state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
-        msgs: list of messages received from other nodes
-        timeout - reference to latest timeout event (when node state updates it is used to find event and delete from event queue)
-        fast_path_timeout - reference to fast_path_timeout event
-        block -  the proposed block in current round
+        BigFoot State:
+            round - round change state defined by the rounds module
+            fast_path - boolean value determining whether the node is in the fast path or not 
+            state - BigFoot node state (new_round, pre-prepared, prepared, committed)]
+            msgs: list of messages received from other nodes
+            timeout - reference to latest timeout event (when node state updates it is used to find event and delete from event queue)
+            fast_path_timeout - reference to fast_path_timeout event
+            block -  the proposed block in current round
     '''
 
     NAME = "BigFoot"
@@ -47,8 +45,8 @@ class BigFoot():
 
     def state_to_string(self):
         msgs = {'prepare': self.count_votes('prepare', self.rounds.round)}
-        s = f"{self.rounds.round} | CP_state: {self.state} | miner: {self.miner}| block: {self.block.id if self.block is not None else -1} | msgs: {self.msgs} | TO: {round(self.timeout.time,3) if self.timeout is not None else -1}"
-        return s
+        return f"round: {self.rounds.round} | node_state:{self.state} | miner:{self.miner}| block:{self.block.id if self.block is not None else -1} | msgs: {self.msgs} | timeout_event: {(round(self.timeout.time,3), self.timeout.payload['round']) if self.timeout is not None else -1}"
+
 
     def set_state(self):
         self.rounds = Rounds.round_change_state()
@@ -122,7 +120,9 @@ class BigFoot():
         if transactions:
             block.transactions = transactions
             block.size = size
-            return block, time + Parameters.execution['creation_time']
+            time += + Parameters.execution['creation_time']
+            time += len(transactions) * Parameters.execution['time_per_tx']
+            return block, time
         else:
             return None, time
 
@@ -154,7 +154,7 @@ class BigFoot():
         else:
             # check if any future events are here for this round
             # slow nodes might miss pre_prepare vote so its good to check early
-            handle_backlog(self.node)
+            handle_backlog(self.node, time)
 
     ########################## RESYNC CP SPECIFIC ACTIONS ###########################
 

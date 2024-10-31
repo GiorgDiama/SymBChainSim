@@ -24,10 +24,8 @@ def propose(state, event):
 
         # if there is still time in the round, attempt to reschedule later when txions might be there
         if creation_time + when_next + Parameters.execution['creation_time'] <= state.timeout.time:
-            BigFoot_messages.schedule_propose(state, creation_time + 1)
-        else:
-            print(
-                f"Block creation failed at {time} for CP {state.NAME}")
+            BigFoot_messages.schedule_propose(state, creation_time + when_next)
+        
     else:
         # block created, change state, and broadcast it.
         state.state = 'pre_prepared'

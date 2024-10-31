@@ -2,6 +2,7 @@ from Chain.Simulation import Simulation
 from Chain.Parameters import Parameters
 from Chain.Network import Network
 from Chain.Metrics import Metrics
+from Chain.Manager.LoadScenariosAndWorkloads import load_workload, set_up_scenario
 
 import Chain.Manager.SimulationUpdates as updates
 
@@ -33,7 +34,6 @@ class Manager:
         self.sim = None
 
     def load_params(self, config="base.yaml"):
-        # load params
         Parameters.load_params_from_config(config)
         tools.parse_cmd_args()
 
@@ -47,73 +47,6 @@ class Manager:
 
         Parameters.simulation['event_id'] = 0 # used to give events incrementing, unique ids
 
-    def set_up_scenario(self, scenario, config='scenario.yaml'):
-        self.load_params(config)
-
-        with open(scenario, 'r') as f:
-            scenario = json.load(f)
-
-        Parameters.application['Nn'] = scenario['set_up']["num_nodes"]
-        Parameters.calculate_fault_tolerance()
-
-        Parameters.simulation['simTime'] = scenario['set_up']["duration"]
-        Parameters.simulation['stop_after_blocks'] = -1
-
-        self.sim = Simulation()
-        self.sim.manager = self
-
-        # set up network
-        Network.nodes = self.sim.nodes
-        Network.parse_latencies()
-        Network.parse_distances()
-        Network.assign_location_to_nodes()
-        Network.assign_neighbours()
-
-        '''
-            SC Schema
-                'set_up': 
-                    num_nodes
-                    duration
-                'intervals:
-                    '1':
-                        'network':[(node, BW)...]
-                        'behaviour':[(node, fail_at, duration)]
-                        'transactions': [(creator, id, timestamp, size)...]
-                    '2':  ...
-        '''
-
-        for key in scenario['intervals'].keys():
-            interval = scenario['intervals'][key]
-            start, end = interval['start'], interval['end']
-            for key, value in interval.items():
-                # schedule system events for each update interval
-                match key:
-                    case 'transactions':
-                        scenarioSE.schedule_scenario_transactions_event(
-                            self, value, start)
-                    case 'network':
-                        scenarioSE.schedule_scenario_update_network_event(
-                            self, value, start-0.01)
-                    case 'faults':
-                        if Parameters.simulation['simulate_faults']:
-                            scenarioSE.schedule_scenario_fault_and_recovery_events(
-                                self, value)
-
-        # schedule snapshot events if we have those in the config
-        if Parameters.simulation["snapshot_interval"] != -1:
-            scenarioSE.schedule_scenario_snapshot_event(self)
-
-        self.sim.init_simulation()
-
-    def load_workload(self):
-        with open(Parameters.simulation['workload'],'r') as f:
-            data = json.load(f)
-        
-        Parameters.simulation['stop_after_tx'] = len(data)
-        Parameters.simulation['simTime'] = -1
-        Parameters.simulation['stop_after_blocks'] = -1
-        
-        Parameters.tx_factory.add_scenario_transactions([x.values() for x in data])
 
     def set_up(self, num_nodes=-1):
         '''
@@ -136,10 +69,10 @@ class Manager:
         # initialise simulation
         self.sim.init_simulation()
 
-        if Parameters.simulation['workload'] != 'generate':
-            self.load_workload()
+        if Parameters.simulation['workload'] != 'generate': 
+            load_workload()
 
-        if Parameters.simulation['print_info']:
+        if Parameters.simulation['print_info']: 
             print(self.simulation_details())
         
 
@@ -169,8 +102,9 @@ class Manager:
         return any(finish_conditions)
 
     def run(self):
-        ''' Managed simulation loop'''
-
+        ''' 
+            Managed simulation loop
+        '''
         while not self.finished():
             self.sim.sim_next_event()
             self.update_sim()
@@ -179,7 +113,7 @@ class Manager:
 
     def update_sim(self):
         '''
-            Time based updates that are not controlled by system events can be triggered here
+            Time based updates that are controlled by system events
         '''
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
@@ -197,7 +131,7 @@ class Manager:
 
     def init_system_events(self):
         '''
-            Sets up initial events 
+            Sets up initial simulation events 
         '''
         
         if Parameters.simulation['workload'] == 'generate':
@@ -208,8 +142,7 @@ class Manager:
             # if we are using dynamic simulation: load events that handle the dynamic updates
             dynamic_simulationSE.DynamicParameters.init_parameters()
             dynamic_simulationSE.schedule_update_network_event(self, init=True)
-            dynamic_simulationSE.schedule_update_workload_event(
-                self, init=True)
+            dynamic_simulationSE.schedule_update_workload_event(self, init=True)
 
         if Parameters.simulation["snapshots"]:
             # if snapshots is true, add the event that periodically takes the snapshots

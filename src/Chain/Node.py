@@ -6,6 +6,8 @@ from types import SimpleNamespace
 
 from Chain.tools import color
 
+from Chain.Consensus.HighLevelSync import create_local_sync_event
+
 class Behaviour():
     # model behaiviour of a fautly node
     faulty = None
@@ -178,11 +180,22 @@ class Node():
         '''
         self.state.alive = False
 
-    def resurrect(self):
+    def resurrect(self, time):
         '''
             Resurrects an offline nodes
         '''
         self.state.alive = True
+    
+        # after the node is online, attempt to resync
+        synced, synced_neighbour = self.synced_with_neighbours()
+        if not synced:
+            self.state.synced = False
+            create_local_sync_event(self, synced_neighbour, time)
+        
+        if self.update(time):
+            return 
+        
+        self.cp.init_round_change(time)
 
     def add_block(self, block, time):
         '''

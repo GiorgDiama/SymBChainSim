@@ -1,2 +1,2 @@
-fast_path_timeout: 1
-timeout: 3
+fast_path_timeout: 5
+timeout: 10

@@ -132,8 +132,10 @@ class PBFT():
 
         if transactions:
             block.transactions = transactions
-            block.size = size
-            return block, time + Parameters.execution['creation_time']
+            block.size = size + Parameters.data['base_block_size']
+            time += + Parameters.execution['creation_time']
+            time += len(transactions) * Parameters.execution['time_per_tx']
+            return block, time  
         else:
             return None, time
 
@@ -162,11 +164,12 @@ class PBFT():
         else:
             # check if any future events are here for this round
             # slow nodes might miss pre_prepare vote so its good to check early
-            handle_backlog(self.node)
+            handle_backlog(self.node, time)
 
     def init_round_change(self, time):
         '''
-            Called by the Rounds module when a node enters the round_change state - handles any protocol specific actions
+            Executes any protocol specific actions!
+            Called by the Rounds module when a node enters the round_change state 
         '''
         timeouts.schedule_timeout(self, time, add_time=True)
 
