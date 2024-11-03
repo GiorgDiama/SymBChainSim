@@ -1,7 +1,7 @@
-from Chain.Parameters import Parameters
-from Chain.Network import Network
-from Chain.Manager.SystemEvents import ScenarioEvents as scenarioSE
-from Chain.Simulation import Simulation
+from ..Parameters import Parameters
+from ..Network import Network
+from .SystemEvents import ScenarioEvents as scenarioSE
+from ..Simulation import Simulation
 
 import json
 
@@ -16,6 +16,7 @@ def set_up_scenario(manager, scenario, config='scenario.yaml'):
 
     Parameters.simulation['simTime'] = scenario['set_up']["duration"]
     Parameters.simulation['stop_after_blocks'] = -1
+    Parameters.simulation['stop_after_tx'] = -1
 
     manager.sim = Simulation()
     manager.sim.manager = manager
@@ -28,14 +29,16 @@ def set_up_scenario(manager, scenario, config='scenario.yaml'):
     Network.assign_neighbours()
 
     '''
-        SC Schema
+        Scenario JSON Schema
             'set_up': 
                 num_nodes
                 duration
             'intervals:
                 '1':
-                    'network':[(node, BW)...]
-                    'behaviour':[(node, fail_at, duration)]
+                    'start: start_time,
+                    'end': end_time
+                    'network' : [(node, BW)...]
+                    'behaviour': [(node, fail_at, duration)]
                     'transactions': [(creator, id, timestamp, size)...]
                 '2':  ...
     '''
