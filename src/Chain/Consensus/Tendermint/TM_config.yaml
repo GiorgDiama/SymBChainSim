@@ -1,3 +1,4 @@
 timeout: 10
+use_net_msg_size: False
 base_block_size: 2200
 hash_size: 40

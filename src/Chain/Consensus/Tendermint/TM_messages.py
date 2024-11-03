@@ -1,4 +1,5 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
+
 from sys import getsizeof
 
 def schedule_propose(state, time):
@@ -21,7 +22,8 @@ def broadcast_pre_prepare(state, time, block):
         'CP': state.NAME
     }
 
-    payload['net_msg_size'] = get_payload_size(payload)
+    if Parameters.Tendermint['use_net_msg_size']:
+        payload['net_msg_size'] = get_payload_size(payload)
 
     event = state.node.scheduler.schedule_broadcast_message(
         state.node, time, payload, state.handle_event)
@@ -36,7 +38,8 @@ def broadcast_prepare(state, time, block_hash):
         'CP': state.NAME
     }
 
-    payload['net_msg_size'] = get_payload_size(payload)
+    if Parameters.Tendermint['use_net_msg_size']:
+        payload['net_msg_size'] = get_payload_size(payload)
 
     event = state.node.scheduler.schedule_broadcast_message(
         state.node, time, payload, state.handle_event)
@@ -52,7 +55,8 @@ def broadcast_commit(state, time, block_hash):
         'CP': state.NAME
     }
 
-    payload['net_msg_size'] = get_payload_size(payload)
+    if Parameters.Tendermint['use_net_msg_size']:
+        payload['net_msg_size'] = get_payload_size(payload)
 
     event = state.node.scheduler.schedule_broadcast_message(
         state.node, time, payload, state.handle_event)
@@ -67,7 +71,8 @@ def broadcast_new_block(state, time, block):
         'CP': state.NAME
     }
 
-    payload['net_msg_size'] = get_payload_size(payload)
+    if Parameters.Tendermint['use_net_msg_size']:
+        payload['net_msg_size'] = get_payload_size(payload)
 
     event = state.node.scheduler.schedule_broadcast_message(
         state.node, time, payload, state.handle_event)
