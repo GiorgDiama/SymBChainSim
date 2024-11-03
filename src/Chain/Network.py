@@ -1,6 +1,6 @@
-from Chain.Event import MessageEvent
-from Chain.Parameters import Parameters
-import Chain.tools as tools
+from .Event import MessageEvent
+from .Parameters import Parameters
+from .Utils import tools
 
 from sys import getsizeof
 import numpy as np
@@ -31,7 +31,7 @@ class Network:
             Calculates the size of a message. When the payload contains the key 'block' uses the block.size otherwise uses getsizeof.
             Event payloads can define net_msg_size to bypass this check using that value instead
         '''
-        # if message defines its own size - simply use that
+        # # if message defines its own size - simply use that
         if 'net_msg_size' in msg.payload:
             return msg.payload['net_msg_size']
         
@@ -91,7 +91,7 @@ class Network:
             return 'process' 
                 
         if msg.id in Network.received[node]:
-            return 'gossiped'
+            return 'previously_gossiped'
         
         Network.received[node].add(msg.id) # mark this message as received
 
@@ -252,7 +252,7 @@ class Network:
         Network.locations = []
         Network.latency_map = {}
 
-        with open("NetworkLatencies/latency_map.json", "rb") as f:
+        with open(Parameters.path_to_src + '/' + "NetworkLatencies/latency_map.json", "rb") as f:
             Network.latency_map = json.load(f)
 
         Network.locations = list(Network.latency_map.keys())
@@ -270,7 +270,7 @@ class Network:
         Network.locations = []
         Network.distance_map = {}
 
-        with open("NetworkLatencies/distance_map.json", "rb") as f:
+        with open(Parameters.path_to_src + '/' +"NetworkLatencies/distance_map.json", "rb") as f:
             Network.distance_map = json.load(f)
 
         Network.locations = list(Network.distance_map.keys())
