@@ -1,16 +1,13 @@
-from Chain.Node import Node
-from Chain.Block import Block
-from Chain.TransactionFactory import TransactionFactory
-from Chain.Parameters import Parameters
-from Chain.EventQueue import Queue
-from Chain.Handler import handle_event
+from .Node import Node
+from .Block import Block
+from .TransactionFactory import TransactionFactory
+from .Parameters import Parameters
+from .EventQueue import Queue
+from .Handler import handle_event
 
-import Chain.tools as tools
+from .Utils import tools
 
-from Chain.Event import SystemEvent
-
-from Chain.Consensus.PBFT.PBFT_state import PBFT
-from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
+from .Event import SystemEvent
 
 
 class Simulation:
@@ -20,11 +17,11 @@ class Simulation:
         q: The event queue storing simulation events
         clock: The event driven simulation clock
 
-        nodes: a list of blockchain nodes 
+        nodes: the list of blockchain nodes 
         current_cp: (string) the name of current consensus protocol
-        manager: a reference to the manager instance managing this simulation
+        manager: a reference to the manager managing this simulation
     '''
-    
+
     def __init__(self) -> None:
         self.q = Queue()
         self.clock = 0
@@ -36,16 +33,13 @@ class Simulation:
 
         self.manager = None
 
-        '''
-            TODO: Move this somewhere else
-                - ideally, stop storing the TX factory in the parameters module!
-        '''
+        # TODO: stop storing the TX factory in the parameters module ... 
         # initialise the transaction factory for this simulation and store in the in the Parameters module so that it can be accessed by all models (...)
         Parameters.tx_factory = TransactionFactory(self.nodes)
 
     def init_simulation(self):
         '''
-            Initialises the simulation (genesis block and consensus protocols)
+            Initialises the blockchains with the genesis block and start the consensus protocol on the nodes
         '''
         genesis = Block.genesis_block()
 
