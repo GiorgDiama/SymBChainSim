@@ -1,23 +1,10 @@
-from Chain.Scheduler import Scheduler
-
-from Chain.Parameters import Parameters
+from .Scheduler import Scheduler
+from .Parameters import Parameters
+from .Consensus import HighLevelSync
+from .Utils.tools import color
 
 from types import SimpleNamespace
-
-from Chain.tools import color
-
-from Chain.Consensus.HighLevelSync import create_local_sync_event
-
-class Behaviour():
-    # model behaiviour of a fautly node
-    faulty = None
-    mean_fault_time = None
-    mean_recovery_time = None
-    fault_event = None
-    recovery_event = None
-    byzantine = None
-    sync_fault_chance = None
-
+from collections import deque
 
 class Node():
     '''
@@ -52,7 +39,7 @@ class Node():
     def __init__(self, id, queue):
         self.id = id
         self.blockchain = []
-        self.pool = []
+        self.pool = deque([])
         self.blocks = 0
 
         self.neighbours = None
@@ -61,12 +48,20 @@ class Node():
 
         self.state = SimpleNamespace(
             alive=True,
-            synced=True
+            synced=True,
         )
 
         self.cp = None
 
-        self.behaviour = Behaviour()
+        self.behaviour = SimpleNamespace(
+            faulty = None,
+            mean_fault_time = None,
+            mean_recovery_time = None,
+            fault_event = None,
+            recovery_event = None,
+            byzantine = None,
+            sync_fault_chance = None,
+        )
 
         self.backlog = []
 
@@ -137,7 +132,7 @@ class Node():
             self.cp = Parameters.application["CP"](self)
             self.cp.init(time)
             return True
-
+        
         return False
 
     def reset(self):
@@ -160,7 +155,8 @@ class Node():
     def synced_with_neighbours(self):
         '''
             Compares the latest block of current node with all peers to check sync status
-            If desynced, returns the node that is furthest (useful to the sync operation)
+            If desynced, returns the node that is furthest
+            TODO: associate a delay with this (only useful when this is called as part of an event)
         '''
         # create (neighbour, block, depth) pairs from neighbours that have a later block than us
         neighbours_ahead = [
@@ -175,46 +171,35 @@ class Node():
             return True, None
 
     def kill(self):
-        '''
-            Sets the current node state to offline
-        '''
         self.state.alive = False
 
     def resurrect(self, time):
         '''
-            Resurrects an offline nodes
+            Gracefully resurrects an offline node - attempts to retrieve new blocks from peers 
+            if still synced calls protocol specific rejoin method
         '''
         self.state.alive = True
-    
+        
         # after the node is online, attempt to resync
         synced, synced_neighbour = self.synced_with_neighbours()
         if not synced:
             self.state.synced = False
-            create_local_sync_event(self, synced_neighbour, time)
+            HighLevelSync.create_local_sync_event(self, synced_neighbour, time)
+        else:
+            self.cp.rejoin(time)
         
-        if self.update(time):
-            return 
-        
-        self.cp.init_round_change(time)
 
-    def add_block(self, block, time):
+    def add_block(self, block, time, update_time_added=True):
         '''
             Adds 'block' to blockchain at time 'time'
             Removes included transactions from the memory pool
         '''
-        block.time_added = time
+        if update_time_added:
+            block.time_added = time
+            
         self.blockchain.append(block)
-
-        if Parameters.application["transaction_model"] == "local":
-            self.pool = Parameters.tx_factory.remove_transactions_from_pool(
-                block.transactions, self.pool)
-        elif Parameters.application["transaction_model"] == "global":
-            # only one node needs to remove the transactions
-            if Parameters.tx_factory.depth_removed < block.depth:
-                Parameters.tx_factory.global_mempool = Parameters.tx_factory.remove_transactions_from_pool(
-                    block.transactions, Parameters.tx_factory.global_mempool)
-
-                Parameters.tx_factory.depth_removed = block.depth
+        
+        Parameters.tx_factory.mark_transactions_as_processed(block, self.pool)
 
     def add_event(self, event):
         '''
