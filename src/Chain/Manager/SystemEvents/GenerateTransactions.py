@@ -1,5 +1,5 @@
-from Chain.Parameters import Parameters
-from Chain.Event import SystemEvent
+from ...Parameters import Parameters
+from ...Event import SystemEvent
 
 
 def schedule_event(manager, init=False):

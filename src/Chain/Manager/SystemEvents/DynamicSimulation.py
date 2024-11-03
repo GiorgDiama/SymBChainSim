@@ -1,7 +1,7 @@
-from Chain.Parameters import Parameters, read_yaml
-from Chain.Event import SystemEvent
-from Chain.Network import Network
-from Chain.Metrics import Metrics
+from ...Parameters import Parameters, read_yaml
+from ...Event import SystemEvent
+from ...Network import Network
+from ...Metrics import Metrics
 
 from random import normalvariate
 
@@ -17,10 +17,7 @@ class DynamicParameters:
         DynamicParameters.network = params["network"]
         DynamicParameters.workload = params["workload"]
 
-###########################################################################
 #######################     NETWORK    ####################################
-###########################################################################
-
 
 def schedule_update_network_event(manager, init=False):
     time = manager.sim.clock if init else (
@@ -43,14 +40,14 @@ def handle_update_network_event(manager, event):
     Parameters.network["bandwidth"]["dev"] = normalvariate(
         *DynamicParameters.network["sigma_dist"])
 
+    if Parameters.dynamic_sim.get('print_updates', False):
+        print(f'{"Network updated":<20}: mu= {Parameters.network["bandwidth"]["mean"]} sigma= {Parameters.network["bandwidth"]["dev"]}')
     Network.set_bandwidths()
 
     schedule_update_network_event(manager)
 
 
-###########################################################################
 ######################     WORKLOAD    ####################################
-###########################################################################
 
 def schedule_update_workload_event(manager, init=False):
     time = manager.sim.clock if init else (
@@ -74,11 +71,12 @@ def handle_update_workload_event(manager, event):
     Parameters.application["Tsize"] = abs(normalvariate(
         *DynamicParameters.workload["Tsize_norm_dist"]))
 
+    if Parameters.dynamic_sim.get('print_updates', False):
+        print(f'{"Workload  updated":<20}: TPS= {Parameters.application["Tn"]} size= {Parameters.application["Tsize"]}')
+
     schedule_update_workload_event(manager)
 
-###########################################################################
 ######################     SNAPSHOT    ####################################
-###########################################################################
 
 def schedule_snapshot_event(manager):
     # -0.01 snap shot before transactions are generated.

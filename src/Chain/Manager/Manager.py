@@ -1,25 +1,25 @@
-from Chain.Simulation import Simulation
-from Chain.Parameters import Parameters
-from Chain.Network import Network
-from Chain.Metrics import Metrics
-from Chain.Manager.LoadScenariosAndWorkloads import load_workload, set_up_scenario
+from ..Simulation import Simulation
+from ..Parameters import Parameters
+from ..Network import Network
+from .. import Event
 
-import Chain.Manager.SimulationUpdates as updates
+from ..Utils import tools
+from ..Metrics import Metrics
 
-import Chain.tools as tools
+from .ScenariosAndWorkloads import load_workload, set_up_scenario
 
-from Chain.Consensus.PBFT.PBFT_state import PBFT
-from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
-from Chain.Consensus.Tendermint.TM_state import Tendermint
+from ..Manager import SimulationUpdates as updates
 
-import Chain.Manager.SystemEvents.GenerateTransactions as generate_txionsSE
-import Chain.Manager.SystemEvents.DynamicSimulation as dynamic_simulationSE
-import Chain.Manager.SystemEvents.BehaviourEvents as behaviourSE
-import Chain.Manager.SystemEvents.ScenarioEvents as scenarioSE
+from ..Consensus.PBFT.PBFT_state import PBFT
+from ..Consensus.BigFoot.BigFoot_state import BigFoot
+from ..Consensus.Tendermint.TM_state import Tendermint
 
-import json
+from .SystemEvents import GenerateTransactions as generate_txionsSE
+from .SystemEvents import DynamicSimulation as dynamic_simulationSE
+from .SystemEvents import BehaviourEvents as behaviourSE
+from .SystemEvents import ScenarioEvents as scenarioSE
+
 import sys
-
 
 class Manager:
     '''
@@ -31,27 +31,26 @@ class Manager:
     '''
 
     def __init__(self) -> None:
-        self.sim = None
-
-    def load_params(self, config="base.yaml"):
-        Parameters.load_params_from_config(config)
-        tools.parse_cmd_args()
-
         Parameters.CPs = {
             PBFT.NAME: PBFT,
             BigFoot.NAME: BigFoot,
             Tendermint.NAME: Tendermint
         }
 
-        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
+        self.sim = None
 
+    ############################ SET UP AND CONFIGURATION ############################
+
+    def load_params(self, config="base.yaml"):
+        # ORDER: env_vars dictate path to config & cmd_args must overwrite parameters from config file
+        tools.parse_env_vars()
+        Parameters.load_params_from_config(config)
+        tools.parse_cmd_args()
+
+        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
         Parameters.simulation['event_id'] = 0 # used to give events incrementing, unique ids
 
-
     def set_up(self, num_nodes=-1):
-        '''
-            Initial tasks required for the simulation to start
-        '''
         if num_nodes != -1:
             Parameters.application['Nn'] = num_nodes
             Parameters.calculate_fault_tolerance()
@@ -63,48 +62,43 @@ class Manager:
         # initialise network
         Network.init_network(self.sim.nodes)
 
-        # schedule the first system events
+        # schedule the systems event that manage the simulation
         self.init_system_events()
 
-        # initialise simulation
+        # initialise blockchain simulation
         self.sim.init_simulation()
 
-        if Parameters.simulation['workload'] != 'generate': 
+        if Parameters.simulation.get('workload', 'generate') != 'generate': 
             load_workload()
 
-        if Parameters.simulation['print_info']: 
-            print(self.simulation_details())
+        if Parameters.simulation.get('print_info', False): 
+            print(self.simulation_details_to_string())
         
+    ############################ MANAGING SIMULATION ############################
 
     def finished(self):
+        '''
+            Evaluates all finish conditions for simulation
+        '''
         # check if we have reached desired simulation duration
-        if Parameters.simulation["simTime"] != -1:
+        if times_out := (Parameters.simulation["simTime"] != -1):
             times_out = self.sim.clock >= Parameters.simulation["simTime"]
-        else:
-            times_out = False
 
         # check if the desired amount blocks have been confirmed
-        if Parameters.simulation["stop_after_blocks"] != -1:
+        if reached_blocks := (Parameters.simulation["stop_after_blocks"] != -1):
             reached_blocks = Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"]
-        else:
-            reached_blocks = False
 
         # check if we confirmed the desired amount of txs
-        if Parameters.simulation['stop_after_tx'] != -1:
+        if processed_all := (Parameters.simulation['stop_after_tx'] != -1):
             curr_processed = [sum([len(block.transactions) for block in node.blockchain]) for node in self.sim.nodes]
             processed_all = all(map(lambda x: x >= Parameters.simulation['stop_after_tx'], curr_processed))
-        else:
-            processed_all = False
-
-        finish_conditions = [times_out, reached_blocks, processed_all]
 
         # if any finish condition is true, return true else false
-        return any(finish_conditions)
+        return any([times_out, reached_blocks, processed_all])
 
     def run(self):
-        ''' 
-            Managed simulation loop
-        '''
+        ''' Managed simulation loop '''
+
         while not self.finished():
             self.sim.sim_next_event()
             self.update_sim()
@@ -112,47 +106,50 @@ class Manager:
         self.finalise()
 
     def update_sim(self):
-        '''
-            Time based updates that are controlled by system events
-        '''
+        ''' Time based updates that are controlled by system events '''
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
         updates.interval_switch(self.sim)
-
+        
     def finalise(self):
-        if Parameters.simulation.get('snapshots', False) or \
-                Parameters.simulation.get('snapshot_interval', -1) != -1:
-
-            if '-n' in sys.argv:
-                idx = sys.argv.index('-n') + 1
-                name = sys.argv[idx]
-
-            Metrics.save_snapshots(name)
+        ''' actions to be executed after simulation is finalised '''
+        pass
 
     def init_system_events(self):
-        '''
-            Sets up initial simulation events 
-        '''
-        
-        if Parameters.simulation['workload'] == 'generate':
-            # generates the transactions every time interval
+        ''' Sets up the events that dynamically manage the simulation '''
+
+        if Parameters.simulation.get('workload', 'generate') == 'generate': 
             generate_txionsSE.schedule_event(self, init=True)
 
         if Parameters.dynamic_sim["use"]:
-            # if we are using dynamic simulation: load events that handle the dynamic updates
             dynamic_simulationSE.DynamicParameters.init_parameters()
             dynamic_simulationSE.schedule_update_network_event(self, init=True)
             dynamic_simulationSE.schedule_update_workload_event(self, init=True)
 
         if Parameters.simulation["snapshots"]:
-            # if snapshots is true, add the event that periodically takes the snapshots
             dynamic_simulationSE.schedule_snapshot_event(self)
 
         if Parameters.behaviour['use']:
             behaviourSE.Behaviour.init(self)
             behaviourSE.schedule_random_fault_event(self, self.sim.clock)
 
+
+    ############################ EVENT PROCESSING AND SCHEDULING LOGIC ############################
+
+    def schedule_system_event(self, time, payload):
+        event = Event.SystemEvent(
+            time=time,
+            payload=payload
+        )
+        self.sim.q.add_event(event)
+
+        # some callers need a reference to the created event
+        return event 
+    
     def handle_system_event(self, event):
+        '''
+            Manager specific event handler
+        '''
         match event.payload["type"]:
             ################## TRANSACTION GENERATION EVENTS ##################
             case "generate_txions":
@@ -185,7 +182,10 @@ class Manager:
                 raise ValueError(
                     f"Event '{event.payload['type']}'was not handled by its own handler...")
 
-    def simulation_details(self):
+
+    ############################ UTILITY ############################
+
+    def simulation_details_to_string(self):
         s = tools.color("-"*28 + "NODE INFO" + '-'*28) + '\n'
         s += ("NODE\tLOCATION\tBANDWIDTH\tCP\tNEIGHBOURS") + '\n'
         for n in self.sim.nodes:

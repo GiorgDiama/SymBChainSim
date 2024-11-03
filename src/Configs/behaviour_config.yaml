@@ -12,8 +12,8 @@ byzantine:
 
 faulty:
   # number of faulty nodes
-  num: 4
+  num: 2
   # probabilities for crash
-  mean_fault_range: [60, 120]
+  mean_fault_range: [100, 150]
   # how long for the node to recover
-  mean_recovery_range: [10, 50]
+  mean_recovery_range: [50, 100]

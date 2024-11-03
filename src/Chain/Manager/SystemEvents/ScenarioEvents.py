@@ -1,14 +1,8 @@
-from Chain.Parameters import Parameters, read_yaml
-from Chain.Event import SystemEvent
-from Chain.Network import Network
-from Chain.Metrics import Metrics
-
-from random import normalvariate
-
-from Chain.Consensus.HighLevelSync import create_local_sync_event
+from ...Parameters import Parameters
+from ...Event import SystemEvent
+from ...Metrics import Metrics
 
 ##################### network ##################
-
 
 def schedule_scenario_update_network_event(manager, info, time):
     event = SystemEvent(
@@ -84,14 +78,7 @@ def handle_scenario_recovery_event(manager, event):
     node = event.payload['node']
     time = event.time
 
-    node.resurrect()
-
-    # after the node is online, attempt to resync
-    synced, synced_neighbour = node.synced_with_neighbours()
-
-    if not synced:
-        node.state.synced = False
-        create_local_sync_event(node, synced_neighbour, time)
+    node.resurrect(time)
 
 
 def schedule_scenario_snapshot_event(manager):

@@ -1,5 +1,5 @@
-import Chain.tools as tools
-from Chain.Parameters import Parameters
+from .Utils import tools
+from .Parameters import Parameters
 
 import json
 import statistics as st
@@ -22,10 +22,24 @@ class Metrics:
 
     @staticmethod
     def confirmed_blocks(sim):
+        '''
+            Returns the number of blocks common among ALL nodes
+            IMPORTANT: when a node is offline this metrics appears stuck!
+                - it is not necessarily stuck since other nodes could still be producing blocks
+                  the offline / desynced node just doesn't get them
+            Changing this to max solves this problem but introduces other issues when using this to terminate the simulation
+                - the simulation terminates the moment ANY node reaches X blocks
+            TODO: Change this so that it returns the max number of blocks common among the 2f+1 nodes with the most blocks
+        '''
         return min([n.blockchain_length() for n in sim.nodes])
-
+    
     @staticmethod
     def measure_all(sim, start_from=0):
+        '''
+            Measures all implemented metrics for a given blockchain state 
+            START_FROM: Only considers blocks that were added after start_from:
+                block.time_added >= start_from
+        '''
         for node in sim.nodes:
             # get all blocks added to the chain after the 'start_from'
             BC = [b for b in node.blockchain[1:] if b.time_added >= start_from]
@@ -61,31 +75,30 @@ class Metrics:
 
         # throughput
         for key, value in Metrics.throughput.items():
-            averages[key]["Throughput"] = "%.3f" % value
+            averages[key]["TPS"] = "%.3f" % value
 
         # blockctime
         for key, value in Metrics.blocktime.items():
-            averages[key]["Blocktime"] = "%.3f" % value["AVG"]
+            averages[key]["BlockTime"] = "%.3f" % value["AVG"]
 
         # decentralisation
         for key, value in Metrics.decentralisation.items():
-            averages[key]["Decentralisation"] = "%.6f" % value
+            averages[key]["Decent."] = "%.6f" % value
 
         for key, value in Metrics.transaction_info.items():
-            averages[key]['TX in pool'] = value['pool']
-            averages[key]['Confirmed TX'] = value['processed_tx']
-            try:
-                averages[key]['Unconfirmed ratio'] = round(value['pool'] / value['processed_tx'], 3)
-            except ZeroDivisionError:
-                averages[key]['Unconfirmed ratio'] = 0
+            averages[key]['Mempool'] = value['pool']
+            averages[key]['Confirmed'] = value['processed_tx']
 
         for key, value in Metrics.block_info.items():
-            averages[key]["AVG block size"] = round(value['AVG'], 3)
+            averages[key]["AVG. BlockSize"] = round(value['AVG'], 3)
 
         print(tools.color(f'{"-"*30} METRICS {"-"*30}', 41))
 
-        for key, value in averages.items():
-            print(f"Node: {key} -> {value}")
+        for key, metrics in averages.items():
+            print(f"{f"Node: {key}":10}", end='')
+            for metric, value in metrics.items():
+                print(f"{metric}:{value} ", end=' | ')
+            print()
 
     @staticmethod
     def measure_latency(blocks):
@@ -200,7 +213,6 @@ class Metrics:
 
         return st.mean(processed_tx_nodes)
 
-
     def measure_block_sizes(blocks):
         return [b.size for b in blocks]
         
@@ -231,6 +243,13 @@ class Metrics:
 
         return block_info
 
+    @staticmethod
+    def serialise_sim_state(sim):
+        ser_state = {}
+        for node in sim.nodes:
+            ser_state[node.id] = Metrics.serialisable_node(node)
+        return ser_state
+            
     @staticmethod
     def take_snapshot(sim, start_from=0):
         # start_from functions the same in measure_all so no need to include conditionals

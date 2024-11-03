@@ -7,7 +7,15 @@ from ..Consensus import HighLevelSync
 
 import random
 
+'''
+    Simulation Updates are a less dynamic method of updating the simulation. These are less powerful than SystemEvent
+    based updates but can be useful for simple functions like periodically printing some information etc...
+    NOTE: THESE ARE NOT EVENTS! Simulation Update logic is ONLY triggered after an event! Thus logic that needs to be trigger periodically
+    wont have a static period - it will trigger alongside the first event that takes place after a period is completed.
 
+    If doing the desired action at a specific time is important use SystemEvents!
+
+'''
 def print_progress(sim):
     if "print_next" not in Parameters.simulation:
         Parameters.simulation["print_next"] = 0
@@ -25,23 +33,33 @@ def print_progress(sim):
 
 
 def start_debug(sim):
+    '''
+        Starts the built-in debugger at a specific time
+        (very useful when the error happens 100thousand events down the line)
+    '''
     if 'start_debugging_at' in Parameters.simulation and sim.clock >= Parameters.simulation['start_debugging_at']:
         Parameters.simulation["debugging_mode"] = True
 
 
 def interval_switch(sim):
-    mean, sigma = Parameters.simulation['interval_mean'], Parameters.simulation['interval_mean']
-    if "switch" not in Parameters.simulation:
+    '''
+        Randomly switches protocols based on an interval drawn from a normal distribution
+        (not too time accurate due to nature of SimulationUpdates)
+    '''
+    if not Parameters.simulation.get('switch_init', False):
+        mean, sigma = Parameters.simulation['interval_mean'], Parameters.simulation['interval_mean']
         Parameters.simulation["switch"] = random.normalvariate(mean, sigma)
+        Parameters.simulation['switch_init'] = True # prevent changing 'switch' at every call
 
-    if sim.clock >= Parameters.simulation["switch"] and Parameters.simulation["interval_switch"]:
-        Parameters.simulation['switch'] += random.normalvariate(mean, sigma)
+    if sim.clock >= Parameters.simulation["switch"] and Parameters.simulation.get('interval_switch', False):
+        mean, sigma = Parameters.simulation['interval_mean'], Parameters.simulation['interval_mean']
+        Parameters.simulation["switch"] += random.normalvariate(mean, sigma)
 
-        protocols = [x for x in Parameters.CPs.values() if x.NAME !=
-                 Parameters.application['CP'].NAME]
-
+        protocols = [x for x in Parameters.CPs.values() if x.NAME !=Parameters.application['CP'].NAME]
         Parameters.application['CP'] = random.choice(protocols)
 
+        print(f'{round(sim.clock,3)}: changed protocol to {Parameters.application['CP'].NAME} | next change will be at {Parameters.simulation["switch"]}')
+        
 
 def change_cp(cp):
     '''
