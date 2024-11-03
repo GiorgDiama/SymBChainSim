@@ -1,9 +1,8 @@
-from Chain.Parameters import Parameters
-import Chain.Consensus.HighLevelSync as Sync
+from ...Parameters import Parameters
+from ...Consensus import HighLevelSync as Sync
+from ...Consensus import Rounds
 
-import Chain.Consensus.BigFoot.BigFoot_messages as BigFoot_messages
-import Chain.Consensus.Rounds as Rounds
-
+from . import BigFoot_messages
 
 def propose(state, event):
     time = event.time

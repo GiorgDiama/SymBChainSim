@@ -1,12 +1,12 @@
-from Chain.Block import Block
-from Chain.Parameters import Parameters
-from Chain.Handler import handle_backlog
+from ...Block import Block
+from ...Parameters import Parameters
+from ...Handler import handle_backlog
 
-import Chain.Consensus.Rounds as Rounds
+from ...Consensus import Rounds 
 
-import Chain.Consensus.BigFoot.BigFoot_transition as state_transition
-import Chain.Consensus.BigFoot.BigFoot_timeouts as timeouts
-import Chain.Consensus.BigFoot.BigFoot_messages as messages
+from ..BigFoot import BigFoot_transition as state_transition
+from ..BigFoot import BigFoot_timeouts as timeouts
+from ..BigFoot import BigFoot_messages as messages
 
 from random import randint
 
@@ -156,16 +156,14 @@ class BigFoot():
             # slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
 
-    ########################## RESYNC CP SPECIFIC ACTIONS ###########################
-
-    def resync(self, payload, time):
+    def rejoin(self, time):
         '''
-            BigFoot specific resync actions
+            Defines the protocol specific rejoin logic for BigFoot
         '''
-        self.set_state()
-        round = payload['blocks'][-1].extra_data['round']
-
-        self.start(round, time)
+        self.set_state() # set node's protocol state 
+        round = self.node.blockchain[-1].extra_data['round'] + 1 # set round to latest known round (latest block round + 1)
+        # NOTE: if this node rejoins at earlier round it's possible that it will try to propose a block. This will be ignored now but if wrong proposals are tracked this should be considered
+        self.start(round, time) # start the protocol
 
     ########################## HANDLER ###########################
 

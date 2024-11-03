@@ -1,8 +1,8 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
 
-import Chain.Consensus.BigFoot.BigFoot_messages as messages
-import Chain.Consensus.HighLevelSync as Sync
-import Chain.Consensus.Rounds as Rounds
+from ..BigFoot import BigFoot_messages as messages
+from ...Consensus import HighLevelSync
+from ...Consensus import Rounds 
 
 
 def handle_timeout(state, event):
@@ -11,47 +11,49 @@ def handle_timeout(state, event):
         Specifically for BigFoot, also handles the fast_path logic wherein a node has to check
         if the node has enough prepare votes (2f+1) to move to the prepared state broadcasting a commit message
     '''
-    # ignore timeout events from old rounds
-    if event.payload['round'] == state.rounds.round:
-        if event.payload['type'] == "fast_path_timeout":
-            time = event.time
+    # ignore timeout events from other rounds (a timeout at future round should never happen)
+    if event.payload['round'] != state.rounds.round:
+        return 'invalid'
+    if event.payload['type'] == "fast_path_timeout":
+        time = event.time
 
-            # set fast_path to false and remove TO event
-            state.fast_path = False
-            state.fast_path_timeout = None
+        # set fast_path to false and remove TO event
+        state.fast_path = False
+        state.fast_path_timeout = None
 
-            # if node is not synced it cannot send any commit messages
-            if not state.node.state.synced:
-                return "handled"
+        # if node is not synced it cannot send any commit messages
+        if not state.node.state.synced:
+            return "handled"
 
-            # In case fast path times out - check if we have enough prepare votes now (if so go to prepared state)
-            if state.block is not None and len(state.msgs[state.rounds.round]['prepare']) >= Parameters.application["required_messages"] - 1:
-                # change to prepared
-                state.state = 'prepared'
-                # send commit message
-                messages.broadcast_commit(state, time, state.block)
-                # count own vote
-                state.process_vote('commit', state.node,
-                                   state.rounds.round, time)
-                return 'new_state'
-        else:
-            # check for updates
-            if event.actor.update(event.time):
+        # In case fast path times out - check if we have enough prepare votes now (if so go to prepared state)
+        if state.block is not None and len(state.msgs[state.rounds.round]['prepare']) >= Parameters.application["required_messages"] - 1:
+            # change to prepared
+            state.state = 'prepared'
+            # send commit message
+            messages.broadcast_commit(state, time, state.block)
+            # count own vote
+            state.process_vote('commit', state.node,
+                                state.rounds.round, time)
+            return 'new_state'
+    else:
+        # check for updates
+        if event.actor.update(event.time):
+            return 0
+
+        # double check that a node that thinks is synced is actually synced
+        if state.node.state.synced:
+            synced, in_sync_neighbour = state.node.synced_with_neighbours()
+            if not synced:
+                # if node is actually behind, try to sync
+                state.node.state.synced = False
+                HighLevelSync.create_local_sync_event(
+                    state.node, in_sync_neighbour, event.time)
                 return 0
-
-            # double check that a node that thinks is synced is actually synced
-            if state.node.state.synced:
-                synced, in_sync_neighbour = state.node.synced_with_neighbours()
-                if not synced:
-                    # if node is actually behind, try to sync
-                    state.node.state.synced = False
-                    Sync.create_local_sync_event(
-                        state.node, in_sync_neighbour, event.time)
-                    return 0
-            # try to change round
-            Rounds.change_round(state.node, event.time)
+            
+        # try to change round
+        Rounds.change_round(state.node, event.time)
         return "handled"
-    return "invalid"
+
 
 
 def schedule_timeout(state, time, add_time=True, fast_path=False):
