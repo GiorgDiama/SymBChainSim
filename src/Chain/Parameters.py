@@ -2,7 +2,10 @@ import yaml
 
 
 def read_yaml(path):
-    with open(path, 'rb') as f:
+    '''
+        Reads a yaml file - assumes path is relevant to SBS_SRC
+    '''
+    with open(Parameters.path_to_src + '/' + path, 'rb') as f:
         data = yaml.safe_load(f)
     return data
 
@@ -29,6 +32,8 @@ class Parameters:
 
     tx_factory = None
 
+    path_to_src = '.'
+
     @staticmethod
     def reset_params():
         Parameters.dynamic_sim = {}
@@ -52,7 +57,7 @@ class Parameters:
         '''
             Parses config yaml file and initialises parameter dictionaries
         '''
-        params = read_yaml(f"Configs/{config}")
+        params = read_yaml(f"/Configs/{config}")
 
         try:
             Parameters.dynamic_sim = params["dynamic_sim"]
