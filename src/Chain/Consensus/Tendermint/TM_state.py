@@ -1,14 +1,15 @@
-from Chain.Block import Block
-from Chain.Parameters import Parameters
-from Chain.Handler import handle_backlog
+from ...Block import Block
+from ...Parameters import Parameters
+from ...Handler import handle_backlog
 
-import Chain.Consensus.Rounds as Rounds
+from  ...Consensus import Rounds
+
+from  ..Tendermint import TM_transition as state_transitions
+from  ..Tendermint import TM_timeouts as timeouts
+from  ..Tendermint import TM_messages as messages
 
 from random import randint
 
-import Chain.Consensus.Tendermint.TM_transition as state_transitions
-import Chain.Consensus.Tendermint.TM_timeouts as timeouts
-import Chain.Consensus.Tendermint.TM_messages as messages
 
 class Tendermint():
     '''
@@ -100,7 +101,7 @@ class Tendermint():
             'round': self.rounds.round,
         }
         
-        if 'votes' in self.node.blockchain[-1].extra_data.keys():
+        if 'votes' in self.node.blockchain[-1].extra_data.keys() and self.node.blockchain[-1].consensus == Tendermint:
             block.extra_data['last_proof'] = self.node.blockchain[-1].extra_data['votes']['commit']
 
         transactions, size = Parameters.tx_factory.execute_transactions(
@@ -129,7 +130,7 @@ class Tendermint():
         # taking into account block interval for the proposal round timeout
         time += Parameters.data["block_interval"]
 
-        timeouts.schedule_timeout(self, time, add_time=True)
+        timeouts.schedule_timeout(self, time)
 
         # if the current node is the miner, schedule propose block event
         if self.miner == self.node.id:
@@ -140,23 +141,21 @@ class Tendermint():
             handle_backlog(self.node, time)
 
     def init_round_change(self, time):
-        timeouts.schedule_timeout(self, time, add_time=True)
+        timeouts.schedule_timeout(self, time)
 
-    ########################## RESYNC CP SPECIFIC ACTIONS ###########################
-
-    def resync(self, payload, time):
+    def rejoin(self, time):
         '''
-            PBFT specific resync actions
+            Defines the protocol specific rejoin logic for Tendermint
         '''
-        self.set_state()
-        round = payload['blocks'][-1].extra_data['round']
-
-        self.start(round, time)
+        self.set_state() # set node's protocol state 
+        round = self.node.blockchain[-1].extra_data['round'] + 1 # set round to latest known round (latest block round + 1)
+        # NOTE: if this node rejoins at earlier round it's possible that it will try to propose a block. This will be ignored now but if wrong proposals are tracked this should be considered
+        self.start(round, time) # start the protocol
 
     ########################## HANDLER ###########################
 
     @staticmethod
-    def handle_event(event):  # specific to PBFT - called by events in Handler.handle_event()
+    def handle_event(event):  # specific to Tendermint - called by events in Handler.handle_event()
         match event.payload["type"]:
             case 'propose':
                 return state_transitions.propose(event.actor.cp, event)

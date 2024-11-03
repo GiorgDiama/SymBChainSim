@@ -1,13 +1,14 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
 
-import Chain.Consensus.HighLevelSync as Sync
-import Chain.Consensus.Rounds as Rounds
+from ...Consensus import HighLevelSync
+from ...Consensus import Rounds
 
 
 def handle_timeout(state, event):
+    # ignore timeout events from other rounds (a timeout at future round should never happen)
     if event.payload['round'] != state.rounds.round:
         return 'invalid'
-
+    
     if state.node.update(event.time):
         return 'changed_protocol'
 
@@ -15,9 +16,10 @@ def handle_timeout(state, event):
         synced, in_sync_neighbour = state.node.synced_with_neighbours()
         if not synced:
             state.node.state.synced = False
-            Sync.create_local_sync_event(
+            HighLevelSync.create_local_sync_event(
                 state.node, in_sync_neighbour, event.time)
-
+            return 'detected_desync'
+        
     Rounds.change_round(state.node, event.time)
     return "handled"  # changes state to round_change but no need to handle backlog
 
@@ -31,7 +33,7 @@ def schedule_timeout(state, time, add_time=True):
         'round': state.rounds.round,
         'CP': state.NAME
     }
-
+    
     event = state.node.scheduler.schedule_event(
         state.node, time, payload, state.handle_event)
     

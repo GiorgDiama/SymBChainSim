@@ -1,11 +1,10 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
+from ...Network import Network
 
-import Chain.Consensus.HighLevelSync as Sync
-import Chain.Consensus.Tendermint.TM_messages as messages
-import Chain.Consensus.Rounds as Rounds
+from ...Consensus import HighLevelSync
+from ...Consensus import Rounds
 
-from Chain.Network import Network
-
+from  ..Tendermint import TM_messages as messages
 
 def propose(state, event):
     time = event.time
@@ -208,7 +207,7 @@ def new_block(state, event):
         # future block: initiate sync
         if state.node.state.synced:
             state.node.state.synced = False
-            Sync.create_local_sync_event(state.node, event.creator, time)
+            HighLevelSync.create_local_sync_event(state.node, event.creator, time)
         # if not synced then we have to wait for other blocks in order to validate this so we cannot accept it
         return "handled"
     else:  # valid block
