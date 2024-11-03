@@ -1,16 +1,51 @@
+from ..Parameters import Parameters
+from ..Event import MessageEvent, Event
 
 import os
 import sys
 import yaml
 import subprocess
 
-
-from Chain.Parameters import Parameters
-from Chain.Event import SystemEvent, MessageEvent, Event
-
 '''
     A collection of useful utility functions and tools for SBS
 '''
+def get_named_cmd_arg(name):
+    '''
+        Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
+    '''
+    if name in sys.argv:
+        return sys.argv[sys.argv.index(name)+1]
+    else:
+        return None
+
+def parse_cmd_args():
+    '''
+        Modifies simulation parameters based on cmd arguments
+    '''
+    if "nd" in sys.argv:
+        Parameters.simulation["debugging_mode"] = False
+
+    if "d" in sys.argv:
+        Parameters.simulation["debugging_mode"] = True
+
+    if param := get_named_cmd_arg('da'):
+        Parameters.simulation['start_debugging_at'] = float(param)
+
+    if param := get_named_cmd_arg('--gossip'):
+        Parameters.network['gossip'] = bool(param)
+
+    if param := get_named_cmd_arg('--peers'):
+        Parameters.network['num_neighbours'] = int(param)
+    
+    if param := get_named_cmd_arg('--cp'):
+        Parameters.simulation['init_CP'] = param
+
+def parse_env_vars():
+    if sbs_src := os.environ.get('SBS_SRC'):
+        Parameters.path_to_src = sbs_src
+    else:
+        print('WARNING: "SBS_SRC" defaulted to CWD! If you are seeing path errors, export SBS_SRC="path/to/SymbChainSim/src"')
+        
 
 def debug_logs(msg, **kwargs):
     '''
@@ -20,7 +55,7 @@ def debug_logs(msg, **kwargs):
         Debug mode can be set from the config or by passing the -d command line argument
             
         You can use the following colours using the color()  function
-            color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:green | 47:white
+            color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:cyan | 47:white
 
         Supported **kwargs:
             col: prints the messages with the specified color
@@ -60,38 +95,6 @@ def debug_logs(msg, **kwargs):
 
         if "command" in kwargs:
             return cmd
-
-
-def get_named_cmd_arg(name):
-    '''
-        Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
-    '''
-    if name in sys.argv:
-        return sys.argv[sys.argv.index(name)+1]
-    else:
-        return None
-
-def parse_cmd_args():
-    '''
-        Modifies simulation parameters based on cmd arguments
-    '''
-    if "nd" in sys.argv:
-        Parameters.simulation["debugging_mode"] = False
-
-    if "d" in sys.argv:
-        Parameters.simulation["debugging_mode"] = True
-
-    if param := get_named_cmd_arg('da'):
-        Parameters.simulation['start_debugging_at'] = float(param)
-
-    if param := get_named_cmd_arg('--gossip'):
-        Parameters.network['gossip'] = bool(param)
-
-    if param := get_named_cmd_arg('--peers'):
-        Parameters.network['num_neighbours'] = int(param)
-    
-    if param := get_named_cmd_arg('--cp'):
-        Parameters.simulation['init_CP'] = param
 
 def exec_cmd(simulator, cmd):
     '''
@@ -157,11 +160,13 @@ def sim_info(simulator, print_event_queues=True):
             # sort the list of nodes to print events in order
             sort_nodes = sorted(list(events_per_node.keys()))
 
+            node_cp_states = ''
             for key in sort_nodes:
                 if key != -1:
                     s += color(("-"*30 + "NODE " +
                                str(key) + '-'*30), 41) + '\n'
                     s += f"({simulator.nodes[key].state.alive}) CP_STATE:" + simulator.nodes[key].cp.state_to_string()+'\n\n'
+                    node_cp_states += f"({simulator.nodes[key]} alive:{simulator.nodes[key].state.alive}) -" + simulator.nodes[key].cp.state_to_string() + " BW:" + str(simulator.nodes[key].bandwidth) + '\n'
                 else:
                     s += color(("-"*30 + "SYSTEM" + '-'*30), 42) + '\n'
 
@@ -174,26 +179,34 @@ def sim_info(simulator, print_event_queues=True):
                     s += ' ' + str(e) + '\n'
 
                 s += "\n"
-                
+            
+        s += node_cp_states
         return s
 
 ####################### YAML ######################
 
 def read_yaml(path):
-    with open(path, 'rb') as f:
+    '''
+        Reads a yaml file - assumes path is relevant to SBS_SRC
+    '''
+    with open(Parameters.path_to_src + '/' + path, 'rb') as f:
         data = yaml.safe_load(f)
     return data
 
 
 def write_yaml(data, path):
-    with open(path, 'w+') as f:
+    '''
+        Write a yaml file - assumes path is relevant to SBS_SRC
+    '''
+    with open(Parameters.path_to_src + '/' + path, 'w+') as f:
         yaml.dump(data, f)
 
 ###################### COLOR #####################
 
 def color(string, c=44):
     '''
-        Prints 'string' with a specific color
+        returns 'string' with a specific color
+        color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:cyan | 47:white
     '''
     return f'\x1b[1;37;{c}m' + string + '\x1b[0m'
 
