@@ -1,18 +1,22 @@
-from Chain.Parameters import Parameters
-from Chain.Network import Network
+from .Parameters import Parameters
+from .Network import Network
 
-import numpy as np
-
-from collections import namedtuple
-from bisect import insort
-
-from collections import deque
-
+from collections import namedtuple, deque
 import random
 
-##############################   MODELS TRANSACTION  ##########################################
-Transaction = namedtuple("Transaction", "creator id timestamp size")
+class Transaction:
+    def __init__(self, creator, id, timestamp, size):
+        self.creator = creator
+        self.id = id
+        self.timestamp = timestamp
+        self.size = size
+        self.processed = False
 
+    def __str__(self) -> str:
+        return f'TX({self.timestamp},{self.size})'
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
 class TransactionFactory:
     '''
@@ -39,7 +43,7 @@ class TransactionFactory:
         self.nodes = nodes
 
         # FOR GLOBAL TXION POOL
-        self.global_mempool = []
+        self.global_mempool = deque([])
         self.depth_removed = -1
         self.produced_tx = 0
 
@@ -47,29 +51,29 @@ class TransactionFactory:
         '''
             Models transaction propagation delays
                 - currently: local pools utilise the point-to-point delay between the receiver and transaction producer
-                    TODO: Utilise broadcast!
+                    TODO: Utilise topology to calculate propagation delay for gossip
                 - Global pool: utilises an approximation of the above model
         '''
-        if Parameters.application["transaction_model"] == "global":
-            # model transaction propagation based on creators bandwidth
-            prop_delay = Network.calculate_message_propagation_delay(
-                self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
-            new_timestamp = tx.timestamp + prop_delay
-            tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
-            self.global_mempool.append(tx)
-        elif Parameters.application["transaction_model"] == "local":
-            for node in self.nodes:
-                if node.id == tx.creator:
-                    node.pool.append(tx)
-                else:
+        match Parameters.application.get('transaction_model', 'local'):
+            case 'local':
+                for node in self.nodes:
+                    if node.id == tx.creator:
+                        continue
                     prop_delay = Network.calculate_message_propagation_delay(
                         self.nodes[tx.creator], node, tx.size)
                     new_timestamp = tx.timestamp + prop_delay
                     tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
                     node.pool.append(tx)
-        else:
-            raise (ValueError(
-                f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
+            case 'global':
+                # model transaction propagation based on creators bandwidth
+                prop_delay = Network.calculate_message_propagation_delay(
+                    self.nodes[tx.creator], self.nodes[tx.creator], tx.size)
+                new_timestamp = tx.timestamp + prop_delay
+                tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
+                self.global_mempool.append(tx)
+            case _:
+                raise (ValueError(
+                    f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     def add_scenario_transactions(self, txion_list):
         '''
@@ -86,31 +90,29 @@ class TransactionFactory:
         for second in range(round(start), round(start + Parameters.application["TI_dur"])):
             for _ in range(Parameters.application["Tn"]):
                 if Parameters.simulation['stop_after_tx'] != -1 and self.produced_tx == Parameters.simulation['stop_after_tx']:
-                    break
-                else:
-                    id = Parameters.application["txIDS"]
-                    Parameters.application["txIDS"] += 1
+                    return
+                
+                id = Parameters.application["txIDS"]
+                Parameters.application["txIDS"] += 1
 
-                    # timestamp = second + random.random()
-                    timestamp = second
+                timestamp = second
 
-                    # size = random.expovariate(1/Parameters.application["Tsize"])
-                    size = Parameters.application["Tsize"] + \
-                        Parameters.application["base_transaction_size"]
+                size = random.expovariate(1/Parameters.application["Tsize"])
+                size += Parameters.application["base_transaction_size"]
 
-                    creator = random.choice(self.nodes)
+                creator = random.choice(self.nodes)
 
-                    self.transaction_prop(Transaction(
-                        creator.id, id, timestamp, size))
-                    
-                    self.produced_tx += 1
+                self.transaction_prop(Transaction(
+                    creator.id, id, timestamp, size))
+                
+                self.produced_tx += 1
 
     def execute_transactions(self, pool, time):
         '''
-            Abstracts transaction execution (i.e picking transactions to be included in the next block) form transaction pool model
-            Calls the appropriate methods to execute transactions based on the transaction pool model 
+            Abstracts transaction execution (picking transactions to be included in the next block) form transaction pool model
+            calls the appropriate methods to execute transactions based on the transaction pool model 
         '''
-        match Parameters.application["transaction_model"]:
+        match Parameters.application.get('transaction_model', 'local'):
             case "local":
                 # local pool: execute transactions for the local pool of the node
                 return self._get_transactions_from_pool(pool, time)
@@ -122,18 +124,24 @@ class TransactionFactory:
                     f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     @staticmethod
-    def _get_transactions_from_pool(pool, time):    
+    def _get_transactions_from_pool(pool:deque, time):    
         '''
             Gets transaction from the provided memory pool (either global or local) and returns the appropriate transactions for the next block
+            While doing so removes already processed transactions
             Nodes should NOT call this explicitly! Use TransactionFactory.execute_transactions() which makes the appropriate call based on the model 
-        '''   
-        transactions = []
-        size = 0
+        '''  
+        transactions, size = [], 0
+    
+        while pool:
+            tx = pool[0]
+            if tx.processed:
+                pool.popleft()
+                continue
 
-        for tx in pool:
             if tx.timestamp <= time and size + tx.size <= Parameters.data["Bsize"]:
                 transactions.append(tx)
                 size += tx.size
+                pool.popleft()
             else:
                 break
 
@@ -142,22 +150,39 @@ class TransactionFactory:
         else:
             # if we did not find any transactions return an empty list
             return [], -1
+          
+    @staticmethod
+    def mark_transactions_as_processed(block, pool):
+        '''
+            Entry point into transaction pool marking logic -
+            calls _mark_pool on the correct data based on the  transaction pool mode
+        '''
+        if Parameters.application["transaction_model"] == "local":
+            Parameters.tx_factory._mark_pool(
+                block.transactions, pool)
+        elif Parameters.application["transaction_model"] == "global":
+            # only one node needs to remove the transactions
+            if Parameters.tx_factory.depth_removed < block.depth:
+                Parameters.tx_factory.global_mempool = Parameters.tx_factory._mark_pool(
+                    block.transactions, Parameters.tx_factory.global_mempool)
+
+                Parameters.tx_factory.depth_removed = block.depth
 
     @staticmethod
-    def remove_transactions_from_pool(txions, pool):
+    def _mark_pool(txions, pool):
         '''
-            Removes committed transactions (transactions included in a valid blockchain block) from the provided memory pool 
-            (agnostic to mempool model)
+            Marks transactions in the pool as processed - 
+            these transactions will be removed next time the nodes tried to include them in a block
         '''
-        t_idx, p_idx = 0, 0
-        # for each transactions in txions go over pool: look for it and remove it
-        while t_idx < len(txions) and p_idx < len(pool):
-            if txions[t_idx].id == pool[p_idx].id:
-                pool.pop(p_idx)
-                t_idx += 1
-                # start over, looking for the next transaction in txions
-                p_idx = 0
-            else:
-                p_idx += 1
+        txions = set(txions) # HashMap: 'in' operation is O(1) (assuming no collisions)
+        marked = 0
+
+        for tx in pool:
+            if tx in txions:
+                tx.processed = True
+                marked += 1
+            if marked == len(txions):
+                break
 
         return pool
+
