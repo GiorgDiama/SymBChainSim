@@ -1,9 +1,10 @@
 '''
-    Handles the logic for consensus rounds
+    Handles the logic used by nodes to agree on a new round when they detect the current round has failed
 '''
 from types import SimpleNamespace
-from Chain.Parameters import Parameters
+from ..Parameters import Parameters
 
+############### EVENTS ###############
 
 def broadcast_round_change_message(node, new_round, time):
     payload = {
@@ -15,6 +16,8 @@ def broadcast_round_change_message(node, new_round, time):
     node.scheduler.schedule_broadcast_message(
         node, time, payload, handle_event)
     
+############### STATE  ###############
+
 def round_change_state(round=0):
     '''
         Round change state
@@ -29,22 +32,20 @@ def round_change_state(round=0):
     )
 
 def reset_votes(node):
-    '''
-        resets round change votes of node
-    '''
     node.cp.rounds.votes = {}
 
+def state_to_string(node):
+    return f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
 
 def handle_event(event):
-    '''
-        handles round change events
-    '''
     match event.payload['type']:
         case "round_change":
             handle_round_change_msg(event)
         case _:
             raise ValueError(
                 f"Event '{event.payload['type']}' was not handled by its own handler...")
+
+############### LOGIC ###############
 
 def change_round(node, time):
     '''
@@ -62,13 +63,18 @@ def change_round(node, time):
     node.cp.rounds.change_to = new_round
     
     broadcast_round_change_message(node, new_round, time)
-    count_round_change_vote(node, new_round, node) # count own vote
+    process_round_change_vote(node, new_round, node) # count own vote
   
 
 def handle_round_change_msg(event):
     '''
-        Logic to handle received round_change messages
+        Logic to handle received round_change messages:
+            if the vote makes a candidate round > our chosen new_round have f+1 votes
+                - adopt that candidate round and broadcast round_change message for that round
+            if 'new_round' receives 2f+1 votes:
+                start a new concuss round at round 'new_round' 
     '''
+    
     node = event.receiver
     time = event.time
     new_round = event.payload['new_round']
@@ -81,29 +87,25 @@ def handle_round_change_msg(event):
         return 'invalid'
 
     # try to count the vote (if message contains an invalid vote return)
-    if (ret := count_round_change_vote(node, new_round, event.creator)) == 'invalid':
+    if (ret := process_round_change_vote(node, new_round, event.creator)) == 'invalid':
         return ret
     
     if (len(msgs[new_round]) == Parameters.application["f"]+1):
         if cp_state.state != 'round_change':
-             # if the node is not in 'round_change' mode and a 'round_change' round receives f+1
-             # start the round change process on node
+            # if the node is not in 'round_change' - start the round change process on node
             change_round(node, time)
-            return 'handled'
         if new_round > cp_state.rounds.change_to:
-            # of if the node has realised that a higher 'new_round' has received f+1 nodes - change 'new_round' and broadcast agreement
+            # if the node has realised that a higher 'new_round' has received f+1 nodes - change 'new_round' and broadcast round_change for 'new_round'
             cp_state.rounds.change_to = new_round
             broadcast_round_change_message(node, new_round, time)
-            count_round_change_vote(node, new_round, node) # count own vote
-
+            process_round_change_vote(node, new_round, node) # count own vote
+            
+    # if a node receives 2f+1 round messages for a specific round change to that round
     if len(msgs[new_round]) == Parameters.application["required_messages"]:
-        # if a node receives 2f+1 round messages for a specific round change to that round
-        if node.id not in node.cp.rounds.votes[new_round]:
-            raise RuntimeError(f"Something is very wrong! node {node} has received 2f+1 votes for a round but never voted for that round! (its supposed to vote for a round when it received f+1 votes)")
-
         node.cp.start(new_round, time)
-        return "handled"
-
+    
+    return "handled"
+    
 def get_next_round(node):
     '''
         Logic for nodes to decide which round should be 'next_round'
@@ -115,7 +117,8 @@ def get_next_round(node):
     change_msgs = node.cp.rounds.votes
 
     # get all new_round candidates that have f+1 votes
-    new_round_candidates = [round for round, votes in change_msgs.items() if len(votes) >= Parameters.application["f"]+1]
+    new_round_candidates = [round for round, votes in change_msgs.items() 
+                            if len(votes) >= Parameters.application["f"]+1]
     
     # if any candidate round numbers have received f+1 votes adopt the max round
     if new_round_candidates:
@@ -124,9 +127,15 @@ def get_next_round(node):
     # otherwise new_round = current_round + 1
     return node.cp.rounds.round + 1
 
-def count_round_change_vote(node, new_round, voter):
+def process_round_change_vote(node, new_round, voter):
     '''
-        implements logic that counts votes for new_rounds
+        Logic that keeps track of votes for new_rounds
+            If no record of the voter voting then:
+                record the vote
+            If the votes has voted for a round < current_vote (new_round)
+                delete the old vote and record the new one
+            else:
+                vote is invalid
     '''
     msgs = node.cp.rounds.votes
     voter = voter.id
@@ -139,12 +148,7 @@ def count_round_change_vote(node, new_round, voter):
             else:  # voter is voting for an earlier round than its last vote
                 return 'invalid'
 
+    # record valid vote
     msgs[new_round] = msgs.get(new_round, []) + [voter]
 
     return "handled"
-
-def state_to_string(node):
-    '''
-        returns the round change state of *node* as a string
-    '''
-    return f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
