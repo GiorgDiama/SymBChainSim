@@ -1,29 +1,32 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
 
-import Chain.Consensus.HighLevelSync as Sync
-import Chain.Consensus.Rounds as Rounds
+from ...Consensus import HighLevelSync
+from ...Consensus import Rounds
 
 
 def handle_timeout(state, event):
     ''' 
-        Handler for timeout event - initiates round change logic
-        Detects desyncs and initialises resync process 
+        Handler for timeout events - initiates round change logic
+        Checks for desync and initialises resync process 
     '''
-    if event.payload['round'] == state.rounds.round:
-        if state.node.update(event.time):
-            return 0
+    # ignore timeout events from other rounds (a timeout at future round should never happen)
+    if event.payload['round'] != state.rounds.round:
+        return 'invalid'
+    
+    if state.node.update(event.time):
+        return 'changed_cp'
 
-        if state.node.state.synced:
-            synced, in_sync_neighbour = state.node.synced_with_neighbours()
-            if not synced:
-                state.node.state.synced = False
-                Sync.create_local_sync_event(
-                    state.node, in_sync_neighbour, event.time)
+    if state.node.state.synced:
+        synced, in_sync_neighbour = state.node.synced_with_neighbours()
+        if not synced:
+            state.node.state.synced = False
+            HighLevelSync.create_local_sync_event(
+                state.node, in_sync_neighbour, event.time)
+            return 'detected_desync'
 
-        Rounds.change_round(state.node, event.time)
-        return "handled"  # changes state to round_change but no need to handle backlog
+    Rounds.change_round(state.node, event.time)
+    return "handled"  # changes state to round_change but no need to handle backlog
 
-    return "invalid"
 
 
 def schedule_timeout(state, time, add_time=True):
@@ -44,4 +47,5 @@ def schedule_timeout(state, time, add_time=True):
 
     event = state.node.scheduler.schedule_event(
         state.node, time, payload, state.handle_event)
+    
     state.timeout = event

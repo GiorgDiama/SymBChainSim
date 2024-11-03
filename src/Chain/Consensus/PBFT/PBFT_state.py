@@ -1,15 +1,14 @@
-from Chain.Block import Block
-from Chain.Parameters import Parameters
-from Chain.Handler import handle_backlog
+from ...Block import Block
+from ...Parameters import Parameters
+from ...Handler import handle_backlog
 
-import Chain.Consensus.Rounds as Rounds
+from  ...Consensus import Rounds
+
+from  ..PBFT import PBFT_transition as state_transitions
+from  ..PBFT import PBFT_timeouts as timeouts
+from  ..PBFT import PBFT_messages as messages
 
 from random import randint
-
-import Chain.Consensus.PBFT.PBFT_transition as state_transitions
-import Chain.Consensus.PBFT.PBFT_timeouts as timeouts
-import Chain.Consensus.PBFT.PBFT_messages as messages
-
 
 class PBFT():
     '''
@@ -44,14 +43,11 @@ class PBFT():
         self.block = None
 
     def state_to_string(self):
-        '''
-            Returns the state of the Protocol instance as a string
-        '''
         return f"round: {self.rounds.round} | node_state:{self.state} | miner:{self.miner}| block:{self.block.id if self.block is not None else -1} | msgs: {self.msgs} | timeout_event: {(round(self.timeout.time,3), self.timeout.payload['round']) if self.timeout is not None else -1}"
         
     def reset_msgs(self, round):
         '''
-            Reset the state of the consensus messages
+            Reset the state of the consensus messages and change round votes
         '''
         self.msgs = {'prepare': [], 'commit': []}
         Rounds.reset_votes(self.node)
@@ -70,7 +66,7 @@ class PBFT():
 
     def validate_message(self, event):
         '''
-            Defines logic to validate messages (i.e events) according to the protocol
+            Defines logic to validate messages according to the protocol
         '''
         round, current_round = event.payload['round'], self.rounds.round
 
@@ -173,16 +169,14 @@ class PBFT():
         '''
         timeouts.schedule_timeout(self, time, add_time=True)
 
-    ########################## RESYNC CP SPECIFIC ACTIONS ###########################
-
-    def resync(self, payload, time):
+    def rejoin(self, time):
         '''
-            PBFT specific resync actions
+            Defines the protocol specific rejoin logic for PBFT
         '''
-        self.set_state()
-        round = payload['blocks'][-1].extra_data['round']
-
-        self.start(round, time)
+        self.set_state() # set node's protocol state 
+        round = self.node.blockchain[-1].extra_data['round'] + 1 # set round to latest known round (latest block round + 1)
+        # NOTE: if this node rejoins at earlier round it's possible that it will try to propose a block. This will be ignored now but if wrong proposals are tracked this should be considered
+        self.start(round, time) # start the protocol
 
     ########################## HANDLER ###########################
 

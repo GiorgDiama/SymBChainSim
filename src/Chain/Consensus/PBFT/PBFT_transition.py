@@ -1,11 +1,10 @@
-from Chain.Parameters import Parameters
+from ...Parameters import Parameters
+from ...Network import Network
 
-import Chain.Consensus.HighLevelSync as Sync
-import Chain.Consensus.PBFT.PBFT_messages as PBFT_messages
-import Chain.Consensus.Rounds as Rounds
+from ...Consensus import HighLevelSync
+from ...Consensus import Rounds
 
-
-from Chain.Network import Network
+from  ..PBFT import PBFT_messages
 
 
 def propose(state, event):
@@ -62,36 +61,39 @@ def pre_prepare(state, event):
         case 'new_round':
             # validate block
             time += Parameters.execution["block_val_delay"]
-
-            if state.validate_block(block):
-                # store block as current block
-                state.block = event.payload['block'].copy()
-
-                # create the votes extra_data field and log votes
-                state.block.extra_data['votes'] = {
-                    'pre_prepare': [], 'prepare': [], 'commit': []}
-                
-                state.block.extra_data['votes']['pre_prepare'].append((
-                    event.creator.id, time, Network.size(event)))
-
-                # change state to pre_prepared since block was accepted
-                state.state = 'pre_prepared'
-
-                # broadcast prepare message
-                PBFT_messages.broadcast_prepare(state, time, state.block)
-
-                # count own vote
-                state.process_vote('prepare', state.node,
-                                   state.rounds.round, time)
-
-                state.block.extra_data['votes']['prepare'].append((
-                    event.actor.id, time, Network.size(event)))
-                
-                return 'new_state'  # state changed (will check backlog)
-            else:
-                # if the block was invalid begin round change
+            if not state.validate_block(block):
+                # if the block is invalid begin round change
                 Rounds.change_round(state.node, time)
                 return 'handled'  # event handled but state did not change
+
+            # store block as current block
+            state.block = event.payload['block'].copy()
+
+            # create the votes extra_data field and log votes
+            state.block.extra_data['votes'] = {
+                'pre_prepare': [],
+                'prepare': [],
+                'commit': []
+            }
+            
+            state.block.extra_data['votes']['pre_prepare'].append((
+                event.creator.id, time, Network.size(event)))
+
+            # change state to pre_prepared since block was accepted
+            state.state = 'pre_prepared'
+
+            # broadcast prepare message
+            PBFT_messages.broadcast_prepare(state, time, state.block)
+
+            # count own vote
+            state.process_vote('prepare', state.node,
+                                state.rounds.round, time)
+
+            state.block.extra_data['votes']['prepare'].append((
+                event.actor.id, time, Network.size(event)))
+            
+            return 'new_state'  # state changed (will check backlog)
+
         case 'pre_prepared':
             return 'invalid'
         case 'prepared':
@@ -141,6 +143,7 @@ def prepare(state, event):
                     event.actor.id, time, Network.size(event)))
 
                 return 'new_state'
+            
             # not enough votes yet...
             return 'handled'
         case 'new_round':
@@ -176,10 +179,10 @@ def commit(state, event):
             
             # if we have enough votes
             if state.count_votes('commit', round) >= Parameters.application["required_messages"]:
-                # add block to BC
+                # add block to local blockchain
                 state.node.add_block(state.block, time)
 
-                # if miner: broadcast new block to nodes
+                # if this node is the miner: broadcast the block to the nodes
                 if state.node.id == state.miner:
                     PBFT_messages.broadcast_new_block(state, time, block)
 
@@ -187,6 +190,7 @@ def commit(state, event):
                 state.start(state.rounds.round + 1, time)
 
                 return 'new_state'
+            
             # not enough votes yet...
             return 'handled'
         case 'new_round':
@@ -207,21 +211,20 @@ def new_block(state, event):
     time += Parameters.execution["msg_val_delay"]
     time += Parameters.execution["block_val_delay"]
 
+    # check: already added
     if block.depth <= state.node.blockchain[-1].depth:
         return "invalid"  # old block: ignore
-    elif block.depth > state.node.blockchain[-1].depth + 1:
-        # future block: initiate sync
-        if state.node.state.synced:
+    
+    # check: future block
+    if block.depth > state.node.blockchain[-1].depth + 1:
+        # TODO: add logic to cache this block so we dont have to request it
+        if state.node.state.synced: # check: do we know we are desynced?
             state.node.state.synced = False
-            Sync.create_local_sync_event(state.node, event.creator, time)
-        # if not synced then we have to wait for other blocks in order to validate this so we cannot accept it
+            HighLevelSync.create_local_sync_event(state.node, event.creator, time)
         return "handled"
-    else:  # valid block
-        # update_round if necessary
-        state.rounds.round = event.payload['round']
+    
+    # add block local blockchain and start new round (round in block + 1)
+    state.node.add_block(block.copy(), time)
+    state.start(block.extra_data['round']+1, time)
 
-        # add block and start new round
-        state.node.add_block(block.copy(), time)
-        state.start(event.payload['round']+1, time)
-
-        return "handled"
+    return "handled"
