@@ -158,8 +158,7 @@ class TransactionFactory:
             calls _mark_pool on the correct data based on the  transaction pool mode
         '''
         if Parameters.application["transaction_model"] == "local":
-            Parameters.tx_factory._mark_pool(
-                block.transactions, pool)
+            Parameters.tx_factory._mark_pool(block.transactions, pool)
         elif Parameters.application["transaction_model"] == "global":
             # only one node needs to remove the transactions
             if Parameters.tx_factory.depth_removed < block.depth:
@@ -168,21 +167,36 @@ class TransactionFactory:
 
                 Parameters.tx_factory.depth_removed = block.depth
 
+
+    @staticmethod
+    def removed_processed(pool):
+        '''
+            RETURNS a new pool that does not contain any processed transactions
+            This can be useful when looking at metrics regarding transactions at the end of the simulation
+            Some nodes will still have processed transactions remaining so this can be used to remove them
+        '''
+        new_pool = deque([])
+        while pool:
+            if (tx := pool.popleft()).processed:
+                continue
+            new_pool.append(tx)
+        return new_pool
+
     @staticmethod
     def _mark_pool(txions, pool):
         '''
             Marks transactions in the pool as processed - 
-            these transactions will be removed next time the nodes tried to include them in a block
+            these transactions will be discarded next time the nodes tries to include them in a block
         '''
-        txions = set(txions) # HashMap: 'in' operation is O(1) (assuming no collisions)
+        txions = set([tx.id for tx in txions]) # HashMap: 'in' operation is O(1) (assuming no collisions)
         marked = 0
 
         for tx in pool:
-            if tx in txions:
+            if tx.id in txions:
                 tx.processed = True
                 marked += 1
             if marked == len(txions):
                 break
-
+        
         return pool
 
