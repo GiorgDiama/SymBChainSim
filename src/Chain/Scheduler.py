@@ -1,5 +1,5 @@
-from Chain.Event import Event
-from Chain.Network import Network
+from .Event import Event
+from .Network import Network
 
 
 class Scheduler:
