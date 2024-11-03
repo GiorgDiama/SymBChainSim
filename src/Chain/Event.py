@@ -1,4 +1,4 @@
-from Chain.Parameters import Parameters
+from .Parameters import Parameters
 
 class Event():
     '''
@@ -57,8 +57,8 @@ class Event():
 
 class MessageEvent(Event):
     '''
-        Models messages between nodes (i.e cp message, sync message, new blocks etc)
-        is created by the network through a node Event and added to the EQ's of other nodes
+        Models messages network between nodes (i.e cp message, sync message, new blocks etc)
+        MessageEvents these are created by the Network model so that the relative delays can be calculated
     '''
 
     def __str__(self):
