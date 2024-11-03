@@ -1,5 +1,6 @@
-from Chain.Parameters import Parameters
-from Chain.Event import SystemEvent
+from .Parameters import Parameters
+from .Event import SystemEvent
+
 import heapq
 
 
@@ -50,9 +51,6 @@ class Queue:
     def __init__(self):
         self.prio_queue = PrioQueue()
         self.old_messages = {}
-
-    def add_old_to_old_messages(self, item):
-        pass
 
     def add_event(self, event):
         self.prio_queue.add_task(event, event.time)
