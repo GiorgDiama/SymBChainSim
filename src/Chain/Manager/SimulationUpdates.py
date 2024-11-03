@@ -1,12 +1,11 @@
-from Chain.Parameters import Parameters
-from Chain.Network import Network
-import Chain.tools as tools
-from Chain.Node import Node
-from Chain.Metrics import Metrics
+from ..Parameters import Parameters
+from ..Network import Network
+from ..Node import Node
+from ..Metrics import Metrics
+from ..Utils import tools
+from ..Consensus import HighLevelSync
 
-import Chain.Consensus.HighLevelSync as Sync
-
-from random import choice, normalvariate
+import random
 
 
 def print_progress(sim):
@@ -33,15 +32,15 @@ def start_debug(sim):
 def interval_switch(sim):
     mean, sigma = Parameters.simulation['interval_mean'], Parameters.simulation['interval_mean']
     if "switch" not in Parameters.simulation:
-        Parameters.simulation["switch"] = normalvariate(mean, sigma)
+        Parameters.simulation["switch"] = random.normalvariate(mean, sigma)
 
     if sim.clock >= Parameters.simulation["switch"] and Parameters.simulation["interval_switch"]:
-        Parameters.simulation['switch'] += normalvariate(mean, sigma)
+        Parameters.simulation['switch'] += random.normalvariate(mean, sigma)
 
-        prots = [x for x in Parameters.CPs.values() if x.NAME !=
+        protocols = [x for x in Parameters.CPs.values() if x.NAME !=
                  Parameters.application['CP'].NAME]
 
-        Parameters.application['CP'] = choice(prots)
+        Parameters.application['CP'] = random.choice(protocols)
 
 
 def change_cp(cp):
@@ -60,7 +59,11 @@ def change_cp(cp):
 def add_node(sim):
     '''
         Adds a node taking part in the consensus process
+
+        This is not realistic as it assumes a fully centralised approach where a single entity can control all the nodes
     '''
+    print(f"WARNING: 'add_node' has some shortcomings in its current implementation! ensure these do not affect your results!")
+
     # change number of nodes in the parameters and recalculate fault tolerance
     Parameters.application["Nn"] += 1
     Parameters.calculate_fault_tolerance()
@@ -78,7 +81,6 @@ def add_node(sim):
 
     Network.set_bandwidths(node)
 
-    # also appends txion factory since the nodes there are a reference to the sim nodes
     sim.nodes.append(node)
     Network.nodes = sim.nodes
 
@@ -86,29 +88,31 @@ def add_node(sim):
     node.update(sim.clock)
 
     node.state.synced = False
-    Sync.create_local_sync_event(
-        node, choice(node.neighbours), sim.clock)
+    HighLevelSync.create_local_sync_event(
+        node, random.choice(node.neighbours), sim.clock)
 
 
 def remove_node(sim):
     '''
         removes a node taking part in the consensus process
+        This is not a realistic implementation as it assumes a fully centralised approach where a single entity can control all the nodes
+
+        PROBLEM:
+            Removing a node will not update its peers.
+            TEMP WORKAROUND: 
+                reassign the peers of nodes that had the removed node in their neighbour list
+            TODO: ideally, they would do that once they realised that the node is not there any more
+
+        TODO: implement logic to allow removing a node by index
     '''
+
+    print(f"WARNING: 'remove_node' has some shortcomings in its current implementation! ensure these do not affect your results!")
+
     # update fault tolerance and remove node
     Parameters.application["Nn"] -= 1
     Parameters.calculate_fault_tolerance()
 
     rem_node = sim.nodes.pop()
-
-    '''
-        TODO / BUG:
-            Removing a node will not update the neighbours.
-        
-        TEMP WORKAROUND: 
-            reassign the neighbours of nodes that had the removed node in their neighbour list
-
-        ideally, they would do that once they realised that the node is not there anymore
-    '''
 
     for node in sim.nodes:
         if rem_node in node.neighbours:
