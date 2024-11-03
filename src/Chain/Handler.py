@@ -1,46 +1,37 @@
+from .Network import Network
+from .Event import MessageEvent
+from .Utils import tools
+
 import bisect
-
-from Chain.Parameters import Parameters
-from Chain.Network import Network
-
-import Chain.tools as tools
-
-from Chain.Event import Event, MessageEvent
-
-'''
-    Handling and running Events
-'''
 
 def handle_event(event, checking_backlog=False):
     '''
-        Handless events by calling their respective handlers and backlogs
+        Generic event handler of SBS: handless general logic only!
+        Calls event specific handler for events
+        Handles the backlog when an event triggers a node to move into a new state (declared by the nodes)
 
-        Possible outcomes from individual handlers:
+        Frequently returned outcomes from individual handlers:
             handled     - Event was handled successfully but cause no significant state updates (e.g vote counted but not enough votes yet)
             new_state   - Event was handled and node changed state -> check backlog to see if messages can be handled under this new state
-            invalid     - Invalid message
+            invalid     - Invalid message (straggler from older rounds, etc..)
             unhandled   - Could not handle (error message)
             backlog     - future message, add to backlog
-            gossiped    - message has been gossiped
 
         Successful handling of events is split into two responses (handled and new_state) to reduce the number of times check_back log is called.
-        If we know an event did not change the state of a node enough - checking if any messages in the backlog can now be handled will be a waste of computation
+        If we know an event did not change the state of a node enough - checking the backlog will be a waste of computation
             - in this cases the local handler can return handled which will not trigger a handle_backlog call
-        
     '''
 
-    # if node is 'dead' - event will not be handled
+    # if node is 'dead': ignore all events
     if not event.actor.state.alive:
         return 'dead_node'
     
-    '''
-        TODO: Leave this check to the protocols
-    '''
+    #                   THINK/TODO: any point in leaving this check to the protocols?
     # if this event is CP specific and the CP of the event does not match the current CP of the node - old/old message
     if "CP" in event.payload and event.payload['CP'] != event.actor.cp.NAME:
         return 'invalid'
     
-    # calls on receive method to handle receiving logic specified by the Network (should not gossip backlogged messages)
+    # if network message: handle receiving logic specified by the Network (should not be called on replayed messages)
     if not checking_backlog and isinstance(event, MessageEvent):
         if (result := Network.on_receive(event.actor, event)) != 'process':
             return result
@@ -55,10 +46,9 @@ def handle_event(event, checking_backlog=False):
         # event caused a new sate, check the backlog (some stored events could be handled now)
         handle_backlog(event.actor, event.time)
     elif ret == 'unhandled':
-        raise ValueError(
-                f"Event '{event.payload['type']}' was not handled by its own handler...")
+        raise RuntimeError(f"Event: '{event}' - was not handled by its own handler...")
     
-    # return the status of handling the event. Might be useful to the caller
+    # return the status of handling the event
     return ret
 
 def handle_backlog(node, call_time):
