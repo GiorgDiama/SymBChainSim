@@ -1,0 +1,67 @@
+simulation:
+  init_CP: "PBFT"
+  simTime: 400
+  stop_after_blocks: -1
+  stop_after_tx: -1
+  debugging_mode: False
+  logging_level: "INFO"
+  print_every: 200
+  snapshot_interval: 60
+  
+application:
+  Nn: 4
+  workload: 'generate'
+  TI_dur: 20
+  Tn: 50
+  base_transaction_size: 0
+  Tsize: 0.008
+  transaction_model: "global"
+
+execution:
+  creation_time: 0.02
+  block_val_delay: 0.01
+  msg_val_delay: 0.001
+  sync_message_request_delay: 0.1
+  time_per_tx: 0.001
+  proposer_selection: "hash"
+
+data:
+  Bsize: 1
+  base_block_size: 0.002
+  block_interval: 1
+
+network:
+  base_msg_size: 0.1
+  gossip: True
+  num_neighbours: 2
+  use_latency: "measured"
+  same_city_latency_ms: 5
+  same_city_dev_ms: 0
+  queueing_delay: 0
+  processing_delay: 0
+
+  bandwidth:
+    mean: 10
+    dev: 1
+    min: 0.24
+    sample: 'once'
+    
+consensus:
+  BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
+  PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
+  Tendermint: Chain/Consensus/Tendermint/TM_config.yaml
+
+behaviour:
+  use: False
+  config: "Configs/behaviour_config.yaml"
+  print_updates: True
+
+dynamic_sim:
+  use: False
+  config: "Configs/dynamic_config.yaml"
+  print_updates: True
+
+reconfiguration:
+  reconfigurable: False
+  conf_block_size: 0.25
+

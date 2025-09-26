@@ -1,0 +1,19 @@
+byzantine:
+  # number of byzantine nodes
+  num: 0
+  sync:
+    # define the chance a byzantine node will send bad sync data (and the delay that will cause)
+    bad_data:
+      delay: 10
+    # define the chance a byzantine node will not respond to a sync message (and the delay that will cause)
+    no_response:
+      delay: 5
+    probs: [5, 20]
+
+faulty:
+  # number of faulty nodes
+  num: 1
+  # probabilities for crash
+  mean_fault_range: [120, 200]
+  # how long for the node to recover
+  mean_recovery_range: [20, 50]

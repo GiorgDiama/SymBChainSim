@@ -1,0 +1,1 @@
+This is where dumped logs live. This readme allows committing this path to git.

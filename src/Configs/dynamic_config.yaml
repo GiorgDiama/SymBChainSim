@@ -1,0 +1,9 @@
+network:
+  use: True
+  mu_dist: [9, 2]
+  sigma_dist: [2, 0.5]
+
+workload:
+  use: True
+  Tn_norm_dist: [70, 20]
+  Tsize_norm_dist: [0.001, 0.008]

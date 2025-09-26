@@ -1,0 +1,1 @@
+This is where saved snapshots live. This readme allows committing this path to git.
