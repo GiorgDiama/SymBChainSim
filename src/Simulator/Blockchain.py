@@ -42,7 +42,6 @@ def run():
     print(Tools.color(f"SIMULATED TIME: {manager.sim.clock:0.2f} seconds", 45))
     print(Tools.color(f"EXECUTION TIME: {runtime} seconds", 45))
 
-    pprint.pprint(Metrics.snapshots[0])
 
 def run_scenario(scenario_name):
     manager = Manager()
