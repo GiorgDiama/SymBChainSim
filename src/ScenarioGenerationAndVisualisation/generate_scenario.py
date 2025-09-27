@@ -117,9 +117,9 @@ def generate(name: str, parameters_dict: dict) -> None:
 #     'ti_sigma': 60,
 #     'num_nodes': 16,
 #     'networks': [
-#         (10, 0.1),  # E.g. Fiber
-#         (5, 0.1),  # E.g. VDSL
-#         (2.5, 0.1)  # E.g. ADSL
+#         (10, 0.1), 
+#         (5, 0.1), 
+#         (2.5, 0.1) 
 #     ],
 #     'fail_duration': (
 #         (20, 5),
