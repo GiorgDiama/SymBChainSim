@@ -298,7 +298,7 @@ class Manager:
                 cp_name = n.cp.NAME
 
             s += (
-                f"{n.id:3d} {n.location:12}\t{n.bandwidth[0]:.2f}\t{cp_name:10}\t{
+                f"{n.id:3d} {n.location:12}\t{n.bandwidth}\t{cp_name:10}\t{
                     neigh_list:12}"
                 + "\n"
             )
