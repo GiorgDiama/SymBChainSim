@@ -1,44 +1,100 @@
 simulation:
+  # Initial consensus protocol to use at simulation start
+  #   Options: "PBFT", "Tendermint", "BigFoot"
   init_CP: "PBFT"
+  
+  # Enable detailed debugging mode (step-by-step event processing mode)
   debugging_mode: False
+  
+  # Logging verbosity level: "DEBUG" or "INFO"
   logging_level: "INFO"
-  remove_timeouts: False
+  
+  # Print simulation progress every N seconds
   print_every: 100
+  
+  # Take snapshots of simulation state every N seconds
   snapshot_interval: 30
-  print_info: False
 
+  # Simulate (or not) the node failures described in the scenario
   simulate_faults: False
 
 application:
+  # Transaction pool model:
+  #   "global": abstracted model with only 1 global pool (accuracy of this model is evaluated in the TOMACS paper)
+  #   "local: each nodes gets its own transaction pool (slower)
   transaction_model: "global"
 
 execution:
+  # Time required to create a block in seconds
   creation_time: 0.1
+  
+  # Time required for block validation in seconds
   block_val_delay: 0.025
+  
+  # Time required to validate a network message in seconds
   msg_val_delay: 0.01
+  
+  # Time required to validate each transaction in a received blocks (seconds)
   time_per_tx: 0.001
+  
+  # Time required to requests missing data from a peer (seconds)
   sync_message_request_delay: 1
+  
+  # Proposer selection algorithm: 
+  #   "hash": pseudorandom based on the hash of the latest block
+  #   "round_robin": round robin 
   proposer_selection: "hash"
 
 data:
-  Bsize: 10
+  # Maximum block size in MBs
+  Bsize: 1
+  
+  # Base block size in MB (excluding transactions)
   base_block_size: 0
-  block_interval: 0
+  
+  # Min. time interval between blocks in seconds
+  block_interval: .2
 
 network:
+  # Base message size in MB
   base_msg_size: 0.2
+  
+  # Enable gossip protocol for message propagation
+  #   True: messages are disseminated through cascading peer multicast
+  #   False: full network broadcasts (regardless on num_neighbors)
   gossip: True
+  
+  # Number of neighbors each node connects to
   num_neighbours: 4
+  
+  # Latency model: 
+  # "measured": based on dataset
+  # "distance": calculated based on geographical distance 
+  # "local": uses only local model 
+  # "off": no additional delay 
   use_latency: "distance"
+  
+  # Latency for nodes in the same city in milliseconds
   same_city_latency_ms: 10
+  
+  # Standard deviation for same-city latency in milliseconds
   same_city_dev_ms: 0
+  
+  # Additional queueing delay in seconds
   queueing_delay: 0
+  
+  # Additional processing delay in seconds
   processing_delay: 0
 
   bandwidth:
+    # Bandwidth sampling frequency: 
+    #   'always': sample from the distribution always,
+    #   'once': sample once
+    #   'scenario': never, scenario logic handles network state
     sample: 'scenario'
 
 consensus:
+  # Path to consensus protocol specific configurations 
   BigFoot: Chain/Consensus/BigFoot/BigFoot_config.yaml
   PBFT: Chain/Consensus/PBFT/PBFT_config.yaml
   Tendermint: Chain/Consensus/Tendermint/TM_config.yaml

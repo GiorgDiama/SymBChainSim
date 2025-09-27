@@ -1,9 +1,15 @@
 network:
+  # Dictates whether the network is dynamically updated 
   use: True
+
+  # Bandwidth distribution mew and sigma ranges to sample from when updating the network
   mu_dist: [9, 2]
   sigma_dist: [2, 0.5]
 
 workload:
+  # Dictates whether the workload is dynamically updated 
   use: True
+
+  # Transaction size distribution mew and sigma ranges to sample from when updating the workload
   Tn_norm_dist: [70, 20]
   Tsize_norm_dist: [0.001, 0.008]
