@@ -20,7 +20,7 @@ def schedule_propose(state: "PBFT", time: float) -> None:
     Scheduler.schedule_event(state.node, time, payload, state.handle_event)
 
 
-def broadcast_pre_prepare(state: "PBFT", time: float, block: Block) -> None:
+def broadcast_pre_prepare(state: "PBFT", time: float, block: "Block") -> None:
     payload = {
         "type": "pre_prepare",
         "block": block,
@@ -31,7 +31,7 @@ def broadcast_pre_prepare(state: "PBFT", time: float, block: Block) -> None:
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
 
-def broadcast_prepare(state: "PBFT", time: float, block: Block) -> None:
+def broadcast_prepare(state: "PBFT", time: float, block: "Block") -> None:
     payload = {
         "type": "prepare",
         "block": block,
@@ -42,7 +42,7 @@ def broadcast_prepare(state: "PBFT", time: float, block: Block) -> None:
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
 
-def broadcast_commit(state: "PBFT", time: float, block: Block) -> None:
+def broadcast_commit(state: "PBFT", time: float, block: "Block") -> None:
     payload = {
         "type": "commit",
         "block": block,
@@ -53,7 +53,7 @@ def broadcast_commit(state: "PBFT", time: float, block: Block) -> None:
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
 
-def broadcast_new_block(state: "PBFT", time: float, block: Block) -> None:
+def broadcast_new_block(state: "PBFT", time: float, block: "Block") -> None:
     payload = {
         "type": "new_block",
         "block": block,
