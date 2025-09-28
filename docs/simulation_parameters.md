@@ -99,5 +99,13 @@ Links the protocol names to a path that contains a specific configuration file f
 
 | Parameter | Default Value | Description |
 | --------- | ------------- | ----------- |
-| `reconfigure` | `False` | Enable reconfiguration of blockchain system |
+| `reconfigure` | `True` | Enable reconfiguration of blockchain system |
+| `reconfiguration_interval` | `300` | How often to reconfigure the system (seconds) |
+| `reconfiguration_interval_range` | `[-20,20]` | Range used to randomly change the interval duration (seconds) |
 | `conf_block_size` | `0.25` | Block size of produced configuration blocks in MB |
+| `reconfiguration_method` | `'random_centralised'` | How to reconfigure the system: "random_centralised" (randomly picks configuration from random_configuration) |
+| `random_configuration` | `{protocols: ["PBFT", "BigFoot", "Tendermint"], block_sizes: [0.5, 1, 2, 5, 10], block_times: [0.1, 0.2, 0.5, 1, 2]}` | List of configuration parameters used to randomly reconfigure the blockchain |
+| `propagation.model` | `True` | Controls whether configuration block is instantly added (False) or propagated with delay (True) |
+| `propagation.delay` | `[0.02, 0.1]` | Delay range for configuration block propagation (seconds) |
+| `propagation.per_cent_nodes` | `0.25` | Percentage of nodes that initially receive the configuration block |
+| `print_updates` | `True` | Controls printing the details of the reconfiguration |
