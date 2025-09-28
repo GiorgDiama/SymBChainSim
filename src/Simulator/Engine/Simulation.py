@@ -62,7 +62,7 @@ class Simulation:
 
         for n in self.nodes:
             n.blockchain.append(genesis)
-            n.confchain.append(configuration_genesis)
+            n.reconfiguration_state.confchain.append(configuration_genesis)
             # applies the configuration in the genesis configuration block
             n.update(0)
 

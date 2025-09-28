@@ -53,7 +53,7 @@ data:
   base_block_size: 0
   
   # Min. time interval between blocks in seconds
-  block_interval: .2
+  block_time: 0.2
 
 network:
   # Base message size in MB

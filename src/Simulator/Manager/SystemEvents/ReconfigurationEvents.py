@@ -18,6 +18,7 @@ def schedule_reconfiguration_event(manager: "Manager", time:float) -> None:
         time (float): the current time
     """
     schedule_at = time + Parameters.reconfiguration['reconfiguration_interval']
+    schedule_at += random.uniform(*Parameters.reconfiguration['reconfiguration_interval_range'])
 
     event = SystemEvent(
         time = schedule_at,
@@ -46,7 +47,7 @@ def handle_random_centralised_reconfiguration_event(manager: "Manager", event: S
         previous=latest_configuration_block.id,
         proposer="manager",
         size= Parameters.reconfiguration['conf_block_size'],
-        consensus="PBFT",
+        consensus="centralised",
     )
     configuration_block.time_created = event.time
     configuration_block.extra_data = {}
@@ -70,13 +71,13 @@ def handle_random_centralised_reconfiguration_event(manager: "Manager", event: S
             if Parameters.reconfiguration['print_updates']:
                 print(f"node {node} will receive configuration block at {receive_at}")
 
-            node.schedule_future_receive_configuration(
+            node.reconfiguration_state.schedule_future_receive_configuration(
                 block=configuration_block.copy(),
                 time= receive_at
             )
 
     else:
         for node in manager.sim.nodes:
-            node.confchain.append(configuration_block)
+            node.reconfiguration_state.confchain.append(configuration_block)
 
     schedule_reconfiguration_event(manager, manager.sim.clock)    

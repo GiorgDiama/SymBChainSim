@@ -44,7 +44,7 @@ Most of SymbChainSims components are controlled through the configuration yaml f
 | ----------------- | ------------- | ---------------------------- |
 | `Bsize`           | `1`           | Maximum block size in MB |
 | `base_block_size` | `0.002`       | Base block size in MB (excluding transactions) |
-| `block_interval`  | `0.2`         | Minimum time interval between blocks in seconds |
+| `block_time`      | `0.2`         | Minimum time interval between blocks in seconds |
 
 
 ## network

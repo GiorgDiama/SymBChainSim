@@ -87,7 +87,7 @@ class ConfigurationBlock:
         genesis_block.configuration = {
             "CP": Parameters.simulation["init_CP"],
             "block_size": Parameters.data["Bsize"],
-            "block_interval": Parameters.data["block_interval"],
+            "block_time": Parameters.data["block_time"],
         }
         Parameters.global_configuration_chain = [genesis_block]
         return genesis_block
