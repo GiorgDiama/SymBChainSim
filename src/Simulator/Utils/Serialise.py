@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Dict, Any
 
 if TYPE_CHECKING:
     from Engine.Simulation import Simulation
-    from Chain.Block import Block, ConfigurationBlock
+    from Chain.Block import Block
+    from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
     from Chain.Node import Node
 
 
@@ -26,10 +27,10 @@ def serialisable_node(node: "Node") -> Dict[str, Any]:
     state["state"] = {
         "online": node.state.alive,
         "synced_data": node.state.synced,
-        "synced_config": node.configuration_synced,
+        "synced_config": node.reconfiguration_state.configuration_synced,
     }
     state["latest_configuration_block"] = serialisable_configuration_block(
-        node.confchain[-1]
+        node.reconfiguration_state.confchain[-1]
     )
 
     return state

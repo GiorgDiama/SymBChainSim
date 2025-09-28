@@ -148,7 +148,7 @@ def get_blocks_by_cp(sim, simple=True):
 def dump_reconfiguration_chain(manager):
     if "Metrics" in Parameters.reconfiguration.keys():
         conf_block_ids = Parameters.reconfiguration["Metrics"]["blocks"] = {}
-        for block in Parameters.simulation["conf_blocks"]:
+        for block in Parameters.global_configuration_chain:
             assert block.id not in conf_block_ids
             print(
                 block.depth,
@@ -159,7 +159,7 @@ def dump_reconfiguration_chain(manager):
             conf_block_ids[block.id] = {}
 
         for node in manager.sim.nodes:
-            for block in node.confchain:
+            for block in node.reconfiguration_state.confchain:
                 conf_block_ids[block.id][node.id] = (
                     Serialise.serialisable_configuration_block(block)
                 )

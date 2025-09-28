@@ -1,7 +1,8 @@
 from Parameters import Parameters
 
 from Chain.Node import Node
-from Chain.Block import Block, ConfigurationBlock
+from Chain.Block import Block
+from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
 from Chain.TransactionFactory import TransactionFactory
 
 from Utils import Tools
@@ -61,7 +62,7 @@ class Simulation:
 
         for n in self.nodes:
             n.blockchain.append(genesis)
-            n.confchain.append(configuration_genesis)
+            n.reconfiguration_state.confchain.append(configuration_genesis)
             # applies the configuration in the genesis configuration block
             n.update(0)
 

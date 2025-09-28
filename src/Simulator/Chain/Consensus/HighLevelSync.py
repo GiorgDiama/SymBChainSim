@@ -150,8 +150,8 @@ def create_local_sync_event_configuration(
         f"Node {desynced_node.id} is requesting a CONFIGURATION sync from Node {request_node.id}..."
     )
 
-    latest_block = desynced_node.confchain[-1]
-    sync_chain = request_node.confchain
+    latest_block = desynced_node.reconfiguration_state.confchain[-1]
+    sync_chain = request_node.reconfiguration_state.confchain
 
     missing_blocks = []
     for b in reversed(sync_chain):
@@ -225,7 +225,6 @@ def handle_local_sync_event(event):
                 time=-1,  # time added is calculated by create_local_sync_event_configuration
                 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                 update_time_added=False,
-                blockchain="blockchain",
             )
 
     if blockchain[-1].depth < sync_chain[-1].depth:
@@ -273,17 +272,16 @@ def handle_local_sync_event_configuration(event: Event):
         return "sync_failed"
 
     received_blocks = event.payload["blocks"]
-    blockchain = node.confchain
-    sync_chain = event.payload["request_node"].confchain
+    blockchain = node.reconfiguration_state.confchain
+    sync_chain = event.payload["request_node"].reconfiguration_state.confchain
 
     for b in received_blocks:
         if b.depth == blockchain[-1].depth + 1:
-            node.add_block(
+            node.reconfiguration_state.add_configuration_block(
                 block=b,
                 time=-1,  # time added is calculated by create_local_sync_event_configuration
                 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
                 update_time_added=False,
-                blockchain="configuration",
             )
 
     if blockchain[-1].depth < sync_chain[-1].depth:
@@ -302,7 +300,7 @@ def handle_local_sync_event_configuration(event: Event):
     assert node.cp.NAME == "DESYNC"
     node.cp.local_fast_sync_event_configuration = None
 
-    node.configuration_synced = True
+    node.reconfiguration_state.configuration_synced = True
     if node.cp.ready_to_rejoin():
         node.join_latest_conf(event.time)
         return "successfully_synced"

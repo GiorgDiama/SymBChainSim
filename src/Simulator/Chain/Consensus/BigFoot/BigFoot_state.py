@@ -217,12 +217,12 @@ class BigFoot(ConsensusProtocol):
         block.extra_data = {
             "proposer": self.node.id,
             "round": self.rounds.round,
-            "configuration_depth": self.node.confchain[-1].depth,
+            "configuration_depth": self.node.reconfiguration_state.confchain[-1].depth,
             "votes": {},
         }
 
         transactions, size = TransactionFactory.execute_transactions(
-            self.node.configuration, self.node.pool, time
+            self.node.reconfiguration_state.configuration, self.node.pool, time
         )
 
         if transactions:
@@ -281,7 +281,7 @@ class BigFoot(ConsensusProtocol):
         self.get_miner()
 
         # taking into account block interval for the proposal round timeout
-        time += Parameters.data["block_interval"]
+        time += self.node.reconfiguration_state.configuration.block_time
 
         timeouts.schedule_timeout(self, time)
         timeouts.schedule_timeout(self, time, fast_path=True)

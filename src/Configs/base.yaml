@@ -82,7 +82,7 @@ data:
   base_block_size: 0.002
   
   # Min. time interval between blocks in seconds
-  block_interval: 0.2
+  block_time: 0.2
 
 network:
   # Base message size in MB
@@ -142,7 +142,7 @@ behaviour:
   use: False
   
   # Path to behavior configuration file
-  config: "Configs/behaviour_config.yaml"
+  config: "../Configs/behaviour_config.yaml"
   
   # Print behavior updates during simulation
   print_updates: True
@@ -152,15 +152,38 @@ dynamic_sim:
   use: False
   
   # Path to dynamic simulation configuration file
-  config: "Configs/dynamic_config.yaml"
+  config: "../Configs/dynamic_config.yaml"
   
   # Print dynamic simulation updates during execution
   print_updates: True
 
 reconfiguration:
   # Enable reconfiguration of blockchain system
-  reconfigure: False
-  
+  reconfigure: True
+
+  # How often to reconfigure the system
+  reconfiguration_interval: 300
+
   # Block size of produced configuration blocks in MB
   conf_block_size: 0.25
 
+  # How to reconfigure the system
+  #   "random_centralised": randomly picks confiugration from "random_configuration" every reconfiguration interval
+  reconfiguration_method: 'random_centralised'
+
+  # list of configuration parameters used to randomly reconfigure the blockchain
+  random_configuration:
+    protocols: ["PBFT", "BigFoot", "Tendermint"]
+    block_sizes: [0.5, 1, 2, 4]
+    block_times: [0.1, 0.2, 0.5, 1]
+
+  # controls whether: 
+  #   a) (False) the configuration block is instantly added to the configuration chains of all nodes
+  #   b) (True)  added to a percentage of the nodes (after a small delay) and gossiped to all other nodes
+  propagation:
+    model: True
+    delay: [0.02, 0.1]
+    per_cent_nodes: 0.4    
+
+  # controls printing the details of the reconfiguration 
+  print_updates: True

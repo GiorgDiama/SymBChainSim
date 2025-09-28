@@ -224,11 +224,11 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         block.extra_data = {
             "proposer": self.node.id,
             "round": self.rounds.round,
-            "configuration_depth": self.node.confchain[-1].depth,
+            "configuration_depth": self.node.reconfiguration_state.confchain[-1].depth,
         }
 
         transactions, size = TransactionFactory.execute_transactions(
-            self.node.configuration, self.node.pool, time
+            self.node.reconfiguration_state.configuration, self.node.pool, time
         )
 
         if transactions:
@@ -274,7 +274,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         self.block = None
         self.get_miner()
 
-        time += Parameters.data["block_interval"]
+        time += self.node.reconfiguration_state.configuration.block_time
         timeouts.schedule_timeout(self, time)
 
         if self.miner == self.node.id:
