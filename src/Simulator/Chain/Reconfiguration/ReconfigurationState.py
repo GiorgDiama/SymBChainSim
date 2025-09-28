@@ -20,7 +20,8 @@ class ReconfigurationState():
             node (Node): a back reference to the node
             confchain (List): the configuration blockchain structure
             current_configuration_depth (int): the depth of the latest block in the confchain
-            configuration ()
+            configuration (SimpleNamespace): the configurable parameters
+            
     """
     def __init__(self, node: "Node"):
         self.node = node
