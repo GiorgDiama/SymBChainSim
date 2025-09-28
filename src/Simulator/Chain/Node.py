@@ -3,7 +3,8 @@ from Parameters import Parameters
 from Chain.Consensus import HighLevelSync
 from Chain.Consensus.ConsensusProtocol import ConsensusProtocol
 from Chain.TransactionFactory import TransactionFactory
-from Chain.Block import Block, ConfigurationBlock
+from Chain.Block import Block 
+from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
 
 from Engine.Scheduler import Scheduler
 

@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, Dict, Any
 
 if TYPE_CHECKING:
     from Engine.Simulation import Simulation
-    from Chain.Block import Block, ConfigurationBlock
+    from Chain.Block import Block
+    from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
     from Chain.Node import Node
 
 
