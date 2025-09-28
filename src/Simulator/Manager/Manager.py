@@ -192,7 +192,7 @@ class Manager:
             behaviourSE.Behaviour.init(self)
             behaviourSE.schedule_random_fault_event(self, self.sim.clock)
 
-        if Parameters.reconfiguration.get("reconfigurable", False):
+        if Parameters.reconfiguration.get("reconfigure", False):
             logger.debug("Scheduling reconfiguration system events.")
             reconfigurationSE.schedule_reconfiguration_event(self, self.sim.clock)
 
@@ -259,8 +259,8 @@ class Manager:
             #-----------------------------------------------------------
             #                      Reconfiguration
             #-----------------------------------------------------------
-            case "request_reconfiguration_event":
-                reconfigurationSE.handle_reconfiguration_event(self, event)
+            case "random_centralised":
+                reconfigurationSE.handle_random_centralised_reconfiguration_event(self, event)
             #-----------------------------------------------------------
             #                      Snapshots
             #-----------------------------------------------------------
