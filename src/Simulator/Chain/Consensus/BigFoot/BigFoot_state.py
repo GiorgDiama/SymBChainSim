@@ -128,17 +128,9 @@ class BigFoot(ConsensusProtocol):
             case "hash":
                 # get new miner based on the hash of the last block + the round
                 # (to avoid endlessly waiting for offline nodes)
-                self.miner = (
-                    self.node.last_block.id + self.rounds.round
-                ) % Parameters.application["Nn"]
+                self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
             case _:
-                raise (
-                    ValueError(
-                        f"No such 'proposer_selection {
-                            Parameters.execution['proposer_selection']
-                        }"
-                    )
-                )
+                raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def validate_message(self, event: Any) -> Tuple[bool, str]:
         """Validates an incoming message event.
@@ -190,9 +182,7 @@ class BigFoot(ConsensusProtocol):
             time (float): The current simulation time.
             starting_round (int): The round to start from.
         """
-        logger.debug(
-            f"Node {self.node.id}: Initializing BigFoot protocol at time {time}, starting round: {starting_round}"
-        )
+        logger.debug(f"Node {self.node.id}: Initializing BigFoot protocol at time {time}, starting round: {starting_round}")
         self.set_state()
         self.start(time, starting_round)
 
@@ -221,9 +211,7 @@ class BigFoot(ConsensusProtocol):
             "votes": {},
         }
 
-        transactions, size = TransactionFactory.execute_transactions(
-            self.node.reconfiguration_state.configuration, self.node.pool, time
-        )
+        transactions, size = TransactionFactory.execute_transactions(self.node.reconfiguration_state.configuration, self.node.pool, time)
 
         if transactions:
             block.transactions = transactions
@@ -231,15 +219,11 @@ class BigFoot(ConsensusProtocol):
             time += +Parameters.execution["creation_time"]
             time += len(transactions) * Parameters.execution["time_per_tx"]
 
-            logger.debug(
-                f"Node {self.node.id}: Successfully created block {block.id} with {len(transactions)} transactions, size: {size}, extra_data: {block.extra_data}"
-            )
+            logger.debug(f"Node {self.node.id}: Successfully created block {block.id} with {len(transactions)} transactions, size: {size}, extra_data: {block.extra_data}")
 
             return block, time
         else:
-            logger.debug(
-                f"Node {self.node.id}: Block creation failed - no transactions available, will retry at time {time}"
-            )
+            logger.debug(f"Node {self.node.id}: Block creation failed - no transactions available, will retry at time {time}")
             return None, time
 
     def init_round_change(self, time: float) -> None:
@@ -248,9 +232,7 @@ class BigFoot(ConsensusProtocol):
         Args:
             time (float): The current simulation time.
         """
-        logger.debug(
-            f"Node {self.node.id}: Initializing round change timeout at time {time}"
-        )
+        logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time, add_time=True)
 
     def start(self, time: int, new_round: int) -> None:
@@ -260,14 +242,10 @@ class BigFoot(ConsensusProtocol):
             time (float): The current simulation time.
             new_round (int): The round to start.
         """
-        logger.debug(
-            f"Node {self.node.id}: Starting new consensus round {new_round} at time {time}"
-        )
+        logger.debug(f"Node {self.node.id}: Starting new consensus round {new_round} at time {time}")
 
         if self.node.update(time):
-            logger.debug(
-                f"Node {self.node.id}: Node update returned True, aborting round start"
-            )
+            logger.debug(f"Node {self.node.id}: Node update returned True, aborting round start")
             return
 
         self.state = "new_round"
@@ -287,14 +265,10 @@ class BigFoot(ConsensusProtocol):
         timeouts.schedule_timeout(self, time, fast_path=True)
 
         if self.miner == self.node.id:
-            logger.debug(
-                f"Node {self.node.id}: This node is the miner for round {new_round}, scheduling propose message"
-            )
+            logger.debug(f"Node {self.node.id}: This node is the miner for round {new_round}, scheduling propose message")
             messages.schedule_propose(self, time)
         else:
-            logger.debug(
-                f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events"
-            )
+            logger.debug(f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events")
             # check if any future events are here for this round
             # slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
@@ -309,9 +283,7 @@ class BigFoot(ConsensusProtocol):
         self.set_state()  # set node's protocol state
         # set round to latest known round (latest block round + 1)
         round = self.node.blockchain[-1].extra_data["round"] + 1
-        logger.debug(
-            f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)"
-        )
+        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
         # NOTE: if this node rejoins at earlier round it's possible that it
         # will try to propose a block. This will be ignored now but if wrong
         # proposals are tracked this should be considered
@@ -330,11 +302,7 @@ class BigFoot(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != BigFoot.NAME:
-            print(
-                f"actor at {event.actor.cp.NAME} tried to execute event {
-                    event
-                } at BigFoot state"
-            )
+            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at BigFoot state")
             return "different_state"
         match event.payload["type"]:
             case "propose":
@@ -352,9 +320,7 @@ class BigFoot(ConsensusProtocol):
             case "new_block":
                 ret = state_transition.new_block(event.actor.cp, event)
             case _:
-                logger.debug(
-                    f"Node {event.actor.id}: Unhandled event type: {event.payload['type']}"
-                )
+                logger.debug(f"Node {event.actor.id}: Unhandled event type: {event.payload['type']}")
                 return "unhandled"
 
         return ret

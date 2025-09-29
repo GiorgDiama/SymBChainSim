@@ -27,21 +27,12 @@ def print_progress(sim):
     if "print_next" not in Parameters.simulation:
         Parameters.simulation["print_next"] = 0
 
-    if (
-        sim.clock >= Parameters.simulation["print_next"]
-        and Parameters.simulation["print_every"] != -1
-    ):
+    if sim.clock >= Parameters.simulation["print_next"] and Parameters.simulation["print_every"] != -1:
         Parameters.simulation["print_next"] += Parameters.simulation["print_every"]
 
-        sim_time = f"Simulation time: {'%.2f' % sim.clock:>10} out of {
-            Parameters.simulation['simTime']
-        }"
-        blocks = f"Confirmed blocks: {Metrics.confirmed_blocks(sim):>5} out of {
-            Parameters.simulation['stop_after_blocks']
-        }"
-        tx = f"Confirmed Transactions {Metrics.processed_tx_system(sim):>10} out of {
-            Parameters.simulation['stop_after_tx']
-        }"
+        sim_time = f"Simulation time: {'%.2f' % sim.clock:>10} out of {Parameters.simulation['simTime']}"
+        blocks = f"Confirmed blocks: {Metrics.confirmed_blocks(sim):>5} out of {Parameters.simulation['stop_after_blocks']}"
+        tx = f"Confirmed Transactions {Metrics.processed_tx_system(sim):>10} out of {Parameters.simulation['stop_after_tx']}"
 
         s = f"{sim_time}\t{blocks}\t{tx}"
 
@@ -52,10 +43,7 @@ def start_debug(sim):
     """
     Starts the built-in debugger at a specific time
     """
-    if (
-        "start_debugging_at" in Parameters.simulation
-        and sim.clock >= Parameters.simulation["start_debugging_at"]
-    ):
+    if "start_debugging_at" in Parameters.simulation and sim.clock >= Parameters.simulation["start_debugging_at"]:
         Parameters.simulation["debugging_mode"] = True
 
 

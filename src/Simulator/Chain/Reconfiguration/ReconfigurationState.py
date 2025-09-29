@@ -4,28 +4,32 @@ from Chain.Consensus import HighLevelSync
 from types import SimpleNamespace
 
 import logging
+
 logger = logging.getLogger(__name__.split(".")[-1])
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
     from Chain.Node import Node
     from Engine.Event import Event
 
-class ReconfigurationState():
-    """
-        Controls node reconfiguration through a secondary blockchain structure and configuration blocks
 
-        Arguments:
-            node (Node): a back reference to the node
-            confchain (List): the configuration blockchain structure
-            current_configuration_depth (int): the depth of the latest block in the confchain
-            configuration (SimpleNamespace): the configurable parameters
-            
+class ReconfigurationState:
     """
+    Controls node reconfiguration through a secondary blockchain structure and configuration blocks
+
+    Arguments:
+        node (Node): a back reference to the node
+        confchain (List): the configuration blockchain structure
+        current_configuration_depth (int): the depth of the latest block in the confchain
+        configuration (SimpleNamespace): the configurable parameters
+
+    """
+
     def __init__(self, node: "Node"):
         self.node = node
-    
+
         # configuration & reconfiguration
         self.confchain: list["ConfigurationBlock"] = []
         self.configuration_synced: bool = True
@@ -35,9 +39,14 @@ class ReconfigurationState():
             block_size=None,
             block_time=None,
         )
-    
-    def add_configuration_block(self, block: "ConfigurationBlock", time: float, update_time_added: bool = True,) -> None:
-        """ Adds configuration block to configuration blockchain """
+
+    def add_configuration_block(
+        self,
+        block: "ConfigurationBlock",
+        time: float,
+        update_time_added: bool = True,
+    ) -> None:
+        """Adds configuration block to configuration blockchain"""
         if update_time_added:
             block.time_added = time
 
@@ -95,8 +104,8 @@ class ReconfigurationState():
         If desynced, returns the node that is furthest
 
         Returns:
-            (bool, Node): 
-                (True, None) if node is synced. 
+            (bool, Node):
+                (True, None) if node is synced.
                 (False, Node) where the Node is the neighbour that is ahead.
         """
         logger.debug(f"Node {self.node.id}: Checking configuration sync status with neighbours.")
@@ -113,13 +122,13 @@ class ReconfigurationState():
             node_furthest_ahead = max(neighbours_ahead, key=lambda x: x[2])
             logger.debug(f"Node {self.node.id}: Desynced with neighbour {node_furthest_ahead[0].id} (ahead at depth {node_furthest_ahead[2]}).")
             return False, node_furthest_ahead[0]
-        
+
         logger.debug(f"Node {self.node.id}: Synced with all neighbour configurations")
         return True, None
 
     def attempt_sync_configuration(self, time: float, sync_node: "Node" = None) -> bool:
         """Attempts to synchronise node to latest configuration block.
-        
+
         Args:
             Time:
 
@@ -143,12 +152,8 @@ class ReconfigurationState():
 
             self.configuration_synced = False
             logger.debug(f"Node {self.node.id}: Detected configuration desync with node {sync_node.id} at time {time}. Triggering local config sync event.")
-            
-            HighLevelSync.create_local_sync_event_configuration(
-                desynced_node=self.node,
-                request_node=sync_node,
-                time=time
-            )
+
+            HighLevelSync.create_local_sync_event_configuration(desynced_node=self.node, request_node=sync_node, time=time)
 
             return True
 
@@ -157,17 +162,14 @@ class ReconfigurationState():
 
     def schedule_future_receive_configuration(self, block: "ConfigurationBlock", time: float) -> None:
         """Models the optimisation nodes gossiping a new config block to this node"""
-        payload = {
-            "type": "prop_conf_block",
-            "block": block
-        }
+        payload = {"type": "prop_conf_block", "block": block}
         Scheduler.schedule_event(self.node, time, payload, self.event_handler)
 
     def handle_receive_configuration_block(self, event: "Event") -> str:
         """Models the logic of receiving a new configuration block
         checks its validity, appends to local confchain and gossips to peers
         """
-        block:ConfigurationBlock = event.payload["block"].copy()
+        block: ConfigurationBlock = event.payload["block"].copy()
         time = event.time
         logger.debug(f"Node {self.node.id}: Handling received configuration block {block.id} at depth {block.depth} at time {time}.")
 

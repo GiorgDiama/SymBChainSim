@@ -42,9 +42,7 @@ class Behaviour:
         Behaviour.faulty = params["faulty"]
 
         # chose faulty nodes
-        Behaviour.faulty_nodes = random.sample(
-            manager.sim.nodes, k=Behaviour.faulty["num"]
-        )
+        Behaviour.faulty_nodes = random.sample(manager.sim.nodes, k=Behaviour.faulty["num"])
 
         # set behaviour settings for each faulty node
         for n in Behaviour.faulty_nodes:
@@ -55,9 +53,10 @@ class Behaviour:
             n.behaviour.mean_recovery_time = random.randint(*mean_recover_range)
 
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #                      Random Faults
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+
 
 def schedule_random_fault_event(manager: "Manager", time: float, node: Optional["Node"] = None) -> Optional[str]:
     """Schedule a random fault event for a specific node or initialise all.
@@ -101,9 +100,11 @@ def handle_random_fault_event(manager: "Manager", event) -> None:
 
     schedule_recovery_event(manager, event.time, event.payload["node"])
 
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
 #                      Recovery
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+
 
 def schedule_recovery_event(manager: "Manager", time: float, node: "Node") -> None:
     """Schedule a recovery event for a node following a failure.

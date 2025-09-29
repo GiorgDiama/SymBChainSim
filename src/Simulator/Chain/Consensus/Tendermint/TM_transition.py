@@ -33,10 +33,7 @@ def propose(state: "Tendermint", event: "Event") -> str:
 
         # if there is still time in the round, attempt to reschedule later when
         # txions might be there
-        if (
-            creation_time + when_next + Parameters.execution["creation_time"]
-            < state.timeout.time - 5
-        ):
+        if creation_time + when_next + Parameters.execution["creation_time"] < state.timeout.time - 5:
             messages.schedule_propose(state, creation_time + when_next)
     else:
         time = creation_time
@@ -52,9 +49,7 @@ def propose(state: "Tendermint", event: "Event") -> str:
             "commit": [],
         }
 
-        state.block.extra_data["votes"]["pre_prepare"].append(
-            (event.creator.id, time, Network.size(event))
-        )
+        state.block.extra_data["votes"]["pre_prepare"].append((event.creator.id, time, Network.size(event)))
 
         messages.broadcast_pre_prepare(state, time, block)
 
@@ -106,9 +101,7 @@ def pre_prepare(state: "Tendermint", event: "Event") -> str:
                 "commit": [],
             }
 
-            state.block.extra_data["votes"]["pre_prepare"].append(
-                (event.creator.id, time, Network.size(event))
-            )
+            state.block.extra_data["votes"]["pre_prepare"].append((event.creator.id, time, Network.size(event)))
 
             # change state to pre_prepared since block was accepted
             state.state = "pre_prepared"
@@ -119,9 +112,7 @@ def pre_prepare(state: "Tendermint", event: "Event") -> str:
             # count own vote
             state.process_vote("prepare", state.node)
 
-            state.block.extra_data["votes"]["prepare"].append(
-                (event.actor.id, time, Network.size(event))
-            )
+            state.block.extra_data["votes"]["prepare"].append((event.actor.id, time, Network.size(event)))
 
             return "new_state"  # state changed (will check backlog)
 
@@ -165,16 +156,11 @@ def prepare(state: "Tendermint", event: "Event") -> str:
             # count prepare vote
             state.process_vote("prepare", event.creator)
 
-            state.block.extra_data["votes"]["prepare"].append(
-                (event.creator.id, time, Network.size(event))
-            )
+            state.block.extra_data["votes"]["prepare"].append((event.creator.id, time, Network.size(event)))
 
             # if we have enough prepare messages (2f messages since leader does
             # not participate)
-            if (
-                state.count_votes("prepare")
-                >= Parameters.application["required_messages"] - 1
-            ):
+            if state.count_votes("prepare") >= Parameters.application["required_messages"] - 1:
                 # change to prepared
                 state.state = "prepared"
 
@@ -184,9 +170,7 @@ def prepare(state: "Tendermint", event: "Event") -> str:
                 # count own vote
                 state.process_vote("commit", state.node)
 
-                state.block.extra_data["votes"]["commit"].append(
-                    (event.actor.id, time, Network.size(event))
-                )
+                state.block.extra_data["votes"]["commit"].append((event.actor.id, time, Network.size(event)))
 
                 return "new_state"
             # not enough votes yet...
@@ -229,14 +213,9 @@ def commit(state: "Tendermint", event: "Event") -> str:
     match state.state:
         case "prepared":
             state.process_vote("commit", event.creator)  # count vote
-            state.block.extra_data["votes"]["commit"].append(
-                (event.creator.id, time, Network.size(event))
-            )
+            state.block.extra_data["votes"]["commit"].append((event.creator.id, time, Network.size(event)))
             # if we have enough votes
-            if (
-                state.count_votes("commit")
-                >= Parameters.application["required_messages"]
-            ):
+            if state.count_votes("commit") >= Parameters.application["required_messages"]:
                 state.node.add_block(state.block, time)  # add block to BC
 
                 if state.node.id == state.miner:

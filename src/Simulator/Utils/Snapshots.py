@@ -14,7 +14,8 @@ if TYPE_CHECKING:
     from Engine.Simulation import Simulation
 
 
-SNAPSHOT_PATH = '../Outputs/Snapshots/'
+SNAPSHOT_PATH = "../Outputs/Snapshots/"
+
 
 def take_snapshot(sim: "Simulation", start_from: float = 0) -> None:
     """Takes a snapshot of the current simulation state and metrics.
@@ -42,14 +43,14 @@ def take_snapshot(sim: "Simulation", start_from: float = 0) -> None:
     for node in sim.nodes:
         state = Serialise.serialisable_node(node)
 
-        if Parameters.application['transaction_model'] == 'global':
+        if Parameters.application["transaction_model"] == "global":
             current_transactions = [tx.size for tx in TransactionFactory.global_mempool if tx.timestamp <= sim.clock]
-            state['tx_pool_len'] = len(current_transactions)
-            state['tx_pool_size'] = sum(current_transactions)
-        elif Parameters.application['transaction_model'] == 'local':
+            state["tx_pool_len"] = len(current_transactions)
+            state["tx_pool_size"] = sum(current_transactions)
+        elif Parameters.application["transaction_model"] == "local":
             current_transactions = [tx.size for tx in node.pool if tx.timestamp <= sim.clock]
-            state['tx_pool_len'] = len(current_transactions)
-            state['tx_pool_size'] = sum(current_transactions)
+            state["tx_pool_len"] = len(current_transactions)
+            state["tx_pool_size"] = sum(current_transactions)
         else:
             raise ValueError(f"transaction model '{Parameters.application['transaction_model']}' is not valid")
 
@@ -58,7 +59,7 @@ def take_snapshot(sim: "Simulation", start_from: float = 0) -> None:
             block = Serialise.serialisable_block(b, transactions=False)
 
             if block["time_added"] >= start_from:
-                state['new_blocks'].append(block)
+                state["new_blocks"].append(block)
 
         snapshot["nodes"][node.id] = state
 

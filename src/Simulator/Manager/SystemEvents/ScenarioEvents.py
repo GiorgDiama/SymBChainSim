@@ -10,9 +10,10 @@ if TYPE_CHECKING:
     from Manager.Manager import Manager
 
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 #                      Network
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+
 
 def schedule_scenario_update_network_event(manager: "Manager", info: List, time: float) -> None:
     """Schedule a scenario-driven network update system event.
@@ -25,9 +26,7 @@ def schedule_scenario_update_network_event(manager: "Manager", info: List, time:
     Returns:
         None
     """
-    event = SystemEvent(
-        time=time, payload={"type": "scenario_update_network", "network_info": info}
-    )
+    event = SystemEvent(time=time, payload={"type": "scenario_update_network", "network_info": info})
     manager.sim.q.add_event(event)
 
 
@@ -46,9 +45,10 @@ def handle_scenario_update_network_event(manager: "Manager", event: SystemEvent)
     for id, bw in network_info:
         manager.sim.nodes[id].bandwidth = bw
 
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
 #                      Transactions
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 def schedule_scenario_transactions_event(manager: "Manager", txion_list: List, time: float) -> None:
     """Schedule a system event to inject scenario-specified transactions.
 
@@ -79,9 +79,11 @@ def handle_scenario_transactions_event(manager: "Manager", event: SystemEvent) -
     """
     TransactionFactory.add_scenario_transactions(event.payload["txion_list"])
 
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
 #                      Fault and Recovery
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+
 
 def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: List) -> None:
     """Schedule fault and recovery events for nodes based on scenario.
@@ -99,16 +101,12 @@ def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: 
         fail_at = entry[1]
         node = manager.sim.nodes[entry[0]]
 
-        event = SystemEvent(
-            time=fail_at, payload={"type": "scenario_fault", "node": node}
-        )
+        event = SystemEvent(time=fail_at, payload={"type": "scenario_fault", "node": node})
         node.behaviour.fault_event = event
         manager.sim.q.add_event(event)
 
         recover_at = entry[1] + entry[2]
-        event = SystemEvent(
-            time=recover_at, payload={"type": "scenario_recovery", "node": node}
-        )
+        event = SystemEvent(time=recover_at, payload={"type": "scenario_recovery", "node": node})
         node.behaviour.recovery_event = event
         manager.sim.q.add_event(event)
 

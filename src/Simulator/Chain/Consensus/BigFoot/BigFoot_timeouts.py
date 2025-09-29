@@ -23,9 +23,7 @@ def handle_timeout(state: "BigFoot", event: "Event"):
     if the node has enough prepare votes (2f+1) to move to the prepared state broadcasting a commit message
     """
     if event.payload["round"] != state.rounds.round:
-        logger.debug(
-            f"INVALID - stale timeout - {event.payload['round']}!={state.rounds.round}"
-        )
+        logger.debug(f"INVALID - stale timeout - {event.payload['round']}!={state.rounds.round}")
         return "invalid"
 
     time = event.time
@@ -39,17 +37,11 @@ def handle_timeout(state: "BigFoot", event: "Event"):
             logger.debug(f"INVALID - node is desynced")
             return "handled"
 
-        logger.debug(
-            f"Node {state.node.id} had it's fast path time out for round {state.rounds.round}!"
-        )
+        logger.debug(f"Node {state.node.id} had it's fast path time out for round {state.rounds.round}!")
 
         # In case fast path times out - check if we have enough prepare votes
         # now (if so go to prepared state)
-        if (
-            state.block is not None
-            and len(state.msgs["prepare"])
-            >= Parameters.application["required_messages"] - 1
-        ):
+        if state.block is not None and len(state.msgs["prepare"]) >= Parameters.application["required_messages"] - 1:
             logger.debug(f"Node {state.node.id} has enough vote to broadcast COMMIT!")
 
             # change to prepared
@@ -81,10 +73,7 @@ def schedule_timeout(state, time, add_time=True, fast_path=False):
         if add_time:
             time += float(Parameters.BigFoot["fast_path_timeout"])
 
-        if (
-            state.fast_path_timeout is not None
-            and Parameters.simulation["debugging_mode"]
-        ):
+        if state.fast_path_timeout is not None and Parameters.simulation["debugging_mode"]:
             state.node.queue.remove_event(state.fast_path_timeout)
 
         # schedule timeout

@@ -12,10 +12,11 @@ import json
 
 PATH_TO_SCENARIOS = "../Resources/Scenarios/"
 
+
 def set_up_scenario(manager, scenario, config="scenario.yaml"):
     manager.load_params(config)
-    
-    with open(PATH_TO_SCENARIOS + scenario +'.json', "r") as f:
+
+    with open(PATH_TO_SCENARIOS + scenario + ".json", "r") as f:
         scenario = json.load(f)
 
     Parameters.application["Nn"] = scenario["set_up"]["num_nodes"]
@@ -53,18 +54,12 @@ def set_up_scenario(manager, scenario, config="scenario.yaml"):
             # schedule system events for each update interval
             match key:
                 case "transactions":
-                    scenarioSE.schedule_scenario_transactions_event(
-                        manager, value, start
-                    )
+                    scenarioSE.schedule_scenario_transactions_event(manager, value, start)
                 case "network":
-                    scenarioSE.schedule_scenario_update_network_event(
-                        manager, value, start
-                    )
+                    scenarioSE.schedule_scenario_update_network_event(manager, value, start)
                 case "faults":
                     if Parameters.simulation["simulate_faults"]:
-                        scenarioSE.schedule_scenario_fault_and_recovery_events(
-                            manager, value
-                        )
+                        scenarioSE.schedule_scenario_fault_and_recovery_events(manager, value)
 
     if Parameters.simulation["snapshot_interval"] != -1:
         snapshotSE.schedule_snapshot_event(manager)

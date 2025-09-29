@@ -39,9 +39,7 @@ class Simulation:
         self.q = Queue()
         self.clock = 0.0
 
-        self.nodes: List[Node] = [
-            Node(x, self.q) for x in range(Parameters.application["Nn"])
-        ]
+        self.nodes: List[Node] = [Node(x, self.q) for x in range(Parameters.application["Nn"])]
 
         self.manager: "Manager"
 
@@ -92,9 +90,7 @@ class Simulation:
         )
 
         # the bug catcher!
-        assert self.clock <= next_event.time, (
-            f"Current clock is at {self.clock} but next event is {next_event}!"
-        )
+        assert self.clock <= next_event.time, f"Current clock is at {self.clock} but next event is {next_event}!"
 
         # update sim clock
         self.clock = next_event.time

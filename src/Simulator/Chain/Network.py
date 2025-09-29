@@ -99,9 +99,7 @@ class Network:
                 Network._message(node, n, msg)
 
     @staticmethod
-    def _message(
-        sender: "Node", receiver: "Node", msg: MessageEvent, delay: bool = True
-    ) -> None:
+    def _message(sender: "Node", receiver: "Node", msg: MessageEvent, delay: bool = True) -> None:
         """Internal method to send a message with propagation delay.
 
         Args:
@@ -111,9 +109,7 @@ class Network:
             delay (bool): Whether to apply propagation delay.
         """
 
-        delay = Network.calculate_message_propagation_delay(
-            sender, receiver, Network.size(msg)
-        )
+        delay = Network.calculate_message_propagation_delay(sender, receiver, Network.size(msg))
 
         # message_info = [receiver.id, msg.time, msg.time+delay, Network.size(msg)]
         # Network.track_messages[sender.id] = Network.track_messages.get(sender.id, []) + [message_info]
@@ -187,9 +183,7 @@ class Network:
         delay = message_size / Network.get_bandwidth(sender, receiver)
         match Parameters.network["use_latency"]:
             case "measured":
-                delay += (
-                    Network.latency_map[sender.location][receiver.location][0] / 1000
-                )
+                delay += Network.latency_map[sender.location][receiver.location][0] / 1000
             case "distance":
                 dist = Network.distance_map[sender.location][receiver.location]
                 # conversion to miles (regression fitted on miles)
@@ -200,14 +194,9 @@ class Network:
             case "off":
                 delay += 0
             case _:
-                raise ValueError(
-                    f"no such latency type '{Parameters.network['use_latency']}'"
-                )
+                raise ValueError(f"no such latency type '{Parameters.network['use_latency']}'")
 
-        delay += (
-            Parameters.network["queueing_delay"]
-            + Parameters.network["processing_delay"]
-        )
+        delay += Parameters.network["queueing_delay"] + Parameters.network["processing_delay"]
 
         return delay
 
@@ -271,8 +260,8 @@ class Network:
         Args:
             node (Optional[Node]): Specific node to set bandwidth for, or None for all nodes.
         """
-        # scenarios have separate logic to set up the bandwidths 
-        if Parameters.network['bandwidth'].get("sample", "always") == "scenario":
+        # scenarios have separate logic to set up the bandwidths
+        if Parameters.network["bandwidth"].get("sample", "always") == "scenario":
             return
 
         if node is None:
@@ -284,14 +273,12 @@ class Network:
                     Parameters.network["bandwidth"]["mean"],
                     Parameters.network["bandwidth"]["dev"],
                 )
-            elif Parameters.network["bandwidth"].get("sample", "always") == "once" :
+            elif Parameters.network["bandwidth"].get("sample", "always") == "once":
                 node.bandwidth = random.normalvariate(
                     mu=Parameters.network["bandwidth"]["mean"],
                     sigma=Parameters.network["bandwidth"]["dev"],
                 )
-                node.bandwidth = max(
-                    node.bandwidth, Parameters.network["bandwidth"]["min"]
-                )
+                node.bandwidth = max(node.bandwidth, Parameters.network["bandwidth"]["min"])
             else:
                 raise ValueError(f"Bandwidth sample strategy: '{Parameters.network['bandwidth']['sample']}' is not valid.")
 
@@ -306,17 +293,11 @@ class Network:
             for n in Network.nodes:
                 Network.assign_neighbours(n)
         else:
-            num_neighbours = min(
-                Parameters.network["num_neighbours"], Parameters.application["Nn"] - 1
-            )
-            node.neighbours = random.sample(
-                [x for x in Network.nodes if x != node], num_neighbours
-            )
+            num_neighbours = min(Parameters.network["num_neighbours"], Parameters.application["Nn"] - 1)
+            node.neighbours = random.sample([x for x in Network.nodes if x != node], num_neighbours)
 
     @staticmethod
-    def assign_location_to_nodes(
-        node: Optional["Node"] = None, location: Optional[str] = None
-    ) -> None:
+    def assign_location_to_nodes(node: Optional["Node"] = None, location: Optional[str] = None) -> None:
         """Assigns locations to nodes.
 
         Args:

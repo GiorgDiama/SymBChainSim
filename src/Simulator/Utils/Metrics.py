@@ -89,7 +89,7 @@ class Metrics:
 
             gini = Metrics.measure_decentralisation_nodes(sim, BC)
             Metrics.decentralisation[node.id] = gini
-            
+
             tx_info = Metrics.measure_transactions(node)
             Metrics.transaction_info[node.id] = tx_info
 
@@ -150,9 +150,7 @@ class Metrics:
 
         for b in blocks:
             latencies = [b.time_added - t.timestamp for t in b.transactions]
-            per_block.append(
-                st.mean(latencies) if latencies else 0
-            )
+            per_block.append(st.mean(latencies) if latencies else 0)
         return per_block, st.mean(per_block) if per_block else 0
 
     @staticmethod
@@ -189,10 +187,7 @@ class Metrics:
 
         # for each pair of blocks create the key value pair "curr -> next":
         # next.time_added - current.time_added
-        diffs = {
-            f"{curr.id} -> {next.id}": next.time_added - curr.time_added
-            for curr, next in zip(blocks[:-1], blocks[1:])
-        }
+        diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added for curr, next in zip(blocks[:-1], blocks[1:])}
 
         return diffs, st.mean(diffs.values() if diffs.values() else 0)
 
@@ -207,9 +202,7 @@ class Metrics:
             float: The Gini coefficient.
         """
         # calculating the perfect equality for the given population
-        perfect_equality = [
-            (x + 1) / len(lorenz_curve) for x in range(len(lorenz_curve))
-        ]
+        perfect_equality = [(x + 1) / len(lorenz_curve) for x in range(len(lorenz_curve))]
 
         x_axis = [x for x in range(len(perfect_equality))]
 
@@ -223,9 +216,7 @@ class Metrics:
         return 1 - lorenz_area / perfect_equality_area
 
     @staticmethod
-    def measure_decentralisation_nodes(
-        sim: "Simulation", blocks: List["Block"]
-    ) -> float:
+    def measure_decentralisation_nodes(sim: "Simulation", blocks: List["Block"]) -> float:
         """Measures decentralization using Gini coefficient of block production.
 
         Note:

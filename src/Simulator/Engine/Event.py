@@ -42,9 +42,7 @@ class Event:
         return self.time >= other.time
 
     def __str__(self) -> str:
-        return (
-            f"LCL: {self.creator.id} at {round(self.time, 3)} - payload {self.payload}"
-        )
+        return f"LCL: {self.creator.id} at {round(self.time, 3)} - payload {self.payload}"
 
     def __repr__(self) -> str:
         return f"LCL: {self.creator.id} {round(self.time, 3)} {self.payload['type']}"
@@ -82,14 +80,10 @@ class MessageEvent(Event):
     """
 
     def __str__(self) -> str:
-        return f"MSG: {self.creator} -> {self.receiver}  {
-            round(self.time, 3)
-        } - payload {self.payload}"
+        return f"MSG: {self.creator} -> {self.receiver}  {round(self.time, 3)} - payload {self.payload}"
 
     def __repr__(self) -> str:
-        return f"MSG: {self.creator} -> {self.receiver} - time {
-            round(self.time, 3)
-        } - payload {self.payload}"
+        return f"MSG: {self.creator} -> {self.receiver} - time {round(self.time, 3)} - payload {self.payload}"
 
     def __init__(
         self,
@@ -127,9 +121,7 @@ class MessageEvent(Event):
         Returns:
             MessageEvent: A new MessageEvent instance based on the source event.
         """
-        return MessageEvent(
-            event.handler, event.creator, event.time, event.payload, event.id, receiver
-        )
+        return MessageEvent(event.handler, event.creator, event.time, event.payload, event.id, receiver)
 
 
 class SystemEvent(Event):

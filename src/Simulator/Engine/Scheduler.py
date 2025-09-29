@@ -45,9 +45,7 @@ class Scheduler:
         return event
 
     @staticmethod
-    def schedule_event(
-        creator: "Node", time: float, payload: dict[str, Any], handler: Any
-    ) -> Event:
+    def schedule_event(creator: "Node", time: float, payload: dict[str, Any], handler: Any) -> Event:
         """
         Schedules a local event by adding it to the event queue.
 

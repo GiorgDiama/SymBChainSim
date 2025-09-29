@@ -175,17 +175,9 @@ class Tendermint(ConsensusProtocol):
         elif Parameters.execution["proposer_selection"] == "hash":
             # get new miner based on the hash of the last block + the round (to
             # avoid endlessly waiting for offline nodes)
-            self.miner = (
-                self.node.last_block.id + self.rounds.round
-            ) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
         else:
-            raise (
-                ValueError(
-                    f"No such 'proposer_selection {
-                        Parameters.execution['proposer_selection']
-                    }"
-                )
-            )
+            raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def create_TM_block(self, time: float) -> Tuple[Optional[Block], float]:
         """
@@ -211,17 +203,10 @@ class Tendermint(ConsensusProtocol):
             "configuration_depth": self.node.reconfiguration_state.confchain[-1].depth,
         }
 
-        if (
-            "votes" in self.node.blockchain[-1].extra_data.keys()
-            and self.node.blockchain[-1].consensus == Tendermint
-        ):
-            block.extra_data["last_proof"] = self.node.blockchain[-1].extra_data[
-                "votes"
-            ]["commit"]
+        if "votes" in self.node.blockchain[-1].extra_data.keys() and self.node.blockchain[-1].consensus == Tendermint:
+            block.extra_data["last_proof"] = self.node.blockchain[-1].extra_data["votes"]["commit"]
 
-        transactions, size = TransactionFactory.execute_transactions(
-            self.node.reconfiguration_state.configuration, self.node.pool, time
-        )
+        transactions, size = TransactionFactory.execute_transactions(self.node.reconfiguration_state.configuration, self.node.pool, time)
 
         if transactions:
             block.transactions = transactions
@@ -283,9 +268,7 @@ class Tendermint(ConsensusProtocol):
             time (float): The current simulation time.
         """
         self.set_state()  # set node's protocol state
-        round = (
-            self.node.blockchain[-1].extra_data["round"] + 1
-        )  # set round to latest known round (latest block round + 1)
+        round = self.node.blockchain[-1].extra_data["round"] + 1  # set round to latest known round (latest block round + 1)
         # NOTE: if this node rejoins at earlier round it's possible that it
         # will try to propose a block. This will be ignored now but if wrong
         # proposals are tracked this should be considered
@@ -305,11 +288,7 @@ class Tendermint(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != Tendermint.NAME:
-            print(
-                f"actor at {event.actor.cp.NAME} tried to execute event {
-                    event
-                } at Tendermint state"
-            )
+            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at Tendermint state")
             return "different_state"
         match event.payload["type"]:
             case "propose":

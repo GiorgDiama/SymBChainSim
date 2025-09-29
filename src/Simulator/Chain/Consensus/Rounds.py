@@ -50,9 +50,7 @@ def reset_votes(node: "Node"):
 
 
 def state_to_string(node: "Node"):
-    return f"round: {node.cp.rounds.round} | change_to: {
-        node.cp.rounds.change_to
-    } | round_votes: {node.cp.rounds.votes}"
+    return f"round: {node.cp.rounds.round} | change_to: {node.cp.rounds.change_to} | round_votes: {node.cp.rounds.votes}"
 
 
 def handle_event(event: "Event"):
@@ -60,9 +58,7 @@ def handle_event(event: "Event"):
         case "round_change":
             handle_round_change_msg(event)
         case _:
-            raise ValueError(
-                f"Event '{event.payload['type']}' was not handled by its own handler..."
-            )
+            raise ValueError(f"Event '{event.payload['type']}' was not handled by its own handler...")
 
 
 ############### LOGIC ###############
@@ -87,9 +83,7 @@ def change_round(node: "Node", time: float):
 
     assert isinstance(new_round, int), f"Round numbers cannot be floats: {new_round}"
 
-    logger.debug(
-        f"Node {node.id} initiated a round change to round {new_round} @ {time}"
-    )
+    logger.debug(f"Node {node.id} initiated a round change to round {new_round} @ {time}")
 
     broadcast_round_change_message(node, new_round, time)
     process_round_change_vote(node, new_round, node)  # count own vote
@@ -110,15 +104,11 @@ def handle_round_change_msg(event: "MessageEvent"):
 
     msgs = cp_state.rounds.votes
 
-    logger.debug(
-        f"Node {node.id} is processing a round change message proposing round:{new_round} from node:{event.creator.id}"
-    )
+    logger.debug(f"Node {node.id} is processing a round change message proposing round:{new_round} from node:{event.creator.id}")
 
     # ignore messages voting for a round lower than the current round
     if cp_state.rounds.round >= new_round:
-        logger.debug(
-            f"Invalid message. Stale round ({cp_state.rounds.round} >= {new_round})"
-        )
+        logger.debug(f"Invalid message. Stale round ({cp_state.rounds.round} >= {new_round})")
         return "invalid"
 
     # try to count the vote (if message contains an invalid vote return)
@@ -135,9 +125,7 @@ def handle_round_change_msg(event: "MessageEvent"):
             # if the node has realised that a higher 'new_round' has received
             # f+1 nodes - change 'new_round' and broadcast round_change for
             # 'new_round'
-            logger.debug(
-                f"Node {node.id} was convinced to vote for a higher round that was it believed - change_to:{cp_state.rounds.change_to} new_round:{new_round}"
-            )
+            logger.debug(f"Node {node.id} was convinced to vote for a higher round that was it believed - change_to:{cp_state.rounds.change_to} new_round:{new_round}")
             cp_state.rounds.change_to = new_round
             broadcast_round_change_message(node, new_round, time)
             process_round_change_vote(node, new_round, node)  # count own vote
@@ -162,11 +150,7 @@ def get_next_round(node: "Node"):
     change_msgs = node.cp.rounds.votes
 
     # get all new_round candidates that have f+1 votes
-    new_round_candidates = [
-        round
-        for round, votes in change_msgs.items()
-        if len(votes) >= Parameters.application["f"] + 1
-    ]
+    new_round_candidates = [round for round, votes in change_msgs.items() if len(votes) >= Parameters.application["f"] + 1]
 
     # if any candidate round numbers have received f+1 votes adopt the max
     # round

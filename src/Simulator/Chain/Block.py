@@ -2,7 +2,8 @@ import random
 from copy import deepcopy
 from typing import List, Dict, Any
 
-class Block():
+
+class Block:
     """Defines the block - the building block of the blockchain data structure.
 
     Attributes:
@@ -18,9 +19,7 @@ class Block():
         extra_data (Dict[str, Any]): Additional metadata associated with the block.
     """
 
-    def __init__(self,depth: int = 0, id: int = 0, previous: int = -1, time_created: float = 0,
-        miner: int = None, transactions: List[Any] = [], size: float = 0, consensus: str = None
-    ) -> None:
+    def __init__(self, depth: int = 0, id: int = 0, previous: int = -1, time_created: float = 0, miner: int = None, transactions: List[Any] = [], size: float = 0, consensus: str = None) -> None:
         self.depth: int = depth
         self.id: int = id
         self.previous: int = previous
@@ -33,9 +32,9 @@ class Block():
         self.extra_data: Dict[str, Any] = {}
 
     def __str__(self) -> str:
-        return f"~block: {self.id:5} | depth: {self.depth:4} | proposer: {
-            self.miner:2} | {self.time_created:5.2f} {self.time_added:5.2f} | size: {
-            self.size:5.2f}| prev {self.previous:5} | {self.consensus}~"
+        return f"~block: {self.id:5} | depth: {self.depth:4} | proposer: {self.miner:2} | {self.time_created:5.2f} {self.time_added:5.2f} | size: {self.size:5.2f}| prev {self.previous:5} | {
+            self.consensus
+        }~"
 
     def __repr__(self) -> str:
         return f"~block: {self.id}~"

@@ -23,9 +23,7 @@ def log_events(event: Event):
     """
 
     if isinstance(event, SystemEvent):
-        Parameters.simulation["events"][event.payload["type"]] = (
-            Parameters.simulation["events"].get(event.payload["type"], 0) + 1
-        )
+        Parameters.simulation["events"][event.payload["type"]] = Parameters.simulation["events"].get(event.payload["type"], 0) + 1
     else:
         event_type = Parameters.simulation["events"].get(event.payload["type"], {})
         event_type[event.actor.id] = event_type.get(event.actor.id, 0) + 1

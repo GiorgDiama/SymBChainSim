@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from Chain.Consensus.PBFT.PBFT_state import PBFT
     from Chain.Block import Block
 
+
 def schedule_propose(state: "PBFT", time: float) -> None:
     payload = {
         "type": "propose",

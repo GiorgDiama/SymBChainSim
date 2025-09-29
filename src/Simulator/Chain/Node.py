@@ -3,7 +3,7 @@ from Parameters import Parameters
 from Chain.Consensus import HighLevelSync
 from Chain.Consensus.ConsensusProtocol import ConsensusProtocol
 from Chain.TransactionFactory import TransactionFactory
-from Chain.Block import Block 
+from Chain.Block import Block
 
 from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
 from Chain.Reconfiguration.ReconfigurationState import ReconfigurationState
@@ -16,6 +16,7 @@ from types import SimpleNamespace
 from collections import deque
 
 from typing import Union, Optional, TYPE_CHECKING, Deque
+
 if TYPE_CHECKING:
     from Engine.EventQueue import Queue
     from Engine.Event import Event
@@ -23,10 +24,12 @@ if TYPE_CHECKING:
 
 
 import logging
+
 logger = logging.getLogger(__name__.split(".")[-1])
 
+
 class Node:
-    """  Models a generic blockchain node
+    """Models a generic blockchain node
 
     Attributes:
         id (int): unique node id
@@ -36,7 +39,7 @@ class Node:
         location (str): the geographical location of the node
         bandwidth (union[float, (float,float)]): either the bandwidth on a normal dist. to sample the bandwidth
         state (SimpleNamespace): contains information about the node: alive & synced
-        cp (ConsensusProtocol): the state of the currently active consensus protocol 
+        cp (ConsensusProtocol): the state of the currently active consensus protocol
         behaviour (SimpleNamespace): parameters controlling the behaviour of the node
         backlog (list): a list of future events to be replayed
         queue (Queue): reference to the event queue of the simulation
@@ -78,9 +81,8 @@ class Node:
 
         logger.debug(f"Node {self.id} initialized.")
 
-    
     def join_latest_conf(self, time: float) -> None:
-        """ 
+        """
         Initialises the node consensus state using the protocol in the latest configuration block with the following parameters:
             time  = time
             round = last_block_round + 1
@@ -88,11 +90,11 @@ class Node:
         protocol = self.reconfiguration_state.confchain[-1].configuration["CP"]
         self.cp = Parameters.CPs[protocol](self)
 
-        assert self.cp is not None, ("failed to retrieve CP from latest configuration block")
+        assert self.cp is not None, "failed to retrieve CP from latest configuration block"
 
         self.cp.init(
-            time = time,
-            starting_round = self.blockchain[-1].extra_data["round"] + 1,
+            time=time,
+            starting_round=self.blockchain[-1].extra_data["round"] + 1,
         )
 
         logger.debug(f"Node {self.id}: Joining latest configuration at time {time} with protocol {self.cp.NAME}.")
@@ -102,10 +104,10 @@ class Node:
         Attempts to updated the nodes configuration using the latest configuration block
 
         When this is called from a consensus state, the caller should ensure that the old state does not attempt to modify the state any more
-        
+
         Returns:
             state_updated (bool): True if the state was updated
-            
+
         """
         logger.debug(f"Node {self.id}: Attempting to update configuration at time {time}.")
         return self.reconfiguration_state.try_apply_configuration(self.reconfiguration_state.confchain[-1], time)
@@ -154,25 +156,21 @@ class Node:
         If desynced, returns the node that is furthest
 
         Returns:
-            (bool, Node): 
-                (True, None) if node is synced. 
+            (bool, Node):
+                (True, None) if node is synced.
                 (False, Node) where the Node is the neighbour that is ahead.
         """
         logger.debug(f"Node {self.id}: Checking blockchain sync status with neighbours")
 
         # creates (neighbour, block, depth) triplet from
         # neighbours that have a later DATA blocks than us
-        neighbours_ahead = [
-            (n, n.last_block, n.last_block.depth)
-            for n in self.neighbours
-            if n.last_block.depth > self.last_block.depth
-        ]
+        neighbours_ahead = [(n, n.last_block, n.last_block.depth) for n in self.neighbours if n.last_block.depth > self.last_block.depth]
 
         if neighbours_ahead:
             node_furthest_ahead = max(neighbours_ahead, key=lambda x: x[2])
             logger.debug(f"Node {self.id}: Desynced with neighbour {node_furthest_ahead[0].id} (ahead at depth {node_furthest_ahead[2]}).")
             return False, node_furthest_ahead[0]
-        
+
         logger.debug(f"Node {self.id}: Synced with all neighbours for {type} chain.")
         return True, None
 
@@ -215,12 +213,9 @@ class Node:
 
             self.state.synced = False
             logger.debug(f"Node {self.id}: Detected desync with node {sync_node.id} at time {time}. Triggering local sync event.")
-            HighLevelSync.create_local_sync_event(
-                desynced_node = self,
-                request_node  = sync_node, time=time
-            )
+            HighLevelSync.create_local_sync_event(desynced_node=self, request_node=sync_node, time=time)
             return True
-        
+
         logger.debug(f"Node {self.id}: Sync check passed at time {time}.")
         return False
 
@@ -248,14 +243,14 @@ class Node:
             self.join_latest_conf(time)
 
     def add_block(self, block: "Block", time: float, update_time_added: bool = True) -> None:
-        """ 
+        """
         Adds 'block' to blockchain at time 'time'.
         Removes included transactions from the memory pool
         """
         logger.debug(f"Node {self.id}: Adding block {block.id} at depth {block.depth} at time {time}.")
         if update_time_added:
             block.time_added = time
-        
+
         self.blockchain.append(block)
         TransactionFactory.mark_transactions_as_processed(block, self.pool)
 
@@ -264,9 +259,9 @@ class Node:
         if self.state.alive:
             self.queue.add_event(event)
 
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
     #                      UTILITY
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
 
     def __repr__(self):
         if self.state.alive:
@@ -279,32 +274,18 @@ class Node:
 
         if self.state.alive:
             if full:
-                return f"{Tools.color(f'Node: {self.id}', 42)}\n   LATEST_BLOCKS {
-                    self.trunc_ids
-                }  local_pool: {len(self.pool)} global_pool: {
-                    len(TransactionFactory.global_mempool)
-                } \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {
-                    Parameters.application['CP'].NAME
-                } | req msg: {Parameters.application['required_messages']} f: {
-                    Parameters.application['f']
-                } \
-                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {
-                    self.behaviour_state_to_string
-                }\n"
+                return f"{Tools.color(f'Node: {self.id}', 42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(TransactionFactory.global_mempool)} \n   SYNCED: {
+                    self.state.synced
+                } | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']} f: {Parameters.application['f']} \
+                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{
-                    Tools.color(f'**dead** Node: {self.id}', 41)
-                } \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {
-                    len(self.pool)
-                } global_pool: {len(TransactionFactory.global_mempool)} \n   SYNCED: {
-                    self.state.synced
-                } | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
-                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {
-                    self.behaviour_state_to_string
-                }\n"
+                return f"{Tools.color(f'**dead** Node: {self.id}', 41)} \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} global_pool: {
+                    len(TransactionFactory.global_mempool)
+                } \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
+                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
             else:
                 return f"**DEAD** - Node: {self.id}"
 
@@ -331,12 +312,7 @@ class Node:
         returns a list of the last 5 block ids in nodes local blockchain
         """
         hidden_blocks = len(self.blockchain) - 5 if len(self.blockchain) - 5 > 0 else 0
-        return f"{hidden_blocks} hidden_blocks...{
-            [
-                f'{x.id} {x.consensus if x.consensus is not None else None}'
-                for x in self.blockchain[-5:]
-            ]
-        } {self.blockchain[-1].depth}"
+        return f"{hidden_blocks} hidden_blocks...{[f'{x.id} {x.consensus if x.consensus is not None else None}' for x in self.blockchain[-5:]]} {self.blockchain[-1].depth}"
 
     @property
     def last_block(self):
@@ -346,16 +322,12 @@ class Node:
     def behaviour_state_to_string(self):
         s = ""
         if self.behaviour.faulty:
-            s += f"{Tools.color('FAULTY', 41)} -> mean_fault_time: {
-                self.behaviour.mean_fault_time
-            } | recover_at: {self.behaviour.recovery_event}"
+            s += f"{Tools.color('FAULTY', 41)} -> mean_fault_time: {self.behaviour.mean_fault_time} | recover_at: {self.behaviour.recovery_event}"
         else:
             s += "NOT FAULTY"
         s += "\t"
         if self.behaviour.byzantine:
-            s += f"{Tools.color('BYZANTINE', 41)} -> fault_chance: {
-                self.behaviour.sync_fault_chance
-            }"
+            s += f"{Tools.color('BYZANTINE', 41)} -> fault_chance: {self.behaviour.sync_fault_chance}"
         else:
             s += "HONEST"
 

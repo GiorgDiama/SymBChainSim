@@ -49,9 +49,7 @@ def broadcast_pre_prepare(state: "Tendermint", time: float, block: "Block") -> "
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
@@ -77,9 +75,7 @@ def broadcast_prepare(state: "Tendermint", time: float, block_hash: int) -> "Eve
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
@@ -105,9 +101,7 @@ def broadcast_commit(state: "Tendermint", time: float, block_hash: int) -> "Even
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
@@ -133,9 +127,7 @@ def broadcast_new_block(state: "Tendermint", time: float, block: "Block") -> "Ev
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
@@ -154,9 +146,7 @@ def get_payload_size(payload: dict[str, Any]) -> float:
     for key in payload:
         match key:
             case "block":
-                size += (
-                    payload[key].size + Parameters.Tendermint["base_block_size"] / 1e6
-                )
+                size += payload[key].size + Parameters.Tendermint["base_block_size"] / 1e6
             case "block_hash":
                 size += Parameters.Tendermint["hash_size"] / 1e6
             case _:

@@ -19,9 +19,7 @@ def schedule_snapshot_event(manager: "Manager") -> None:
     """
     time = manager.sim.clock + Parameters.simulation["snapshot_interval"]
 
-    event = SystemEvent(
-        time=time, payload={"type": "snapshot", "time_last": manager.sim.clock}
-    )
+    event = SystemEvent(time=time, payload={"type": "snapshot", "time_last": manager.sim.clock})
     manager.sim.q.add_event(event)
 
 

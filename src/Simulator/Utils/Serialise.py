@@ -29,9 +29,7 @@ def serialisable_node(node: "Node") -> Dict[str, Any]:
         "synced_data": node.state.synced,
         "synced_config": node.reconfiguration_state.configuration_synced,
     }
-    state["latest_configuration_block"] = serialisable_configuration_block(
-        node.reconfiguration_state.confchain[-1]
-    )
+    state["latest_configuration_block"] = serialisable_configuration_block(node.reconfiguration_state.confchain[-1])
 
     return state
 
@@ -52,16 +50,11 @@ def serialisable_block(block: "Block", transactions: bool = True) -> Dict[str, A
     block_info["time_created"] = block.time_created
     block_info["time_added"] = block.time_added
     block_info["miner"] = block.miner
-    
+
     if transactions:
-        block_info["transactions"] = [
-            str((t.id, t.timestamp, t.size)) for t in block.transactions
-        ]
+        block_info["transactions"] = [str((t.id, t.timestamp, t.size)) for t in block.transactions]
     else:
-        block_info["transactions"] = {
-            'total_transactions': len(block.transactions),
-            'total_size': sum([t.size for t in block.transactions])
-        }
+        block_info["transactions"] = {"total_transactions": len(block.transactions), "total_size": sum([t.size for t in block.transactions])}
 
     block_info["depth"] = block.depth
     block_info["size"] = block.size

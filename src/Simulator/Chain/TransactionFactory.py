@@ -77,9 +77,7 @@ class TransactionFactory:
                 for node in TransactionFactory.nodes:
                     if node.id == tx.creator:
                         continue
-                    prop_delay = Network.calculate_message_propagation_delay(
-                        TransactionFactory.nodes[tx.creator], node, tx.size
-                    )
+                    prop_delay = Network.calculate_message_propagation_delay(TransactionFactory.nodes[tx.creator], node, tx.size)
                     new_timestamp = tx.timestamp + prop_delay
                     tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
                     node.pool.append(tx)
@@ -93,14 +91,8 @@ class TransactionFactory:
                 tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
                 TransactionFactory.global_mempool.append(tx)
             case _:
-                logger.error(
-                    f"Unknown transaction model: '{Parameters.application['transaction_model']}'"
-                )
-                raise (
-                    ValueError(
-                        f"Unknown transaction model: '{Parameters.application['transaction_model']}'"
-                    )
-                )
+                logger.error(f"Unknown transaction model: '{Parameters.application['transaction_model']}'")
+                raise (ValueError(f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     @staticmethod
     def add_scenario_transactions(txion_list: List[tuple]) -> None:
@@ -124,18 +116,10 @@ class TransactionFactory:
         """
         logger.debug(f"Generating interval transactions starting at {start}")
 
-        for second in range(
-            round(start), round(start + Parameters.application["TI_dur"])
-        ):
+        for second in range(round(start), round(start + Parameters.application["TI_dur"])):
             for _ in range(Parameters.application["Tn"]):
-                if (
-                    Parameters.simulation["stop_after_tx"] != -1
-                    and TransactionFactory.produced_tx
-                    == Parameters.simulation["stop_after_tx"]
-                ):
-                    logger.debug(
-                        "Reached stop_after_tx limit, stopping transaction generation."
-                    )
+                if Parameters.simulation["stop_after_tx"] != -1 and TransactionFactory.produced_tx == Parameters.simulation["stop_after_tx"]:
+                    logger.debug("Reached stop_after_tx limit, stopping transaction generation.")
                     return
 
                 id = Parameters.application["txIDS"]
@@ -148,16 +132,12 @@ class TransactionFactory:
 
                 creator = random.choice(TransactionFactory.nodes)
 
-                TransactionFactory.transaction_prop(
-                    Transaction(creator.id, id, timestamp, size)
-                )
+                TransactionFactory.transaction_prop(Transaction(creator.id, id, timestamp, size))
 
                 TransactionFactory.produced_tx += 1
 
     @staticmethod
-    def execute_transactions(
-        configuration, pool: Deque[Transaction], time: float
-    ) -> tuple[List[Transaction], float]:
+    def execute_transactions(configuration, pool: Deque[Transaction], time: float) -> tuple[List[Transaction], float]:
         """Executes transactions by selecting them from the transaction pool.
 
         Args:
@@ -172,27 +152,15 @@ class TransactionFactory:
 
         match Parameters.application.get("transaction_model", "local"):
             case "local":
-                return TransactionFactory._get_transactions_from_pool(
-                    configuration, pool, time
-                )
+                return TransactionFactory._get_transactions_from_pool(configuration, pool, time)
             case "global":
-                return TransactionFactory._get_transactions_from_pool(
-                    configuration, TransactionFactory.global_mempool, time
-                )
+                return TransactionFactory._get_transactions_from_pool(configuration, TransactionFactory.global_mempool, time)
             case _:
-                logger.error(
-                    f"Unknown transaction model: '{Parameters.application['transaction_model']}'"
-                )
-                raise (
-                    ValueError(
-                        f"Unknown transaction model: '{Parameters.application['transaction_model']}'"
-                    )
-                )
+                logger.error(f"Unknown transaction model: '{Parameters.application['transaction_model']}'")
+                raise (ValueError(f"Unknown transaction model: '{Parameters.application['transaction_model']}'"))
 
     @staticmethod
-    def _get_transactions_from_pool(
-        configuration, pool: Deque[Transaction], time: float
-    ) -> tuple[List[Transaction], float]:
+    def _get_transactions_from_pool(configuration, pool: Deque[Transaction], time: float) -> tuple[List[Transaction], float]:
         """Retrieves transactions from the pool for inclusion in the next block.
 
         Args:
@@ -222,27 +190,21 @@ class TransactionFactory:
                 break
 
         if transactions:
-            logger.debug(
-                f"Selected {len(transactions)} transactions for block, total size: {size}"
-            )
+            logger.debug(f"Selected {len(transactions)} transactions for block, total size: {size}")
             return transactions, size
         else:
             logger.debug("No valid transactions found for block.")
             return [], -1
 
     @staticmethod
-    def mark_transactions_as_processed(
-        block: "Block", pool: Deque[Transaction]
-    ) -> None:
+    def mark_transactions_as_processed(block: "Block", pool: Deque[Transaction]) -> None:
         """Marks transactions in a block as processed in the appropriate pool.
 
         Args:
             block: The block containing transactions to mark.
             pool (Deque[Transaction]): The pool to mark transactions in.
         """
-        logger.debug(
-            f"Marking transactions as processed for block at depth {block.depth}"
-        )
+        logger.debug(f"Marking transactions as processed for block at depth {block.depth}")
 
         match Parameters.application["transaction_model"]:
             case "local":
@@ -250,25 +212,15 @@ class TransactionFactory:
             case "global":
                 # only one node needs to remove the transactions
                 if TransactionFactory.depth_removed >= block.depth:
-                    logger.debug(
-                        f"Transactions already removed for block depth {block.depth}"
-                    )
+                    logger.debug(f"Transactions already removed for block depth {block.depth}")
                     return
 
-                TransactionFactory._mark_pool(
-                    block.transactions, TransactionFactory.global_mempool
-                )
+                TransactionFactory._mark_pool(block.transactions, TransactionFactory.global_mempool)
                 TransactionFactory.depth_removed = block.depth
-                logger.debug(
-                    f"Transactions marked as processed for global pool at block depth {block.depth}"
-                )
+                logger.debug(f"Transactions marked as processed for global pool at block depth {block.depth}")
             case _:
-                logger.error(
-                    f"No such mempool model: {Parameters.application['transaction_model']}"
-                )
-                raise ValueError(
-                    f"No such mempool model: {Parameters.application['transaction_model']}"
-                )
+                logger.error(f"No such mempool model: {Parameters.application['transaction_model']}")
+                raise ValueError(f"No such mempool model: {Parameters.application['transaction_model']}")
 
     @staticmethod
     def removed_processed(pool: Deque[Transaction]) -> Deque[Transaction]:
@@ -290,9 +242,7 @@ class TransactionFactory:
         return new_pool
 
     @staticmethod
-    def _mark_pool(
-        txions: List[Transaction], pool: Deque[Transaction]
-    ) -> Deque[Transaction]:
+    def _mark_pool(txions: List[Transaction], pool: Deque[Transaction]) -> Deque[Transaction]:
         """Marks transactions in the pool as processed.
 
         Args:

@@ -49,12 +49,8 @@ def handle_event(event: Event, checking_backlog: bool = False) -> str:
 
     # if this event is CP specific and the CP of the event does not match the
     # current CP of the node - old/old message
-    if "CP" in event.payload and (
-        event.actor.cp is not None and event.payload["CP"] != event.actor.cp.NAME
-    ):
-        logger.debug(
-            f"[Node: {event.actor.id}] uses {event.actor.cp.NAME} but event is for protocol {event.payload['CP']}..."
-        )
+    if "CP" in event.payload and (event.actor.cp is not None and event.payload["CP"] != event.actor.cp.NAME):
+        logger.debug(f"[Node: {event.actor.id}] uses {event.actor.cp.NAME} but event is for protocol {event.payload['CP']}...")
         return "invalid"
 
     if not checking_backlog and isinstance(event, MessageEvent):
@@ -99,12 +95,7 @@ def handle_backlog(node: "Node", call_time: float) -> None:
     for event in node.backlog:
         event.time = call_time  # ensure the message is replayed at call_time
 
-        logger.debug(
-            f"BACKLOG CHECK: {event.payload['type']} "
-            f"creator:{'' if event.creator is None else event.creator.id} "
-            f"actor:{'' if event.actor is None else event.actor.id} "
-            f"time:{event.time}"
-        )
+        logger.debug(f"BACKLOG CHECK: {event.payload['type']} creator:{'' if event.creator is None else event.creator.id} actor:{'' if event.actor is None else event.actor.id} time:{event.time}")
 
         Tools.debug_logs(
             msg=f"",

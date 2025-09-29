@@ -18,6 +18,7 @@ random.seed(seed)
 np.random.seed(seed)
 ############## SEEDS ############
 
+
 def run():
     manager = Manager()
 
@@ -46,7 +47,7 @@ def run():
 def run_scenario(scenario_name):
     manager = Manager()
     Scenario.set_up_scenario(manager, scenario_name, config="scenario.yaml")
-  
+
     t = datetime.now()
     manager.run()
     runtime = datetime.now() - t
@@ -65,7 +66,7 @@ def run_scenario(scenario_name):
 
 if __name__ == "__main__":
     if "--sc" in sys.argv:
-        name = Tools.get_named_cmd_arg('--sc')
+        name = Tools.get_named_cmd_arg("--sc")
         run_scenario(scenario_name=name)
     else:
         run()
