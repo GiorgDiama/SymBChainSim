@@ -11,3 +11,12 @@ dependencies = [
     "pyyaml>=6.0.2",
     "requests>=2.32.4",
 ]
+
+[tool.ruff]
+line-length = 200 
+target-version = "py313"
+
+[tool.ruff.format]
+quote-style = "double" 
+indent-style = "space" 
+skip-magic-trailing-comma = false
