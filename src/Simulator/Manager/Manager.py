@@ -194,7 +194,7 @@ class Manager:
 
         if Parameters.reconfiguration.get("reconfigure", False):
             logger.debug("Scheduling reconfiguration system events.")
-            reconfigurationSE.schedule_reconfiguration_event(self, self.sim.clock)
+            reconfigurationSE.schedule_centralised_reconfiguration_event(self, self.sim.clock)
 
     
     #-----------------------------------------------------------

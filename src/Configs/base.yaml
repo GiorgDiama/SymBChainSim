@@ -163,6 +163,7 @@ reconfiguration:
 
   # How often to reconfigure the system
   reconfiguration_interval: 300
+  reconfiguration_interval_range: [-20,20]
 
   # Block size of produced configuration blocks in MB
   conf_block_size: 0.25
