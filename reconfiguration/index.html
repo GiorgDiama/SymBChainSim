@@ -1,0 +1,1401 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../manager/">
+      
+      
+        <link rel="next" href="../simulation_parameters/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Reconfiguration - SymbChainSim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#symbchainsims-approach-to-reconfiguration" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="SymbChainSim" class="md-header__button md-logo" aria-label="SymbChainSim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SymbChainSim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reconfiguration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GiorgDiama/SymBChainSim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SymbChainSim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../quick_start/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../simulation_engine/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Simulation Engine
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../node/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Blockchain Models
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../consensus/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Consensus
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../manager/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Manager
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../simulation_parameters/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Parameters
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="SymbChainSim" class="md-nav__button md-logo" aria-label="SymbChainSim" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    SymbChainSim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GiorgDiama/SymBChainSim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SymbChainSim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quick_start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simulation_engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Simulation Engine
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Blockchain Models
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Blockchain Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Node
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../block/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Block
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../transaction_factory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Transaction Factory
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Network
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Consensus
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Consensus
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Conseusus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../high_level_sync/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    High-Level Sync
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rounds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Rounds
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Reconfiguration
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reconfiguration
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reconfiguration-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reconfiguration mechanism
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeling-in-sbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modeling in SBS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-model-and-linkage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data model and linkage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-bootstrap-and-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node bootstrap and adoption
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-data-and-configuration-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syncing: data and configuration chains
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-validation-during-block-intake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration validation during block intake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralised-reconfiguration-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Centralised reconfiguration flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduling-and-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduling and parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure and recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending-the-mechanism-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending the mechanism (skeleton)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-reconfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported reconfiguration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported reconfiguration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrumenting-the-blockchain-system-to-feed-the-optimisation-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instrumenting the blockchain system to feed the optimisation process
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../simulation_parameters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Parameters
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#reconfiguration-mechanism" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reconfiguration mechanism
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeling-in-sbs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modeling in SBS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Implementation details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-model-and-linkage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data model and linkage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#node-bootstrap-and-adoption" class="md-nav__link">
+    <span class="md-ellipsis">
+      Node bootstrap and adoption
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncing-data-and-configuration-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Syncing: data and configuration chains
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-validation-during-block-intake" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuration validation during block intake
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralised-reconfiguration-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Centralised reconfiguration flow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduling-and-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scheduling and parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#failure-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Failure and recovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extending-the-mechanism-skeleton" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extending the mechanism (skeleton)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-reconfiguration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supported reconfiguration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Supported reconfiguration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#instrumenting-the-blockchain-system-to-feed-the-optimisation-process" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instrumenting the blockchain system to feed the optimisation process
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="symbchainsims-approach-to-reconfiguration">SymbChainSims approach to reconfiguration</h1>
+<p>Modeling dynamic reconfiguration is core to SBS due to dynamic blockchain management being one of the tools core use cases. SBS utilises the same ideas for dynamic updating of the blockchain conditions to reconfiguration. However, reconfiguration in SBS is not abstracted (as simple simulation state updated) it is modeled as a mechanism of the blockchain system allowing SBS to capture the dynamics of the reconfiguration and their interactions with the systems conditions.</p>
+<h2 id="reconfiguration-mechanism">Reconfiguration mechanism</h2>
+<p>To model reconfiguration the idea of a configuration chain is introduced and modeled in SBS. Briefly, the configuration chain is a utility, secondary blockchain that consists of configuration blocks. Configuration blocks are typical blockchain blocks that, instead of transactions included system configurations. This mechanisms enables linking the configuration of the blockchain nodes to the latest block in the nodes configuration chain.</p>
+<p>The above has numerous benefits:
+- It allows modeling the propagation and reconfiguration of nodes through modeling the propagation of configuration blocks
+- As a blockchain structure, its immutable and transparent nature allows linking data blocks to configuration blocks immutably. This ensures the main chain will remain verifiable and can simplifies block validation under  reconfiguration
+- Finally, as a blockchain structure it can be constructed in a decentralised manner ensuring the management process does not violate the decentraliation properties of the underlying blockchain system.</p>
+<p>More information about this can be found in the following publication proposing the approach:</p>
+<blockquote>
+<p>Cite AsiaSim paper when online</p>
+</blockquote>
+<h2 id="modeling-in-sbs">Modeling in SBS</h2>
+<p>This section briefly described how the above is modeled in SBS.</p>
+<p>Initially the node model is updated with a configuration chain. The initial configuration of the blockchain is in the genesis block (this is the case even when reconfiguration is not used; the configuration chain simply never get any new blocks). The node model also gets the updated method, which when called, checks whether any new blocks were added in the local configuration blockchain and updates the configuration of the node. The update process asynchronous (meaning that new blocks do not immediately trigger reconfiguration) to prevent disrupting ongoing consensus rounds. Thus, when modeling new consensus protocols it is at the discretion of the developer to call node.update() at times when doing so is generally safe (after new blocks, timeouts, end of rounds etc..). For an example see any of the implemented protocols.</p>
+<p>To model the dynamics of reconfiguration, the future_receive_configuration event is added, which when triggered, models a configuration block arriving at the node. The node then validates it, request any missing configuration blocks before it, and gossips the block to its peers that do the same. With the new block added to their blockchain nodes will eventually adopt the new configuration when update is called.</p>
+<p>As a blockchain, the logic for synchronising and validating configuration blocks remains largely unchanged. </p>
+<p>Furthermore, in a reconfigurable blockchain validating data blocks required ensuring the block was produced under the latest configuration. This is achieved by linking configuration blocks to data blocks (with hash references)</p>
+<h2 id="implementation-details">Implementation details</h2>
+<h3 id="overview">Overview</h3>
+<p>SBS models reconfiguration via a secondary configuration blockchain. Nodes adopt configuration updates asynchronously by syncing the configuration chain, then switching their consensus protocol/state at safe points. The main participating components are:</p>
+<ul>
+<li><code>Parameters.global_configuration_chain</code>: manager-side configuration chain tracking the global state of the configuration chain</li>
+<li><code>Chain.Reconfiguration.ConfigurationBlock</code>: configuration block data model</li>
+<li><code>Chain.Reconfiguration.ReconfigurationState</code>: node-local configuration chain, validation, adoption, gossip/sync</li>
+<li><code>Chain.Consensus.HighLevelSync</code>: extending with logic to handle syncing configuration chain</li>
+<li><code>Chain.Node</code>: applies/validates configuration, coordinates sync, and transitions consensus protocol</li>
+<li><code>Manager.SystemEvents.ReconfigurationEvents</code>: schedules reconfiguration events and dispatches handling</li>
+<li><code>Chain.Reconfiguration.CentralisedReconfiguration</code>: implements creation of configuration blocks and propagation logic for the centralised/random method</li>
+<li><code>Manager.Manager</code>: enables scheduling of reconfiguration events based on <code>base.yaml</code></li>
+</ul>
+<h3 id="data-model-and-linkage">Data model and linkage</h3>
+<ul>
+<li><strong>Configuration blocks</strong> (<code>ConfigurationBlock</code>) carry a configuration payload (e.g., new CP, <code>block_time</code>, <code>block_size</code>) and standard block metadata: <code>depth</code>, <code>id</code>, <code>previous</code>, <code>proposer</code>, <code>size</code>, timestamps, and <code>extra_data</code>.</li>
+<li>Each data block produced under consensus includes a reference to the configuration depth it was created under via <code>block.extra_data["configuration_depth"]</code>. Validation in <code>Node.validate_block(...)</code> enforces:</li>
+<li>Reject if the block uses an older configuration than the local latest</li>
+<li>Treat as future if it references a configuration ahead of the local node, triggering configuration sync</li>
+</ul>
+<h3 id="node-bootstrap-and-adoption">Node bootstrap and adoption</h3>
+<ul>
+<li>On node creation, <code>Node.reconfiguration_state = ReconfigurationState(self)</code> initialises an empty local configuration chain.</li>
+<li>To start or after reconfig, nodes enter <code>join_latest_conf(time)</code> which:</li>
+<li>Reads the latest configuration (<code>CP</code>) from <code>reconfiguration_state.confchain[-1]</code></li>
+<li>Instantiates the appropriate CP class from <code>Parameters.CPs</code></li>
+<li>Calls <code>cp.init(time=time, starting_round=last_block_round + 1)</code> to resume safely</li>
+<li>Nodes opportunistically call <code>node.update(time)</code> from protocol states at safe boundaries to try applying a newly synced configuration (<code>ReconfigurationState.try_apply_configuration(...)</code>). This decouples block processing from configuration changes.</li>
+</ul>
+<h3 id="syncing-data-and-configuration-chains">Syncing: data and configuration chains</h3>
+<ul>
+<li>When a node detects it is behind on the data chain (<code>Node.attempt_sync(...)</code>, <code>Node.is_synced_with_neighbours()</code>), it transitions into a temporary syncing state (<code>HighLevelSync.SyncingState</code>) and schedules a local fast-sync event that models network + validation costs without simulating every message.</li>
+<li>There are two symmetric sync paths handled in <code>HighLevelSync</code>:</li>
+<li><code>create_local_sync_event(...)</code> / <code>handle_local_sync_event(...)</code> for data blocks</li>
+<li><code>create_local_sync_event_configuration(...)</code> / <code>handle_local_sync_event_configuration(...)</code> for configuration blocks</li>
+<li>Both paths:</li>
+<li>Compute missing blocks by comparing local <code>depth</code> to a peer</li>
+<li>Estimate total delay as network propagation + validation + request overheads using <code>Network.calculate_message_propagation_delay(...)</code> and <code>Parameters.execution</code> constants</li>
+<li>Schedule a single local event at <code>time + total_delay</code> that applies the copied blocks to the local chains</li>
+<li>If still behind at application time, schedule another sync</li>
+<li>Only when both data and configuration syncs complete does the node rejoin consensus via <code>node.join_latest_conf(...)</code></li>
+</ul>
+<h3 id="configuration-validation-during-block-intake">Configuration validation during block intake</h3>
+<p>When a data block arrives, <code>Node.validate_block(...)</code> performs generic checks (round, height) and configuration checks:</p>
+<ul>
+<li><code>block.extra_data["configuration_depth"] &lt; local_conf_depth</code> → invalid</li>
+<li><code>block.extra_data["configuration_depth"] &gt; local_conf_depth</code> → future configuration, trigger configuration-chain sync</li>
+<li><code>==</code> and other checks pass → valid or future data block depending on height</li>
+</ul>
+<p>This ensures data blocks are only accepted under the correct configuration.</p>
+<h3 id="centralised-reconfiguration-flow">Centralised reconfiguration flow</h3>
+<ol>
+<li>The <code>Manager</code> schedules periodic reconfiguration system events via <code>ReconfigurationEvents.schedule_centralised_reconfiguration_event(...)</code> using:</li>
+<li>Interval duration: <code>Parameters.reconfiguration.reconfiguration_interval</code></li>
+<li>Random range: <code>reconfiguration_interval_range</code></li>
+<li>On event, <code>ReconfigurationEvents.handle_random_centralised_reconfiguration_event(...)</code> delegates to <code>Chain.Reconfiguration.CentralisedReconfiguration.create_random_configuration_block(time)</code> to construct a <code>ConfigurationBlock</code> using <code>random_configuration</code> from <code>base.yaml</code>.</li>
+<li>Propagation is performed by <code>Chain.Reconfiguration.CentralisedReconfiguration.propagate_configuration_block(manager, block, time)</code> according to <code>reconfiguration.propagation</code>:</li>
+<li>If <code>model=True</code>, only a random subset of nodes (controlled by <code>per_cent_nodes</code>) receive the new configuration block after a random delay within <code>delay=[min,max]</code>. Delivery schedules <code>node.reconfiguration_state.schedule_future_receive_configuration(block.copy(), time=...)</code>, after which nodes gossip/sync to converge.</li>
+<li>If <code>model=False</code>, the block is instantly appended to the configuration chains of all nodes.</li>
+<li>After reception, nodes eventually call <code>node.update(time)</code> at safe points to apply the latest configuration and re-initialise the CP.</li>
+</ol>
+<h3 id="scheduling-and-parameters">Scheduling and parameters</h3>
+<ul>
+<li>All reconfiguration timings and costs are governed by <code>base.yaml</code>:</li>
+<li><code>reconfiguration.*</code>: interval, random ranges, propagation fraction, conf block size, printing</li>
+<li><code>execution.*</code>: latency of validation and message requests used in high-level sync delay calculations</li>
+<li><code>network.*</code>: bandwidth/latency model used by <code>Network.calculate_message_propagation_delay(...)</code></li>
+</ul>
+<h3 id="failure-and-recovery">Failure and recovery</h3>
+<ul>
+<li>When a node is resurrected (<code>Node.resurrect(...)</code>), it attempts fast sync. If sync is not needed it directly rejoins the latest configuration (<code>join_latest_conf</code>).</li>
+<li>During sync, the node remains out of consensus until both chains are caught up.</li>
+</ul>
+<h3 id="extending-the-mechanism-skeleton">Extending the mechanism (skeleton)</h3>
+<p>To add a new reconfiguration approach:</p>
+<ol>
+<li>Decision production</li>
+<li>
+<p>Create a system event handler that emits reconfiguration decisions and produces a <code>ConfigurationBlock</code> candidate.</p>
+</li>
+<li>
+<p>Block validation and linking</p>
+</li>
+<li>Ensure configuration blocks are validated similarly to data blocks (depth continuity, <code>previous</code>, proposer rules, signatures if modeled).</li>
+<li>
+<p>Keep <code>block.extra_data["configuration_depth"]</code> linkage in data blocks.</p>
+</li>
+<li>
+<p>Propagation model</p>
+</li>
+<li>Modify the existing propagation model by selecting the initial receiver nodes and the propagation strategy</li>
+<li>
+<p>Reuse <code>HighLevelSync.create_local_sync_event_configuration(...)</code> for catch-up after late arrivals.</p>
+</li>
+<li>
+<p>Adoption policy</p>
+</li>
+<li>
+<p>Decide and document when <code>node.update(time)</code> is safe to call in your CP (e.g., end-of-round, after commit). Invoke it accordingly.</p>
+</li>
+<li>
+<p>Parameters</p>
+</li>
+<li>
+<p>Add a dedicated section under <code>reconfiguration</code> in <code>base.yaml</code> for your method’s tunables (e.g., quorum size, committee rotation period, signature sizes).</p>
+</li>
+<li>
+<p>Modeling effects of reconfiguration</p>
+<ul>
+<li>Change existing models (CP, Node, Network etc..) to be configured by the configuration blocks instead of Parameters</li>
+</ul>
+</li>
+</ol>
+<h2 id="supported-reconfiguration">Supported reconfiguration</h2>
+<p>Currently only centralised (and random) reconfiguration is supported. Although the random part can be easily changed by incorporating various optimisation approaches (heuristics, machine learning, RL, traditional optimisation etc..).</p>
+<p>The decentralised version utilising a secondary blockchain for decentralsised agreement on decisions will be added soon.</p>
+<h3 id="instrumenting-the-blockchain-system-to-feed-the-optimisation-process">Instrumenting the blockchain system to feed the optimisation process</h3>
+<p>Due to blockchain's  decentralised nature and Byzantine assumptions extracting the state of the blockchain network is non-trivial. Although the existence of the simulation state trivialises state extraction such approaches are not realistic. An approach for blockchain network state extraction is proposes in:</p>
+<blockquote>
+<p>Diamantopoulos, Georgios, Nikos Tziritas, Rami Bahsoon, Nan Zhang, and Georgios Theodoropoulos. "Dynamic Digital Twins of Blockchain Systems: State Extraction and Mirroring." In 2024 28th International Symposium on Distributed Simulation and Real Time Applications (DS-RT), pp. 26-33. IEEE, 2024.</p>
+</blockquote>
+<p>An implementation of the above approach is expected to be added in the simulator soon.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../manager/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Manager">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Manager
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../simulation_parameters/" class="md-footer__link md-footer__link--next" aria-label="Next: Parameters">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Parameters
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["announce.dismiss", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.tabs", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
