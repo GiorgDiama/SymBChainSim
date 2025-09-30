@@ -21,7 +21,7 @@ SymBChainSim is a Discrete Event Simulation (DES) tool designed for blockchain r
 - **Modular Architecture**: Easily extensible design for adding new consensus protocols and features
 - **Low Abstraction Modeling**: Accurate representation of consensus protocol dynamics
 - **Multiple Consensus Support**: Built-in support for PBFT, Tendermint, and BigFoot.
-- **Comprehensive Metrics**: Detailed performance and behavior analysis
+- **Comprehensive Metrics**: Detailed performance and behaviours analysis
 
 ### Discrete Event Simulation
 
@@ -103,7 +103,7 @@ SBS uses YAML configuration files located in `src/Configs/`:
 
 - `base.yaml` - Default simulation parameters
 - `scenario.yaml` - Scenario-specific settings
-- `behaviour_config.yaml` - Node behavior configurations
+- `behaviour_config.yaml` - Node behaviour configurations
 - `dynamic_config.yaml` - Dynamic simulation parameters
 
 ### Key Configuration Categories

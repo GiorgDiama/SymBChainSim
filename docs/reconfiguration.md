@@ -39,7 +39,8 @@ SBS models reconfiguration via a secondary configuration blockchain. Nodes adopt
 - `Chain.Reconfiguration.ReconfigurationState`: node-local configuration chain, validation, adoption, gossip/sync
 - `Chain.Consensus.HighLevelSync`: extending with logic to handle syncing configuration chain
 - `Chain.Node`: applies/validates configuration, coordinates sync, and transitions consensus protocol
-- `Manager.SystemEvents.ReconfigurationEvents`: emits reconfiguration decisions and kicks off propagation
+- `Manager.SystemEvents.ReconfigurationEvents`: schedules reconfiguration events and dispatches handling
+- `Chain.Reconfiguration.CentralisedReconfiguration`: implements creation of configuration blocks and propagation logic for the centralised/random method
 - `Manager.Manager`: enables scheduling of reconfiguration events based on `base.yaml`
 
 ### Data model and linkage
@@ -83,13 +84,13 @@ This ensures data blocks are only accepted under the correct configuration.
 
 ### Centralised reconfiguration flow
 
-1. The `Manager` schedules periodic reconfiguration system events via `ReconfigurationEvents.schedule_reconfiguration_event(...)` using:
+1. The `Manager` schedules periodic reconfiguration system events via `ReconfigurationEvents.schedule_centralised_reconfiguration_event(...)` using:
    - Interval duration: `Parameters.reconfiguration.reconfiguration_interval`
    - Random range: `reconfiguration_interval_range`
-2. On event, `handle_random_centralised_reconfiguration_event(...)` chooses a configuration from `random_configuration` in `base.yaml` and appends a new `ConfigurationBlock` to `Parameters.global_configuration_chain`.
-3. Propagation is modeled according to `reconfiguration.propagation`:
-   - If `model=True`, only a random subset of nodes (controlled by `per_cent_nodes`) receive the new configuration block after a random delay in `delay=[min,max]`. Delivery schedules `node.reconfiguration_state.schedule_future_receive_configuration(block.copy(), time=...)`, after which nodes gossip/sync to converge.
-   - If `model=False`, the manager instantly appends the new block to the configuration chains of all nodes.
+2. On event, `ReconfigurationEvents.handle_random_centralised_reconfiguration_event(...)` delegates to `Chain.Reconfiguration.CentralisedReconfiguration.create_random_configuration_block(time)` to construct a `ConfigurationBlock` using `random_configuration` from `base.yaml`.
+3. Propagation is performed by `Chain.Reconfiguration.CentralisedReconfiguration.propagate_configuration_block(manager, block, time)` according to `reconfiguration.propagation`:
+   - If `model=True`, only a random subset of nodes (controlled by `per_cent_nodes`) receive the new configuration block after a random delay within `delay=[min,max]`. Delivery schedules `node.reconfiguration_state.schedule_future_receive_configuration(block.copy(), time=...)`, after which nodes gossip/sync to converge.
+   - If `model=False`, the block is instantly appended to the configuration chains of all nodes.
 4. After reception, nodes eventually call `node.update(time)` at safe points to apply the latest configuration and re-initialise the CP.
 
 ### Scheduling and parameters
