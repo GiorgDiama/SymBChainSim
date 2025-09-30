@@ -31,8 +31,7 @@ def propose(state: "Tendermint", event: "Event") -> str:
     if block is None:
         when_next = 1
 
-        # if there is still time in the round, attempt to reschedule later when
-        # txions might be there
+        # if there is still time in the round, attempt to reschedule later when txions might be there
         if creation_time + when_next + Parameters.execution["creation_time"] < state.timeout.time - 5:
             messages.schedule_propose(state, creation_time + when_next)
     else:
@@ -71,8 +70,7 @@ def pre_prepare(state: "Tendermint", event: "Event") -> str:
     time = event.time
     block = event.payload["block"]
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         return "invalid"
@@ -82,8 +80,7 @@ def pre_prepare(state: "Tendermint", event: "Event") -> str:
     time += Parameters.execution["msg_val_delay"]
 
     match state.state:
-        # if node is a new round state (i.e waiting for a new block to be
-        # proposed)
+        # if node is a new round state (i.e waiting for a new block to be proposed)
         case "new_round":
             # validate block
             time += Parameters.execution["block_val_delay"]
@@ -140,10 +137,8 @@ def prepare(state: "Tendermint", event: "Event") -> str:
     """
     time = event.time
     block = state.block
-    round = state.rounds.round
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         return "invalid"
@@ -158,8 +153,7 @@ def prepare(state: "Tendermint", event: "Event") -> str:
 
             state.block.extra_data["votes"]["prepare"].append((event.creator.id, time, Network.size(event)))
 
-            # if we have enough prepare messages (2f messages since leader does
-            # not participate)
+            # if we have enough prepare messages (2f messages since leader does not participate)
             if state.count_votes("prepare") >= Parameters.application["required_messages"] - 1:
                 # change to prepared
                 state.state = "prepared"
@@ -173,6 +167,7 @@ def prepare(state: "Tendermint", event: "Event") -> str:
                 state.block.extra_data["votes"]["commit"].append((event.actor.id, time, Network.size(event)))
 
                 return "new_state"
+
             # not enough votes yet...
             return "handled"
         case "new_round":
@@ -198,11 +193,8 @@ def commit(state: "Tendermint", event: "Event") -> str:
         str: Result of processing ('new_state', 'handled', 'invalid', 'backlog').
     """
     time = event.time
-    block = state.block
-    round = state.rounds.round
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         return "invalid"

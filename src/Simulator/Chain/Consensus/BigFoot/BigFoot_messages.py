@@ -13,19 +13,24 @@ if TYPE_CHECKING:
 
 
 def schedule_propose(state: "BigFoot", time: float) -> None:
-    """Schedule a local propose event for the given BigFoot state.
+    """
+    Schedule a local propose event for the given BigFoot state.
 
     Args:
         state (BigFoot): The BigFoot protocol state instance on the node.
         time (float): Simulation time at which to schedule the event.
     """
-    payload = {"type": "propose", "round": state.rounds.round, "CP": state.NAME}
-
+    payload = {
+        "type": "propose",
+        "round": state.rounds.round,
+        "CP": state.NAME,
+    }
     Scheduler.schedule_event(state.node, time, payload, state.handle_event)
 
 
 def broadcast_pre_prepare(state: "BigFoot", time: float, block: "Block") -> None:
-    """Broadcast a pre-prepare message containing the proposed block.
+    """
+    Broadcast a pre-prepare message containing the proposed block.
 
     Args:
         state (BigFoot): The BigFoot protocol state instance on the node.
@@ -38,12 +43,12 @@ def broadcast_pre_prepare(state: "BigFoot", time: float, block: "Block") -> None
         "round": state.rounds.round,
         "CP": state.NAME,
     }
-
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
 
 def broadcast_prepare(state: "BigFoot", time: float, block: "Block") -> None:
-    """Broadcast a prepare vote for a proposed block.
+    """
+    Broadcast a prepare vote for a proposed block.
 
     Args:
         state (BigFoot): The BigFoot protocol state instance on the node.
@@ -56,12 +61,12 @@ def broadcast_prepare(state: "BigFoot", time: float, block: "Block") -> None:
         "round": state.rounds.round,
         "CP": state.NAME,
     }
-
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
 
 def broadcast_commit(state: "BigFoot", time: float, block: "Block") -> None:
-    """Broadcast a commit vote for a prepared block.
+    """
+    Broadcast a commit vote for a prepared block.
 
     Args:
         state (BigFoot): The BigFoot protocol state instance on the node.
@@ -78,7 +83,8 @@ def broadcast_commit(state: "BigFoot", time: float, block: "Block") -> None:
 
 
 def broadcast_new_block(state: "BigFoot", time: float, block: "Block") -> None:
-    """Broadcast a message announcing a newly decided block.
+    """
+    Broadcast a message announcing a newly decided block.
 
     Args:
         state (BigFoot): The BigFoot protocol state instance on the node.
@@ -91,5 +97,4 @@ def broadcast_new_block(state: "BigFoot", time: float, block: "Block") -> None:
         "round": state.rounds.round,
         "CP": state.NAME,
     }
-
     Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)

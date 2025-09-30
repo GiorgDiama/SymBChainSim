@@ -101,26 +101,14 @@ def generate(name: str, parameters_dict: dict) -> None:
 
 
 # parameters_dict = {
-#     'dur': 3600,
-#     'ti_mu': 600,
-#     'ti_sigma': 60,
-#     'num_nodes': 16,
-#     'networks': [
-#         (10, 0.1),
-#         (5, 0.1),
-#         (2.5, 0.1)
-#     ],
-#     'fail_duration': (
-#         (20, 5),
-#         (60, 10),
-#         (120, 20)
-#     ),
-#     'workloads': [
-#         (500, 100),
-#         (1_000, 200),
-#         (2_000, 500)
-#     ],
-#     'sizes': (8, 20.5),
+#     "dur": 3600,
+#     "ti_mu": 600,
+#     "ti_sigma": 60,
+#     "num_nodes": 16,
+#     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
+#     "fail_duration": ((20, 5), (60, 10), (120, 20)),
+#     "workloads": [(500, 100), (1_000, 200), (2_000, 500)],
+#     "sizes": (8, 20.5),
 # }
 
 parameters_dict = {
@@ -129,7 +117,7 @@ parameters_dict = {
     "ti_sigma": 20,
     "num_nodes": 8,
     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
-    "fail_duration": ((20, 5), (60, 10), (120, 20)),
+    "fail_duration": [(20, 5), (60, 10), (120, 20)],
     "workloads": [(50, 10), (100, 20), (100, 50)],
     "sizes": (8, 20.5),
 }

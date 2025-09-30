@@ -20,7 +20,7 @@ def handle_timeout(state: "BigFoot", event: "Event"):
     """
     Handles a timeout event for a BigFoot node
     Specifically for BigFoot, also handles the fast_path logic wherein a node has to check
-    if the node has enough prepare votes (2f+1) to move to the prepared state broadcasting a commit message
+    if the node has enough prepare votes (2f+1) to move to the prepared state broadcasting a commit message.
     """
     if event.payload["round"] != state.rounds.round:
         logger.debug(f"INVALID - stale timeout - {event.payload['round']}!={state.rounds.round}")
@@ -66,6 +66,7 @@ def handle_timeout(state: "BigFoot", event: "Event"):
 
 
 def schedule_timeout(state, time, add_time=True, fast_path=False):
+    """Schedules round and fast_path timeouts."""
     if fast_path:
         # set nodes fast_path attribute to True since fast path just started
         state.fast_path = True

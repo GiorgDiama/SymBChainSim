@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 
 
 def schedule_scenario_update_network_event(manager: "Manager", info: List, time: float) -> None:
-    """Schedule a scenario-driven network update system event.
+    """
+    Schedule a scenario-driven network update system event.
 
     Args:
         manager (Manager): Simulation manager.
@@ -31,7 +32,8 @@ def schedule_scenario_update_network_event(manager: "Manager", info: List, time:
 
 
 def handle_scenario_update_network_event(manager: "Manager", event: SystemEvent) -> None:
-    """Apply scenario-provided bandwidth values to nodes.
+    """
+    Apply scenario-provided bandwidth values to nodes.
 
     Args:
         manager (Manager): Simulation manager.
@@ -49,8 +51,11 @@ def handle_scenario_update_network_event(manager: "Manager", event: SystemEvent)
 # -----------------------------------------------------------
 #                      Transactions
 # -----------------------------------------------------------
+
+
 def schedule_scenario_transactions_event(manager: "Manager", txion_list: List, time: float) -> None:
-    """Schedule a system event to inject scenario-specified transactions.
+    """
+    Schedule a system event to inject scenario-specified transactions.
 
     Args:
         manager (Manager): Simulation manager.
@@ -68,7 +73,8 @@ def schedule_scenario_transactions_event(manager: "Manager", txion_list: List, t
 
 
 def handle_scenario_transactions_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle injection of scenario-provided transactions into the simulation.
+    """
+    Handle injection of scenario-provided transactions into the simulation.
 
     Args:
         manager (Manager): Simulation manager.
@@ -86,7 +92,8 @@ def handle_scenario_transactions_event(manager: "Manager", event: SystemEvent) -
 
 
 def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: List) -> None:
-    """Schedule fault and recovery events for nodes based on scenario.
+    """
+    Schedule fault and recovery events for nodes based on scenario.
 
     Each tuple is (node_id, fail_at, downtime). Recovery is scheduled at fail_at + downtime.
 
@@ -112,7 +119,8 @@ def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: 
 
 
 def handle_scenario_fault_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle a scenario-driven node fault by killing the node.
+    """
+    Handle a scenario-driven node fault by killing the node.
 
     Args:
         manager (Manager): Simulation manager.
@@ -125,7 +133,8 @@ def handle_scenario_fault_event(manager: "Manager", event: SystemEvent) -> None:
 
 
 def handle_scenario_recovery_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle a scenario-driven node recovery by resurrecting the node.
+    """
+    Handle a scenario-driven node recovery by resurrecting the node.
 
     Args:
         manager (Manager): Simulation manager.

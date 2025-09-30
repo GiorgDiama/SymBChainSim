@@ -51,11 +51,12 @@ class Tendermint(ConsensusProtocol):
         self.node: "Node" = node
 
     def set_state(self) -> None:
-        """
-        Reset/initialize the protocol state variables for a new round or after rejoining.
-        """
+        """Reset/initialize the protocol state variables for a new round or after rejoining."""
         self.rounds = Rounds.init_round_change_state()
-        self.msgs = {"prepare": [], "commit": []}
+        self.msgs = {
+            "prepare": [],
+            "commit": [],
+        }
         self.timeout = None
         self.block = None
 
@@ -247,8 +248,7 @@ class Tendermint(ConsensusProtocol):
         if self.miner == self.node.id:
             messages.schedule_propose(self, time)
         else:
-            # check if any future events are here for this round
-            # slow nodes might miss pre_prepare vote so its good to check early
+            # check if any future events are here for this round slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
 
     def init_round_change(self, time: float) -> None:
@@ -269,12 +269,11 @@ class Tendermint(ConsensusProtocol):
         """
         self.set_state()  # set node's protocol state
         round = self.node.blockchain[-1].extra_data["round"] + 1  # set round to latest known round (latest block round + 1)
-        # NOTE: if this node rejoins at earlier round it's possible that it
-        # will try to propose a block. This will be ignored now but if wrong
-        # proposals are tracked this should be considered
         self.start(time, round)  # start the protocol
 
-    ########################## HANDLER ###########################
+    # -----------------------------------------------------------
+    #                      HANDLER
+    # -----------------------------------------------------------
 
     @staticmethod
     def handle_event(event: "Event") -> str:

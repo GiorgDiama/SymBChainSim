@@ -22,12 +22,13 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 
 class Simulation:
-    """Basic blockchain simulation instance (must be managed by a Manager object).
+    """
+    Basic blockchain simulation instance (must be managed by a Manager object).
 
     This class manages the core simulation logic including the event queue, clock,
     and keeps track of the nodes and transaction factory modeled.
 
-    Attributes:
+    Args:
         q (Queue): The event queue storing simulation events.
         clock (float): The event-driven simulation clock.
         nodes (List[Node]): The list of blockchain nodes.
@@ -46,12 +47,13 @@ class Simulation:
         TransactionFactory.nodes = self.nodes
 
     def init_simulation(self) -> None:
-        """Initializes the blockchains with the genesis block and starts the consensus protocol on the nodes.
+        """
+        Initializes the blockchains with the genesis block and starts the consensus protocol on the nodes.
 
         This method:
-        1. Creates genesis blocks for both the main blockchain and configuration chain
-        2. Adds these blocks to each node's respective chains
-        3. Updates each node to initialize the consensus protocol
+            - Creates genesis blocks for both the main blockchain and configuration chain
+            - Adds these blocks to each node's respective chains
+            - Updates each node to initialize the consensus protocol
         """
         genesis = Block.genesis_block()
         configuration_genesis = ConfigurationBlock.genesis_block()
@@ -65,13 +67,14 @@ class Simulation:
             n.update(0)
 
     def sim_next_event(self) -> None:
-        """Retrieves and executes the next event in the event queue, updating the simulation clock.
+        """
+        Retrieves and executes the next event in the event queue, updating the simulation clock.
 
         This method:
-            1. Logs debug information about the simulation state
-            2. Retrieves the next event from the queue
-            3. Updates the simulation clock
-            4. Handles the event based on its type (system event or regular event)
+            - Logs debug information about the simulation state
+            - Retrieves the next event from the queue
+            - Updates the simulation clock
+            - Handles the event based on its type (system event or regular event)
 
         Raises:
             AssertionError: If the simulation clock is ahead of the next event's time.

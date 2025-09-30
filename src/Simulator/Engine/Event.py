@@ -7,7 +7,8 @@ if TYPE_CHECKING:
 
 
 class Event:
-    """Models a local event in SBS.
+    """
+    Models a local event in SBS.
 
     When ID is not provided (-1), event receives an incremental ID based on Parameters.simulation['event_id'].
 
@@ -70,7 +71,8 @@ class Event:
 
 
 class MessageEvent(Event):
-    """Models network messages between nodes (i.e., CP message, sync message, new blocks, etc.).
+    """
+    Models network messages between nodes (i.e., CP message, sync message, new blocks, etc.).
 
     MessageEvents are created by the Network model so that relative delays can be calculated.
 
@@ -100,7 +102,8 @@ class MessageEvent(Event):
         self.forwarded_by: Optional[str] = None
 
     def is_same(self, other: "MessageEvent") -> bool:
-        """Checks if this message event is the same as another based on their IDs.
+        """
+        Checks if this message event is the same as another based on their IDs.
 
         Args:
             other (MessageEvent): The other message event to compare with.
@@ -112,7 +115,8 @@ class MessageEvent(Event):
 
     @staticmethod
     def from_Event(event: Event, receiver: "Node") -> "MessageEvent":
-        """Creates a MessageEvent from an existing Event.
+        """
+        Creates a MessageEvent from an existing Event.
 
         Args:
             event (Event): The source event to convert.
@@ -125,7 +129,8 @@ class MessageEvent(Event):
 
 
 class SystemEvent(Event):
-    """Simplified event for simulation management tasks.
+    """
+    Simplified event for simulation management tasks.
 
     Attributes:
         id (int): Unique identifier for the system event.

@@ -10,9 +10,7 @@ import yaml
 import json
 import logging
 
-"""
-    A collection of useful utility functions and tools for SBS
-"""
+""" A collection of useful utility functions and tools for SBS """
 
 LOG_PATH = "../Outputs/Logs/log.txt"
 
@@ -348,6 +346,3 @@ def color(string, c=44):
     color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:cyan | 47:white
     """
     return f"\x1b[1;37;{c}m" + string + "\x1b[0m"
-
-
-###################### Distributions #############

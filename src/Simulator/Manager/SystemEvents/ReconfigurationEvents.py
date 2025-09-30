@@ -17,7 +17,8 @@ if TYPE_CHECKING:
 
 
 def schedule_centralised_reconfiguration_event(manager: "Manager", time: float) -> None:
-    """Schedules a reconfiguration event of Parameters.reconfiguration['reconfiguration_method'] type
+    """
+    Schedules a reconfiguration event of Parameters.reconfiguration['reconfiguration_method'] type
     at time + reconfiguration_interval
 
     Args:
@@ -32,7 +33,11 @@ def schedule_centralised_reconfiguration_event(manager: "Manager", time: float) 
 
 
 def handle_random_centralised_reconfiguration_event(manager: "Manager", event: SystemEvent) -> None:
-    """ """
+    """
+    Generates a random configuration block and models its propagation in the blockchain system
+
+    Reschedules the next centralised_reconfiguration_event
+    """
     block = CentralisedReconfiguration.create_random_configuration_block(event.time)
 
     CentralisedReconfiguration.propagate_configuration_block(manager, block, event.time)

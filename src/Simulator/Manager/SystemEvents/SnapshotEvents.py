@@ -9,7 +9,8 @@ if TYPE_CHECKING:
 
 
 def schedule_snapshot_event(manager: "Manager") -> None:
-    """Schedule the next periodic snapshot system event.
+    """
+    Schedule the next periodic snapshot system event.
 
     Args:
         manager (Manager): The simulation manager orchestrating the DES.
@@ -24,7 +25,8 @@ def schedule_snapshot_event(manager: "Manager") -> None:
 
 
 def handle_snapshot_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle a snapshot event by persisting the current simulation state.
+    """
+    Handle a snapshot event by persisting the current simulation state.
 
     Args:
         manager (Manager): The simulation manager.

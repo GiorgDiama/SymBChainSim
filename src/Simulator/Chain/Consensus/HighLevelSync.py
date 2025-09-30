@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 class SyncingState:
     """
-    Node state for de-synced nodes
+    Node state for de-synced nodes.
+
+    Keeps track of sync events.
     """
 
     NAME = "DESYNC"
@@ -169,7 +171,7 @@ def create_local_sync_event_configuration(desynced_node: "Node", request_node: "
     desynced_node.cp.local_fast_sync_event_configuration = event
 
 
-def handle_local_sync_event(event):
+def handle_local_sync_event(event) -> str:
     """
     Copies missing blocks to end of the callers blockchain.
     Additionally, checks if the node we are syncing with has received
@@ -223,7 +225,7 @@ def handle_local_sync_event(event):
     return "still_out_of_sync"
 
 
-def handle_local_sync_event_configuration(event: Event):
+def handle_local_sync_event_configuration(event: Event) -> str:
     """
     Copies missing blocks to end of the callers configuration blockchain.
     Additionally, checks if the node we are syncing with has received any

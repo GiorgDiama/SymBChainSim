@@ -8,7 +8,8 @@ if TYPE_CHECKING:
 
 
 def serialisable_node(node: "Node") -> Dict[str, Any]:
-    """Creates a serializable representation of a node's state.
+    """
+    Creates a serializable representation of a node's state.
 
     Args:
         node (Node): The node to serialize.
@@ -35,7 +36,8 @@ def serialisable_node(node: "Node") -> Dict[str, Any]:
 
 
 def serialisable_block(block: "Block", transactions: bool = True) -> Dict[str, Any]:
-    """Creates a serializable representation of a block.
+    """
+    Creates a serializable representation of a block.
 
     Args:
         block (Block): The block to serialize.
@@ -64,7 +66,8 @@ def serialisable_block(block: "Block", transactions: bool = True) -> Dict[str, A
 
 
 def serialisable_configuration_block(block: "ConfigurationBlock") -> Dict[str, Any]:
-    """Creates a serializable representation of a configuration block.
+    """
+    Creates a serializable representation of a configuration block.
 
     Args:
         block (ConfigurationBlock): The configuration block to serialize.
@@ -86,7 +89,8 @@ def serialisable_configuration_block(block: "ConfigurationBlock") -> Dict[str, A
 
 
 def serialise_sim_state(sim: "Simulation") -> Dict[int, Dict[str, Any]]:
-    """Creates a serializable representation of the simulation state.
+    """
+    Creates a serializable representation of the simulation state.
 
     Args:
         sim (Simulation): The simulation instance to serialize.

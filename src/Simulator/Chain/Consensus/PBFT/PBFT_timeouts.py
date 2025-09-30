@@ -17,11 +17,19 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 def handle_timeout(state: "PBFT", event: "Event") -> str:
     """
-    Handler for timeout events - initiates round change logic
-    Checks for desync and initialises resync process
+    Handle a timeout event for a PBFT node.
+
+    Validates the event round, checks for protocol updates or desynchronisation,
+    and triggers a round change when appropriate.
+
+    Args:
+        state (PBFT): The PBFT protocol state instance.
+        event (Event): The timeout event to process.
+
+    Returns:
+        str: One of "invalid", "changed_cp", "detected_desync", or "handled".
     """
-    # ignore timeout events from other rounds (a timeout at future round
-    # should never happen)
+    # ignore timeout events from other rounds (a timeout at future round should never happen)
     if event.payload["round"] != state.rounds.round:
         logger.debug(f"[Node {state.node.id}] ignoring TO - not from this round")
         return "invalid"
@@ -37,9 +45,15 @@ def handle_timeout(state: "PBFT", event: "Event") -> str:
     return "handled"  # changes state to round_change but no need to handle backlog
 
 
-def schedule_timeout(state: "PBFT", time: float, add_time: bool = True) -> str:
+def schedule_timeout(state: "PBFT", time: float, add_time: bool = True) -> None:
     """
-    Schedules timeout event at time + PBFT.timeout
+    Schedule a round timeout for a PBFT node and keep a reference to it.
+
+    Args:
+        state (PBFT): The PBFT protocol state instance.
+        time (float): Base simulation time to schedule relative to.
+        add_time (bool, optional): If True, add the configured PBFT timeout duration. Defaults to True.
+
     """
     if add_time:
         time += Parameters.PBFT["timeout"]

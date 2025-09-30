@@ -7,7 +7,9 @@ from typing import Optional, Tuple
 
 class ConsensusProtocol(abc.ABC):
     """
-    An abstract class for the state defintion of conseusus protocols that work in consueus rounds
+    An abstract class for the state definition of consensus protocols.
+
+    Specifically for protocols that work in rounds
     """
 
     NAME: str
@@ -29,7 +31,8 @@ class ConsensusProtocol(abc.ABC):
 
     @abc.abstractmethod
     def validate_message(self, event) -> Tuple[bool, Optional[str]]:
-        """Validate an incoming message event.
+        """
+        Validate an incoming message event.
 
         Returns:
             Tuple[bool, Optional[str]]: (is_valid, action)
@@ -39,7 +42,8 @@ class ConsensusProtocol(abc.ABC):
 
     @abc.abstractmethod
     def validate_block(self, block: Block, time: float) -> str:
-        """Validate a proposed block.
+        """
+        Validate a proposed block.
 
         Returns:
             str: One of "valid", "invalid", "backlog", "future_block", "future_conf"
@@ -71,7 +75,8 @@ class ConsensusProtocol(abc.ABC):
     @staticmethod
     @abc.abstractmethod
     def handle_event(event) -> str:
-        """Handle protocol-specific events.
+        """
+        Handle protocol-specific events.
 
         Returns:
             str: Result of event handling

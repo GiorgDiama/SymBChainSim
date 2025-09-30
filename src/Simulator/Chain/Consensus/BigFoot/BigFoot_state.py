@@ -23,11 +23,10 @@ import logging
 
 logger = logging.getLogger(__name__.split(".")[-1])
 
-########################## PROTOCOL CHARACTERISTICS ###########################
-
 
 class BigFoot(ConsensusProtocol):
-    """BigFoot Consensus Protocol.
+    """
+    BigFoot Consensus Protocol.
 
     Implementation based on: R. Saltini "BigFooT: A robust optimal-latency BFT blockchain consensus protocol with dynamic validator membership"
 
@@ -46,7 +45,8 @@ class BigFoot(ConsensusProtocol):
     NAME = "BigFoot"
 
     def __init__(self, node: "Node") -> None:
-        """Initializes the BigFoot consensus protocol state.
+        """
+        Initializes the BigFoot consensus protocol state.
 
         Args:
             node (Node): The node running this protocol instance.
@@ -64,7 +64,8 @@ class BigFoot(ConsensusProtocol):
         self.block: Block
 
     def state_to_string(self) -> str:
-        """Returns a string representation of the current protocol state.
+        """
+        Returns a string representation of the current protocol state.
 
         Returns:
             str: Human-readable state string.
@@ -91,16 +92,21 @@ class BigFoot(ConsensusProtocol):
         self.block = None
 
     def reset_msgs(self) -> None:
-        """Resets the message storage for a given round.
+        """
+        Resets the message storage for a given round.
 
         Args:
             round (int): The round number to reset messages for.
         """
-        self.msgs = {"prepare": [], "commit": []}
+        self.msgs = {
+            "prepare": [],
+            "commit": [],
+        }
         Rounds.reset_votes(self.node)
 
     def count_votes(self, type: str) -> int:
-        """Counts the number of votes of a given type for a round.
+        """
+        Counts the number of votes of a given type for a round.
 
         Args:
             type (str): The type of vote ("prepare" or "commit")
@@ -110,7 +116,8 @@ class BigFoot(ConsensusProtocol):
         return len(self.msgs[type])
 
     def process_vote(self, type: str, sender: Any, time: float) -> None:
-        """Processes a vote by adding it to the message store.
+        """
+        Processes a vote by adding it to the message store.
 
         Args:
             type (str): The type of vote ("prepare" or "commit").
@@ -133,7 +140,8 @@ class BigFoot(ConsensusProtocol):
                 raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
     def validate_message(self, event: Any) -> Tuple[bool, str]:
-        """Validates an incoming message event.
+        """
+        Validates an incoming message event.
 
         Args:
             event (Any): The event to validate.
@@ -151,7 +159,8 @@ class BigFoot(ConsensusProtocol):
             return True, "backlog"
 
     def validate_block(self, block: Block, time: float) -> str:
-        """Validates a proposed block.
+        """
+        Validates a proposed block.
 
         Args:
             block (Block): The block to validate.
@@ -176,7 +185,8 @@ class BigFoot(ConsensusProtocol):
                 raise ValueError(f"Node block validation returned unexpected: {result}")
 
     def init(self, time: float, starting_round: int) -> None:
-        """Initializes the protocol state and starts consensus.
+        """
+        Initializes the protocol state and starts consensus.
 
         Args:
             time (float): The current simulation time.
@@ -187,7 +197,8 @@ class BigFoot(ConsensusProtocol):
         self.start(time, starting_round)
 
     def create_BigFoot_block(self, time: float) -> Tuple[Block, float]:
-        """Creates a new block according to the consensus protocol.
+        """
+        Creates a new block according to the consensus protocol.
 
         Args:
             time (float): The current simulation time.
@@ -227,7 +238,8 @@ class BigFoot(ConsensusProtocol):
             return None, time
 
     def init_round_change(self, time: float) -> None:
-        """Schedules a timeout for the round change process.
+        """
+        Schedules a timeout for the round change process.
 
         Args:
             time (float): The current simulation time.
@@ -236,7 +248,8 @@ class BigFoot(ConsensusProtocol):
         timeouts.schedule_timeout(self, time, add_time=True)
 
     def start(self, time: int, new_round: int) -> None:
-        """Starts a new consensus round.
+        """
+        Starts a new consensus round.
 
         Args:
             time (float): The current simulation time.
@@ -269,27 +282,27 @@ class BigFoot(ConsensusProtocol):
             messages.schedule_propose(self, time)
         else:
             logger.debug(f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events")
-            # check if any future events are here for this round
-            # slow nodes might miss pre_prepare vote so its good to check early
+            # check if any future events are here for this round slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
 
     def rejoin(self, time: float) -> None:
-        """Defines the protocol specific rejoin logic for BigFoot.
+        """
+        Defines the protocol specific rejoin logic for BigFoot.
 
         Args:
             time (float): The current simulation time.
         """
         logger.debug(f"Node {self.node.id}: Rejoining BigFoot protocol at time {time}")
-        self.set_state()  # set node's protocol state
+        # set node's protocol state
+        self.set_state()
         # set round to latest known round (latest block round + 1)
         round = self.node.blockchain[-1].extra_data["round"] + 1
         logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-        # NOTE: if this node rejoins at earlier round it's possible that it
-        # will try to propose a block. This will be ignored now but if wrong
-        # proposals are tracked this should be considered
         self.start(time, round)  # start the protocol
 
-    ########################## HANDLER ###########################
+    # -----------------------------------------------------------
+    #                      HANDLER
+    # -----------------------------------------------------------
 
     @staticmethod
     def handle_event(event: "Event") -> str:

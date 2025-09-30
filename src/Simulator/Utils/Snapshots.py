@@ -24,8 +24,7 @@ def take_snapshot(sim: "Simulation", start_from: float = 0) -> None:
         sim (Simulation): The simulation instance to snapshot.
         start_from (float): Only considers blocks added after this timestamp.
     """
-    # start_from functions the same in measure_all so no need to include
-    # conditionals
+    # start_from functions the same in measure_all so no need to include conditionals
     Metrics.measure_all(sim, start_from=start_from)
 
     snapshot = {

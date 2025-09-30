@@ -19,13 +19,19 @@ import logging
 logger = logging.getLogger(__name__.split(".")[-1])
 
 
-############### EVENTS ###############
+# -----------------------------------------------------------
+#                    EVENTS
+# -----------------------------------------------------------
+
+
 def broadcast_round_change_message(node, new_round, time):
     payload = {"type": "round_change", "new_round": new_round, "CP": node.cp.NAME}
     Scheduler.schedule_broadcast_message(node, time, payload, handle_event)
 
 
-############### STATE  ###############
+# -----------------------------------------------------------
+#                    STATE
+# -----------------------------------------------------------
 
 
 @dataclass
@@ -35,7 +41,7 @@ class RoundChangeState:
     votes: Dict[int, List[int]]  # or just Dict if keys/values can vary
 
 
-def init_round_change_state(round=0):
+def init_round_change_state(round: int = 0):
     """
     Round change state
         round: current round the node is on
@@ -56,12 +62,14 @@ def state_to_string(node: "Node"):
 def handle_event(event: "Event"):
     match event.payload["type"]:
         case "round_change":
-            handle_round_change_msg(event)
+            return handle_round_change_msg(event)
         case _:
             raise ValueError(f"Event '{event.payload['type']}' was not handled by its own handler...")
 
 
-############### LOGIC ###############
+# -----------------------------------------------------------
+#                    LOGIC
+# -----------------------------------------------------------
 
 
 def change_round(node: "Node", time: float):
@@ -89,7 +97,7 @@ def change_round(node: "Node", time: float):
     process_round_change_vote(node, new_round, node)  # count own vote
 
 
-def handle_round_change_msg(event: "MessageEvent"):
+def handle_round_change_msg(event: "MessageEvent") -> str:
     """
     Logic to handle received round_change messages:
         if the vote makes a candidate round > our chosen new_round have f+1 votes
@@ -118,20 +126,17 @@ def handle_round_change_msg(event: "MessageEvent"):
 
     if len(msgs[new_round]) == Parameters.application["f"] + 1:
         if cp_state.state != "round_change":
-            # if the node is not in 'round_change' - start the round change
-            # process on node
+            # if the node is not in 'round_change' - start the round change process on node
             change_round(node, time)
         if new_round > cp_state.rounds.change_to:
             # if the node has realised that a higher 'new_round' has received
-            # f+1 nodes - change 'new_round' and broadcast round_change for
-            # 'new_round'
+            # f+1 nodes - change 'new_round' and broadcast round_change for 'new_round'
             logger.debug(f"Node {node.id} was convinced to vote for a higher round that was it believed - change_to:{cp_state.rounds.change_to} new_round:{new_round}")
             cp_state.rounds.change_to = new_round
             broadcast_round_change_message(node, new_round, time)
             process_round_change_vote(node, new_round, node)  # count own vote
 
-    # if a node receives 2f+1 round messages for a specific round change to
-    # that round
+    # if a node receives 2f+1 round messages for a specific round change to that round
     if len(msgs[new_round]) == Parameters.application["required_messages"]:
         logger.debug(f"Node {node.id} received 2f+1 votes! Starting round:{new_round}")
         node.cp.start(time, new_round)
@@ -177,10 +182,11 @@ def process_round_change_vote(node: "Node", new_round: int, voter: "Node"):
     for key, value in msgs.items():
         # check if the voter has voted for some other round
         if voter in value:
-            # if the voter voted for a smaller round then vote is removed from that
+            # if the voter voted for a smaller round then that vote is removed
             if key < new_round:
                 msgs[key].remove(voter_id)
-            else:  # voter is voting for an earlier round than its last vote
+            else:
+                # voter is voting for an earlier round than its last vote
                 return "invalid"
 
     # record valid vote

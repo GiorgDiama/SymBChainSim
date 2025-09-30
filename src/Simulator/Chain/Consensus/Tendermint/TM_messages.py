@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 
 def schedule_propose(state: "Tendermint", time: float) -> "Event":
-    """Schedule a local propose event.
+    """
+    Schedule a local propose event.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -29,7 +30,8 @@ def schedule_propose(state: "Tendermint", time: float) -> "Event":
 
 
 def broadcast_pre_prepare(state: "Tendermint", time: float, block: "Block") -> "Event":
-    """Broadcast a pre-prepare message with the proposed block.
+    """
+    Broadcast a pre-prepare message with the proposed block.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -55,7 +57,8 @@ def broadcast_pre_prepare(state: "Tendermint", time: float, block: "Block") -> "
 
 
 def broadcast_prepare(state: "Tendermint", time: float, block_hash: int) -> "Event":
-    """Broadcast a prepare vote for a block hash.
+    """
+    Broadcast a prepare vote for a block hash.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -81,7 +84,8 @@ def broadcast_prepare(state: "Tendermint", time: float, block_hash: int) -> "Eve
 
 
 def broadcast_commit(state: "Tendermint", time: float, block_hash: int) -> "Event":
-    """Broadcast a commit vote for a block hash.
+    """
+    Broadcast a commit vote for a block hash.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -107,7 +111,8 @@ def broadcast_commit(state: "Tendermint", time: float, block_hash: int) -> "Even
 
 
 def broadcast_new_block(state: "Tendermint", time: float, block: "Block") -> "Event":
-    """Broadcast a message announcing a newly decided block.
+    """
+    Broadcast a message announcing a newly decided block.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -133,7 +138,8 @@ def broadcast_new_block(state: "Tendermint", time: float, block: "Block") -> "Ev
 
 
 def get_payload_size(payload: dict[str, Any]) -> float:
-    """Compute an approximate network payload size in MB for Tendermint messages.
+    """
+    Compute an approximate network payload size in MB for Tendermint messages.
 
     Args:
         payload (dict[str, Any]): The payload dictionary to estimate.

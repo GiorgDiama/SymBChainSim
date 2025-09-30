@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 class Transaction:
-    """Represents a single transaction in the blockchain system.
+    """
+    Represents a single transaction in the blockchain system.
 
     Attributes:
         creator (int): ID of the node that created the transaction.
@@ -42,7 +43,8 @@ class Transaction:
 
 
 class TransactionFactory:
-    """Handles the generation and execution of transactions and manages the memory pools of nodes.
+    """
+    Handles the generation and execution of transactions and manages the memory pools of nodes.
 
     This class supports two types of transaction pool models:
     1) Local pool: Each node maintains its local transaction pool
@@ -64,7 +66,8 @@ class TransactionFactory:
 
     @staticmethod
     def transaction_prop(tx: Transaction) -> None:
-        """Models transaction propagation
+        """
+        Models transaction propagation
 
         For local pool: Utilizes point-to-point delay between receiver and producer.
         For global pool: Utilizes an approximation based on creator's bandwidth.
@@ -96,7 +99,8 @@ class TransactionFactory:
 
     @staticmethod
     def add_scenario_transactions(txion_list: List[tuple]) -> None:
-        """Adds transactions from a list (provided by a scenario) to the simulation.
+        """
+        Adds transactions from a list (provided by a scenario) to the simulation.
 
         Args:
             txion_list (List[tuple]): List of transactions in format (creator, id, timestamp, size).
@@ -109,7 +113,8 @@ class TransactionFactory:
 
     @staticmethod
     def generate_interval_txions(start: float) -> None:
-        """Generates transactions for the interval [start, start+TI_dur] based on the current configuration.
+        """
+        Generates transactions for the interval [start, start+TI_dur] based on the current configuration.
 
         Args:
             start (float): Start time for transaction generation.
@@ -138,7 +143,8 @@ class TransactionFactory:
 
     @staticmethod
     def execute_transactions(configuration, pool: Deque[Transaction], time: float) -> tuple[List[Transaction], float]:
-        """Executes transactions by selecting them from the transaction pool.
+        """
+        Executes transactions by selecting them from the transaction pool.
 
         Args:
             configuration: The configuration settings for transaction execution.
@@ -161,7 +167,8 @@ class TransactionFactory:
 
     @staticmethod
     def _get_transactions_from_pool(configuration, pool: Deque[Transaction], time: float) -> tuple[List[Transaction], float]:
-        """Retrieves transactions from the pool for inclusion in the next block.
+        """
+        Retrieves transactions from the pool for inclusion in the next block.
 
         Args:
             configuration: Configuration containing block size limits.
@@ -198,7 +205,8 @@ class TransactionFactory:
 
     @staticmethod
     def mark_transactions_as_processed(block: "Block", pool: Deque[Transaction]) -> None:
-        """Marks transactions in a block as processed in the appropriate pool.
+        """
+        Marks transactions in a block as processed in the appropriate pool.
 
         Args:
             block: The block containing transactions to mark.
@@ -224,7 +232,8 @@ class TransactionFactory:
 
     @staticmethod
     def removed_processed(pool: Deque[Transaction]) -> Deque[Transaction]:
-        """Returns a new pool without processed transactions.
+        """
+        Returns a new pool without processed transactions.
 
         Args:
             pool (Deque[Transaction]): Pool to filter.
@@ -243,7 +252,8 @@ class TransactionFactory:
 
     @staticmethod
     def _mark_pool(txions: List[Transaction], pool: Deque[Transaction]) -> Deque[Transaction]:
-        """Marks transactions in the pool as processed.
+        """
+        Marks transactions in the pool as processed.
 
         Args:
             txions (List[Transaction]): Transactions to mark as processed.

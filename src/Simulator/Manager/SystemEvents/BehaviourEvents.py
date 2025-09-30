@@ -1,4 +1,7 @@
 from Parameters import Parameters, read_yaml
+
+from Engine.Event import SystemEvent
+
 from Utils import Tools
 
 import random
@@ -11,7 +14,8 @@ if TYPE_CHECKING:
 
 
 class Behaviour:
-    """Holds behaviour configuration and chosen faulty/byzantine nodes.
+    """
+    Holds behaviour configuration and chosen faulty/byzantine nodes.
 
     Attributes:
         byzantine (dict): Byzantine behaviour parameters loaded from YAML.
@@ -59,7 +63,8 @@ class Behaviour:
 
 
 def schedule_random_fault_event(manager: "Manager", time: float, node: Optional["Node"] = None) -> Optional[str]:
-    """Schedule a random fault event for a specific node or initialise all.
+    """
+    Schedule a random fault event for a specific node or initialise all.
 
     Args:
         manager (Manager): Simulation manager.
@@ -76,15 +81,18 @@ def schedule_random_fault_event(manager: "Manager", time: float, node: Optional[
         return "initialised_fault_events"
 
     fail_at = time + random.expovariate(1 / node.behaviour.mean_fault_time)
-    payload = {"type": "random_fault", "node": node}
-    event = manager.schedule_system_event(fail_at, payload)
+
+    event = SystemEvent(time=fail_at, payload={"type": "random_fault", "node": node})
+    manager.sim.q.add_event(event)
+
     node.behaviour.fault_event = event
 
     return None
 
 
 def handle_random_fault_event(manager: "Manager", event) -> None:
-    """Handle a random fault event by killing the node and scheduling recovery.
+    """
+    Handle a random fault event by killing the node and scheduling recovery.
 
     Args:
         manager (Manager): Simulation manager.
@@ -107,7 +115,8 @@ def handle_random_fault_event(manager: "Manager", event) -> None:
 
 
 def schedule_recovery_event(manager: "Manager", time: float, node: "Node") -> None:
-    """Schedule a recovery event for a node following a failure.
+    """
+    Schedule a recovery event for a node following a failure.
 
     Args:
         manager (Manager): Simulation manager.
@@ -118,13 +127,16 @@ def schedule_recovery_event(manager: "Manager", time: float, node: "Node") -> No
         None
     """
     recover_at = time + random.expovariate(1 / node.behaviour.mean_recovery_time)
-    payload = {"type": "recovery", "node": node}
-    event = manager.schedule_system_event(recover_at, payload)
+
+    event = SystemEvent(time=recover_at, payload={"type": "recovery", "node": node})
+    manager.sim.q.add_event(event)
+
     node.behaviour.recovery_event = event
 
 
 def handle_recover_event(manager: "Manager", event) -> None:
-    """Handle a node recovery by resurrecting and re-scheduling its next fault.
+    """
+    Handle a node recovery by resurrecting and re-scheduling its next fault.
 
     Args:
         manager (Manager): Simulation manager.

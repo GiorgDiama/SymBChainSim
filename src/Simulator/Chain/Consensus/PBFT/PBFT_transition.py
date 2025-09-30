@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 
 def propose(state: "PBFT", event: "Event") -> str:
-    """Handle the propose phase of the PBFT consensus protocol.
+    """
+    Handle the propose phase of the PBFT consensus protocol.
 
     This function attempts to create a new block. If successful, it changes the state to
     'pre_prepared' and broadcasts the block. If unsuccessful, it may reschedule another
@@ -36,8 +37,7 @@ def propose(state: "PBFT", event: "Event") -> str:
 
     if block is None:
         when_next = 1
-        # if there is still time in the round, attempt to reschedule later when
-        # txions might be generated
+        # if there is still time in the round, attempt to reschedule later when txions might be generated
         if creation_time + when_next + Parameters.execution["creation_time"] <= state.timeout.time:
             logger.debug(f"[Node {state.node.id}] PROPOSE: Scheduling retry at time {creation_time + when_next}")
             PBFT_messages.schedule_propose(state, creation_time + when_next)
@@ -62,11 +62,13 @@ def propose(state: "PBFT", event: "Event") -> str:
         logger.debug(f"[Node {state.node.id}] PROPOSE: Broadcasting pre_prepare message")
 
         PBFT_messages.broadcast_pre_prepare(state, time, block)
+
         return "proposed block"
 
 
 def pre_prepare(state: "PBFT", event: "Event") -> str:
-    """Handle the pre-prepare phase of the PBFT consensus protocol.
+    """
+    Handle the pre-prepare phase of the PBFT consensus protocol.
 
     This function validates and processes a pre-prepare message. If in 'new_round' state and
     the block is valid, it transitions to 'pre_prepared' state and broadcasts prepare messages.
@@ -84,8 +86,7 @@ def pre_prepare(state: "PBFT", event: "Event") -> str:
     block = event.payload["block"]
     logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Processing pre_prepare from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Message validation failed - invalid")
@@ -97,8 +98,7 @@ def pre_prepare(state: "PBFT", event: "Event") -> str:
     time += Parameters.execution["msg_val_delay"]
 
     match state.state:
-        # if node is a new round state (i.e waiting for a new block to be
-        # proposed)
+        # if node is a new round state (i.e waiting for a new block to be proposed)
         case "new_round":
             # validate block
             time += Parameters.execution["block_val_delay"]
@@ -148,7 +148,8 @@ def pre_prepare(state: "PBFT", event: "Event") -> str:
 
 
 def prepare(state: "PBFT", event: "Event") -> str:
-    """Handle the prepare phase of the PBFT consensus protocol.
+    """
+    Handle the prepare phase of the PBFT consensus protocol.
 
     This function processes prepare messages, counts votes, and transitions to 'prepared' state
     when enough prepare messages are received.
@@ -169,8 +170,7 @@ def prepare(state: "PBFT", event: "Event") -> str:
     round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] PREPARE: Processing prepare vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] PREPARE: Message validation failed - invalid")
@@ -192,8 +192,7 @@ def prepare(state: "PBFT", event: "Event") -> str:
             current_votes = state.count_votes("prepare")
             logger.debug(f"[Node {state.node.id}] PREPARE: Current prepare votes: {current_votes}, required: {Parameters.application['required_messages'] - 1}")
 
-            # if we have enough prepare messages (2f messages since leader does
-            # not participate)
+            # if we have enough prepare messages (2f messages since leader does not participate)
             if state.count_votes("prepare") >= Parameters.application["required_messages"] - 1:
                 # change to prepared
                 logger.debug(f"[Node {state.node.id}] PREPARE: Sufficient prepare votes received, transitioning from {state.state} to prepared")
@@ -228,7 +227,8 @@ def prepare(state: "PBFT", event: "Event") -> str:
 
 
 def commit(state: "PBFT", event: "Event") -> str:
-    """Handle the commit phase of the PBFT consensus protocol.
+    """
+    Handle the commit phase of the PBFT consensus protocol.
 
     This function processes commit messages, counts votes, and finalizes block addition when
     enough commit messages are received.
@@ -248,8 +248,7 @@ def commit(state: "PBFT", event: "Event") -> str:
     block = event.payload["block"]
     logger.debug(f"[Node {state.node.id}] COMMIT: Processing commit vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] COMMIT: Message validation failed - invalid")
@@ -307,7 +306,8 @@ def commit(state: "PBFT", event: "Event") -> str:
 
 
 def new_block(state: "PBFT", event: "Event") -> str:
-    """Handle the reception of a new block in the PBFT consensus protocol.
+    """
+    Handle the reception of a new block in the PBFT consensus protocol.
 
     This function processes new block messages, validates them, and updates the local blockchain
     accordingly. It also handles potential desynchronization scenarios.
@@ -324,9 +324,8 @@ def new_block(state: "PBFT", event: "Event") -> str:
     """
     block = event.payload["block"]
     time = event.time
-    logger.debug(
-        f"[Node {state.node.id}] NEW_BLOCK: Processing new block {block.id} from node {event.creator} at time {time}, block depth: {block.depth}, local chain depth: {state.node.blockchain[-1].depth}"
-    )
+
+    logger.debug(f"[Node {state.node.id}] NEW_BLOCK: Processing new block {block.id} from node {event.creator} at {time}, depth: {block.depth}, local depth: {state.node.blockchain[-1].depth}")
 
     time += Parameters.execution["msg_val_delay"]
     time += Parameters.execution["block_val_delay"]
@@ -344,6 +343,5 @@ def new_block(state: "PBFT", event: "Event") -> str:
     state.node.add_block(block.copy(), time)
     state.start(time, block.extra_data["round"] + 1)
 
-    # we are now in a new round - check the backlog for any missed round
-    # messages from early nodes
+    # we are now in a new round - check the backlog for any missed round messages from early nodes
     return "new_state"

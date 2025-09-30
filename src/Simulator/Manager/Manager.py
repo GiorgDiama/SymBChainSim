@@ -108,9 +108,7 @@ class Manager:
     # -----------------------------------------------------------
 
     def run(self) -> None:
-        """
-        Runs the managed simulation loop until a finish condition is met.
-        """
+        """Runs the managed simulation loop until a finish condition is met."""
         logger.debug("\n\n########### STARTING SIMULATION LOOP! ###############\n")
         while not self.finished():
             self.sim.sim_next_event()
@@ -146,20 +144,19 @@ class Manager:
         return finished
 
     def update_sim(self) -> None:
-        """
-        Performs time-based updates controlled by system events.
-        """
+        """Performs time-based updates controlled by system events."""
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
 
+    # -----------------------------------------------------------
+    #                      SYSTEM EVENTS
+    # -----------------------------------------------------------
     def init_system_events(self) -> None:
-        """
-        Sets up the system events that dynamically manage the simulation, such as transaction generation, dynamic simulation, behaviour.
-        """
+        """Sets up the system events that dynamically manage the simulation."""
         logger.debug("Initializing system events.")
         if Parameters.simulation.get("workload", "generate") == "generate":
             logger.debug("Scheduling transaction generation event.")
-            generate_txionsSE.schedule_event(self, init=True)
+            generate_txionsSE.schedule_transaction_generation_event(self, init=True)
 
         if Parameters.dynamic_sim["use"]:
             logger.debug("Dynamic simulation enabled. Initializing dynamic parameters and scheduling events.")
@@ -180,27 +177,6 @@ class Manager:
             logger.debug("Scheduling reconfiguration system events.")
             reconfigurationSE.schedule_centralised_reconfiguration_event(self, self.sim.clock)
 
-    # -----------------------------------------------------------
-    #                      SYSTEM EVENTS
-    # -----------------------------------------------------------
-
-    def schedule_system_event(self, time: float, payload: dict) -> SystemEvent:
-        """
-        Schedules a system event in the simulation event queue.
-
-        Args:
-            time (float): The simulation time at which the event should occur.
-            payload (dict): The payload containing information about the event
-
-        Returns:
-            SystemEvent: The scheduled system event.
-        """
-        logger.debug(f"Scheduling system event at time {time} with payload: {payload}")
-        event = SystemEvent(time=time, payload=payload)
-        self.sim.q.add_event(event)
-
-        return event
-
     def handle_system_event(self, event: Event) -> None:
         """
         Handles a system event by dispatching it to the appropriate handler based on its type.
@@ -213,7 +189,7 @@ class Manager:
             #                      Transactions
             # -----------------------------------------------------------
             case "generate_txions":
-                generate_txionsSE.handle_event(self, event)
+                generate_txionsSE.handle_transaction_generation_event(self, event)
             # -----------------------------------------------------------
             #                      Dynamic Simulation
             # -----------------------------------------------------------

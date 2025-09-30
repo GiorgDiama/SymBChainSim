@@ -10,23 +10,18 @@ if TYPE_CHECKING:
 
 class Scheduler:
     """
-    The `Scheduler` class is responsible for scheduling local and network events.
+    The Scheduler class is responsible for scheduling local and network events.
     It abstracts event management to minimise the event management logic required in model files.
     """
 
     @staticmethod
-    def schedule_broadcast_message(
-        creator: "Node",
-        time: float,
-        payload: dict[str, Any],
-        handler: Any,
-        id: int = -1,
-    ) -> Event:
+    def schedule_broadcast_message(creator: "Node", time: float, payload: dict[str, Any], handler: Any, id: int = -1) -> Event:
         """
         Schedules a broadcast message event in the network.
         This function creates an event representing the broadcasting of a message
         and adds it to the event queue. It utilizes the network module to handle
         the specifics of the broadcast, which may include algorithms like Gossip.
+
         Args:
             creator (Node): The node initiating the broadcast.
             time (float): The time at which the broadcast is scheduled.

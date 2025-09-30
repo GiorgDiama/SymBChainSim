@@ -29,7 +29,8 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 
 class Node:
-    """Models a generic blockchain node
+    """
+    Models a generic blockchain node
 
     Attributes:
         id (int): unique node id
@@ -129,9 +130,6 @@ class Node:
         decision = "valid"
 
         if block.extra_data["round"] != self.cp.rounds.round:
-            # Even if round >= r future is not a good idea
-            # proposers could propose blocks at future rounds and cause
-            # everyone to sync forever
             return "invalid"
 
         if block.depth <= self.last_block.depth:
@@ -209,8 +207,6 @@ class Node:
             is_synced = False
 
         if not is_synced:
-            assert sync_node is not None, "request node cannot be None"
-
             self.state.synced = False
             logger.debug(f"Node {self.id}: Detected desync with node {sync_node.id} at time {time}. Triggering local sync event.")
             HighLevelSync.create_local_sync_event(desynced_node=self, request_node=sync_node, time=time)
@@ -274,18 +270,30 @@ class Node:
 
         if self.state.alive:
             if full:
-                return f"{Tools.color(f'Node: {self.id}', 42)}\n   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} global_pool: {len(TransactionFactory.global_mempool)} \n   SYNCED: {
-                    self.state.synced
-                } | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME} | req msg: {Parameters.application['required_messages']} f: {Parameters.application['f']} \
-                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                return (
+                    f"{Tools.color(f'Node: {self.id}', 42)}\n"
+                    f"   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} "
+                    f"global_pool: {len(TransactionFactory.global_mempool)}\n"
+                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
+                    f"CHANGE_TO: {Parameters.application['CP'].NAME} | "
+                    f"req msg: {Parameters.application['required_messages']} "
+                    f"f: {Parameters.application['f']}\n"
+                    f"   CP_state: {self.cp.state_to_string()}\n"
+                    f"   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                )
             else:
                 return f"Node: {self.id}"
         else:
             if full:
-                return f"{Tools.color(f'**dead** Node: {self.id}', 41)} \n   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} global_pool: {
-                    len(TransactionFactory.global_mempool)
-                } \n   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | CHANGE_TO: {Parameters.application['CP'].NAME}\
-                        \n   CP_state: {self.cp.state_to_string()} \n   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                return (
+                    f"{Tools.color(f'**dead** Node: {self.id}', 41)}\n"
+                    f"   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} "
+                    f"global_pool: {len(TransactionFactory.global_mempool)}\n"
+                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
+                    f"CHANGE_TO: {Parameters.application['CP'].NAME}\n"
+                    f"   CP_state: {self.cp.state_to_string()}\n"
+                    f"   BEHAVIOUR: {self.behaviour_state_to_string}\n"
+                )
             else:
                 return f"**DEAD** - Node: {self.id}"
 
@@ -301,16 +309,12 @@ class Node:
 
     @property
     def ids(self):
-        """
-        returns a list of all block ids in the nodes local blockchain
-        """
+        """returns a list of all block ids in the nodes local blockchain"""
         return [x.id for x in self.blockchain]
 
     @property
     def trunc_ids(self):
-        """
-        returns a list of the last 5 block ids in nodes local blockchain
-        """
+        """returns a list of the last 5 block ids in nodes local blockchain"""
         hidden_blocks = len(self.blockchain) - 5 if len(self.blockchain) - 5 > 0 else 0
         return f"{hidden_blocks} hidden_blocks...{[f'{x.id} {x.consensus if x.consensus is not None else None}' for x in self.blockchain[-5:]]} {self.blockchain[-1].depth}"
 
@@ -330,5 +334,4 @@ class Node:
             s += f"{Tools.color('BYZANTINE', 41)} -> fault_chance: {self.behaviour.sync_fault_chance}"
         else:
             s += "HONEST"
-
         return s

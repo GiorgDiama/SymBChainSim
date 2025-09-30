@@ -11,7 +11,10 @@ if TYPE_CHECKING:
 
 
 def create_random_configuration_block(time) -> ConfigurationBlock:
-    """ """
+    """
+    Generates a configuration block containing a random configuration
+    based on the options defined in Parameters.reconfiguration["random_configuration"]
+    """
     CPS = Parameters.reconfiguration["random_configuration"]["protocols"]
     BLOCK_SIZES = Parameters.reconfiguration["random_configuration"]["block_sizes"]
     BLOCK_TIMES = Parameters.reconfiguration["random_configuration"]["block_times"]
@@ -42,7 +45,14 @@ def create_random_configuration_block(time) -> ConfigurationBlock:
 
 
 def propagate_configuration_block(manager: "Manager", configuration_block: ConfigurationBlock, time: float) -> None:
-    """ """
+    """
+    Models the propagation of the given configuration block based on the propagation
+    model specific in Parameters.reconfiguration['propagation']
+
+    Options:
+        - Model==True: picks a percentage of the nodes to receive the block after a small delay; these gossip the block
+        - Model==False: append the block to the configuration chains of all nodes directly and immediately
+    """
     if Parameters.reconfiguration["print_updates"]:
         print("RECONFIGURATION:", configuration_block.configuration)
 
@@ -60,7 +70,6 @@ def propagate_configuration_block(manager: "Manager", configuration_block: Confi
                 print(f"node {node} will receive configuration block at {receive_at}")
 
             node.reconfiguration_state.schedule_future_receive_configuration(block=configuration_block.copy(), time=receive_at)
-
     else:
         for node in manager.sim.nodes:
             node.reconfiguration_state.confchain.append(configuration_block)

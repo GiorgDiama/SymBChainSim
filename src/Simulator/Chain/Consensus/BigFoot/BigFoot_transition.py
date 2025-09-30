@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 
 def propose(state: "BigFoot", event: "Event") -> str:
-    """Handles the propose phase of BigFoot consensus.
+    """
+    Handles the propose phase of BigFoot consensus.
 
     Attempts to create a new block and transitions the state to pre_prepared if successful.
     If no block can be created, schedules a retry for later in the round.
@@ -34,8 +35,7 @@ def propose(state: "BigFoot", event: "Event") -> str:
 
     if block is None:
         when_next = 1
-        # if there is still time in the round, attempt to reschedule later when
-        # txions might be there
+        # if there is still time in the round, attempt to reschedule later when txions might be there
         if creation_time + when_next + Parameters.execution["creation_time"] <= state.timeout.time:
             logger.debug(f"[Node {state.node.id}] PROPOSE: Scheduling retry at time {creation_time + when_next}")
             BigFoot_messages.schedule_propose(state, creation_time + when_next)
@@ -54,7 +54,8 @@ def propose(state: "BigFoot", event: "Event") -> str:
 
 
 def pre_prepare(state: "BigFoot", event: "Event") -> str:
-    """Handles the pre_prepare phase of BigFoot consensus.
+    """
+    Handles the pre_prepare phase of BigFoot consensus.
 
     Validates incoming pre_prepare messages and transitions the state accordingly.
     If the node is in new_round state, validates the block and broadcasts prepare messages.
@@ -70,8 +71,7 @@ def pre_prepare(state: "BigFoot", event: "Event") -> str:
     block = event.payload["block"]
     logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Processing pre_prepare from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Message validation failed - invalid")
@@ -82,8 +82,7 @@ def pre_prepare(state: "BigFoot", event: "Event") -> str:
     time += Parameters.execution["msg_val_delay"]
 
     match state.state:
-        # if node is a new round state (i.e waiting for a new block to be
-        # proposed)
+        # if node is a new round state (i.e waiting for a new block to be proposed)
         case "new_round":
             # validate block
             time += Parameters.execution["block_val_delay"]
@@ -93,8 +92,10 @@ def pre_prepare(state: "BigFoot", event: "Event") -> str:
                 return ret
 
             logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Block validation successful, transitioning from {state.state} to pre_prepared")
+
             # store block as current block
             state.block = event.payload["block"].copy()
+
             # change state to pre_prepared since block was accepted
             state.state = "pre_prepared"
 
@@ -109,9 +110,6 @@ def pre_prepare(state: "BigFoot", event: "Event") -> str:
 
         case "pre_prepared":
             logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Node already in pre_prepared state")
-            # consider raising an error as 2 nodes cannot propose block at
-            # the same round maybe its possible if a node has not realised
-            # its not synced but that node should be on an older round
             return "invalid"
         case "prepared":
             logger.debug(f"[Node {state.node.id}] PRE_PREPARE: Node in prepared state")
@@ -125,7 +123,8 @@ def pre_prepare(state: "BigFoot", event: "Event") -> str:
 
 
 def prepare(state: "BigFoot", event: "Event") -> str:
-    """Handles the prepare phase of BigFoot consensus.
+    """
+    Handles the prepare phase of BigFoot consensus.
 
     Processes prepare votes and determines whether to transition to prepared state (slow path)
     or directly commit the block (fast path) based on vote counts.
@@ -142,8 +141,7 @@ def prepare(state: "BigFoot", event: "Event") -> str:
     round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] PREPARE: Processing prepare vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}, fast_path: {state.fast_path}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] PREPARE: Message validation failed - invalid")
@@ -163,10 +161,11 @@ def prepare(state: "BigFoot", event: "Event") -> str:
             logger.debug(f"[Node {state.node.id}] PREPARE: Current prepare votes: {current_votes}")
 
             if not state.fast_path:
-                #################### SLOW PATH/RECOVERY #######################
+                # -----------------------------------------------------------
+                #                      SLOW PATH/RECOVERY
+                # -----------------------------------------------------------
                 logger.debug(f"[Node {state.node.id}] PREPARE: Using SLOW PATH, required votes: {Parameters.application['required_messages'] - 1}")
-                # leader does not issue a prepare message (thus 2f required
-                # votes)
+                # leader does not issue a prepare message (thus 2f required votes)
                 if state.count_votes("prepare") >= Parameters.application["required_messages"] - 1:
                     # change to prepared
                     logger.debug(f"[Node {state.node.id}] PREPARE: Sufficient prepare votes received, transitioning from {state.state} to prepared")
@@ -180,7 +179,9 @@ def prepare(state: "BigFoot", event: "Event") -> str:
                 logger.debug(f"[Node {state.node.id}] PREPARE: Not enough prepare votes yet, waiting for more")
                 return "handled"
             else:
-                #################### FAST PATH ##########################
+                # -----------------------------------------------------------
+                #                      FAST PATH
+                # -----------------------------------------------------------
                 logger.debug(f"[Node {state.node.id}] PREPARE: Using FAST PATH, required votes: {Parameters.application['Nn'] - 1}")
                 if state.count_votes("prepare") == Parameters.application["Nn"] - 1:
                     logger.debug(f"[Node {state.node.id}] PREPARE: Fast path successful! Adding block {block.id} to blockchain")
@@ -199,7 +200,7 @@ def prepare(state: "BigFoot", event: "Event") -> str:
 
                     return "new_state"
 
-                # not enough votes yet...
+                # not enough votes
                 logger.debug(f"[Node {state.node.id}] PREPARE: Not enough prepare votes for fast path yet, waiting for more")
                 return "handled"
         case "new_round":
@@ -216,7 +217,8 @@ def prepare(state: "BigFoot", event: "Event") -> str:
 
 
 def commit(state: "BigFoot", event: "Event") -> str:
-    """Handles the commit phase of BigFoot consensus.
+    """
+    Handles the commit phase of BigFoot consensus.
 
     Processes commit votes and finalizes the block when sufficient votes are received.
     Adds the block to the local blockchain and starts a new round.
@@ -233,8 +235,7 @@ def commit(state: "BigFoot", event: "Event") -> str:
     round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] COMMIT: Processing commit vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
-    # validate message: old (invalid), current (continue processing), future
-    # (valid, add to backlog)
+    # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
     valid, future = state.validate_message(event)
     if not valid:
         logger.debug(f"[Node {state.node.id}] COMMIT: Message validation failed - invalid")

@@ -11,7 +11,7 @@ from Chain.Consensus import ConsensusProtocol
 from Engine.Handler import handle_backlog
 
 from random import randint
-from typing import Optional, TYPE_CHECKING, List, Dict, Union, Any, Sequence
+from typing import Optional, TYPE_CHECKING, List, Dict
 import logging
 
 if TYPE_CHECKING:
@@ -54,9 +54,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         self.node: "Node" = node
 
     def set_state(self) -> None:
-        """
-        Reset the PBFT state to its initial values.
-        """
+        """Reset the PBFT state to its initial values."""
         self.rounds = Rounds.init_round_change_state()
         self.state = ""
         self.miner = ""
@@ -82,9 +80,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         )
 
     def reset_msgs(self) -> None:
-        """
-        Reset the state of the consensus messages and change round votes.
-        """
+        """Reset the state of the consensus messages and change round votes."""
         self.msgs = {"prepare": [], "commit": []}
         Rounds.reset_votes(self.node)
 
@@ -178,8 +174,8 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         Implements proposer selection algorithms to determine the proposer for the current round.
 
         Selection can be either:
-        - round_robin: current round mod number of block producers
-        - hash_based: (last_block_hash + self.round) mod number of block producers
+            - round_robin: current round mod number of block producers
+            - hash_based: (last_block_hash + self.round) mod number of block producers
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
             self.miner = self.rounds.round % Parameters.application["Nn"]
@@ -192,8 +188,11 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
     def create_PBFT_block(self, time: float) -> tuple[Optional["Block"], float]:
         """
         Creates a new PBFT block with the current pending transactions.
+
         If no transactions are available, looks ahead in the transaction pool and returns the time of the earliest future transactions.
+
         This is used to know exactly when to reschedule this event.
+
         Args:
             time: Current simulation time
 
@@ -230,8 +229,9 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
 
     def start(self, time: float, new_round: int) -> Optional[int]:
         """
-        Entry point into the protocol. Initializes state and utilizes the
-        proposer selection mechanisms to dictate the behavior of the node.
+        Entry point into the protocol.
+
+        Initializes state and utilizes the proposer selection mechanisms to dictate the behavior of the node.
 
         Args:
             new_round: The round number to start from
@@ -260,6 +260,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             messages.schedule_propose(self, time)
         else:
             logger.debug(f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events")
+            # check for any existing events!
             handle_backlog(self.node, time)
         return None
 
@@ -288,6 +289,10 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
 
         self.start(time, round)
+
+    # -----------------------------------------------------------
+    #                      HANDLER
+    # -----------------------------------------------------------
 
     @staticmethod
     def handle_event(event: "Event") -> str:

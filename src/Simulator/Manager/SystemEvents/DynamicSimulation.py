@@ -1,4 +1,4 @@
-from Parameters import Parameters, read_yaml
+from Parameters import Parameters
 from Engine.Event import SystemEvent
 from Chain.Network import Network
 
@@ -11,7 +11,8 @@ if TYPE_CHECKING:
 
 
 class DynamicParameters:
-    """Holds dynamic simulation parameter distributions loaded from YAML.
+    """
+    Holds dynamic simulation parameter distributions loaded from YAML.
 
     Attributes:
         network (Dict[str, Any]): Network-related dynamic parameters.
@@ -28,7 +29,7 @@ class DynamicParameters:
         Returns:
             None
         """
-        params = read_yaml(Parameters.dynamic_sim["config"])
+        params = Parameters.read_yaml(Parameters.dynamic_sim["config"])
 
         DynamicParameters.network = params["network"]
         DynamicParameters.workload = params["workload"]
@@ -40,7 +41,8 @@ class DynamicParameters:
 
 
 def schedule_update_network_event(manager: "Manager", init: bool = False) -> None:
-    """Schedule periodic dynamic updates for network parameters.
+    """
+    Schedule periodic dynamic updates for network parameters.
 
     Args:
         manager (Manager): Simulation manager.
@@ -67,7 +69,8 @@ def schedule_update_network_event(manager: "Manager", init: bool = False) -> Non
 
 
 def handle_update_network_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle dynamic network updates by sampling new bandwidth parameters and applying them.
+    """
+    Handle dynamic network updates by sampling new bandwidth parameters and applying them.
 
     Args:
         manager (Manager): Simulation manager.
@@ -94,7 +97,8 @@ def handle_update_network_event(manager: "Manager", event: SystemEvent) -> None:
 
 
 def schedule_update_workload_event(manager: "Manager", init: bool = False) -> None:
-    """Schedule periodic dynamic updates for workload parameters.
+    """
+    Schedule periodic dynamic updates for workload parameters.
 
     Args:
         manager (Manager): Simulation manager.
@@ -121,7 +125,8 @@ def schedule_update_workload_event(manager: "Manager", init: bool = False) -> No
 
 
 def handle_update_workload_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle dynamic workload updates by sampling new TPS and transaction size.
+    """
+    Handle dynamic workload updates by sampling new TPS and transaction size.
 
     Args:
         manager (Manager): Simulation manager.

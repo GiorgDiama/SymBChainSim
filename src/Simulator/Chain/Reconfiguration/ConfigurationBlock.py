@@ -5,7 +5,8 @@ from typing import Dict, Any
 
 
 class ConfigurationBlock:
-    """Defines a configuration block used to define and updated the blockchains configuration.
+    """
+    Defines a configuration block used to define and updated the blockchains configuration.
 
     Attributes:
         depth (int): The depth of the block in the blockchain.
@@ -33,7 +34,8 @@ class ConfigurationBlock:
         self.extra_data: Dict[str, Any] = {}
 
     def copy(self) -> "ConfigurationBlock":
-        """Returns a deep copy of the configuration block.
+        """
+        Returns a deep copy of the configuration block.
 
         Returns:
             ConfigurationBlock: A new ConfigurationBlock instance with the same attributes as the original.
@@ -48,7 +50,8 @@ class ConfigurationBlock:
 
     @staticmethod
     def from_json(data: Dict[str, Any]) -> "ConfigurationBlock":
-        """Creates a ConfigurationBlock instance from JSON data.
+        """
+        Creates a ConfigurationBlock instance from JSON data.
 
         Args:
             data (Dict[str, Any]): Dictionary containing block data.
@@ -71,7 +74,8 @@ class ConfigurationBlock:
 
     @staticmethod
     def genesis_block() -> "ConfigurationBlock":
-        """Generates the genesis configuration block with the initial configuration.
+        """
+        Generates the genesis configuration block with the initial configuration.
 
         The initial configuration is read from the config file.
 
