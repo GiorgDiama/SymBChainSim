@@ -18,6 +18,10 @@ if TYPE_CHECKING:
     from Chain.Node import Node
     from Engine.Event import Event
 
+import logging
+
+logger = logging.getLogger(__name__.split(".")[-1])
+
 
 class Tendermint(ConsensusProtocol):
     """
@@ -42,6 +46,7 @@ class Tendermint(ConsensusProtocol):
         Args:
             node (Node): The node running this protocol instance.
         """
+        logger.debug(f"Node {node.id}: Initializing TM consensus protocol")
         self.rounds: Rounds.RoundChangeState = Rounds.init_round_change_state()
         self.state: str
         self.miner: int
@@ -179,6 +184,7 @@ class Tendermint(ConsensusProtocol):
             self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
         else:
             raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
+        logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")
 
     def create_TM_block(self, time: float) -> Tuple[Optional[Block], float]:
         """
@@ -190,6 +196,7 @@ class Tendermint(ConsensusProtocol):
         Returns:
             Tuple[Optional[Block], float]: The created block (or None if no transactions). If no transactions are in the pool return the time of the first future transaction.
         """
+        logger.debug(f"Node {self.node.id}: Creating TM block at time {time}")
         block = Block(
             depth=len(self.node.blockchain),
             id=randint(1, 10000),
@@ -215,8 +222,10 @@ class Tendermint(ConsensusProtocol):
             time += Parameters.execution["creation_time"]
             time += len(transactions) * Parameters.execution["time_per_tx"]
 
+            logger.debug(f"Node {self.node.id}: Successfully created block {block.id} with {len(transactions)} transactions, size: {block.size}, extra_data: {block.extra_data}")
             return block, time
         else:
+            logger.debug(f"Node {self.node.id}: Block creation failed - no transactions available, will retry at time {time}")
             return None, time
 
     def start(self, time: float, new_round: int) -> Optional[int]:
@@ -230,7 +239,10 @@ class Tendermint(ConsensusProtocol):
         Returns:
             Optional[int]: 0 if the protocol was interrupted by a configuration update, otherwise None.
         """
+        logger.debug(f"Node {self.node.id}: Starting new consensus round {new_round} at time {time}")
+
         if self.node.update(time):
+            logger.debug(f"Node {self.node.id}: Node update returned True, aborting round start")
             return 0
 
         self.state = "new_round"
@@ -246,9 +258,11 @@ class Tendermint(ConsensusProtocol):
 
         # if the current node is the miner, schedule propose block event
         if self.miner == self.node.id:
+            logger.debug(f"Node {self.node.id}: This node is the miner for round {new_round}, scheduling propose message")
             messages.schedule_propose(self, time)
         else:
             # check if any future events are here for this round slow nodes might miss pre_prepare vote so its good to check early
+            logger.debug(f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events")
             handle_backlog(self.node, time)
 
     def init_round_change(self, time: float) -> None:
@@ -258,6 +272,7 @@ class Tendermint(ConsensusProtocol):
         Args:
             time (float): The current simulation time.
         """
+        logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time)
 
     def rejoin(self, time: float) -> None:
@@ -267,8 +282,10 @@ class Tendermint(ConsensusProtocol):
         Args:
             time (float): The current simulation time.
         """
+        logger.debug(f"Node {self.node.id}: Rejoining TM protocol at time {time}")
         self.set_state()  # set node's protocol state
         round = self.node.blockchain[-1].extra_data["round"] + 1  # set round to latest known round (latest block round + 1)
+        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
         self.start(time, round)  # start the protocol
 
     # -----------------------------------------------------------

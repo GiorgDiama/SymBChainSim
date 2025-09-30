@@ -3,6 +3,7 @@ from Engine.Scheduler import Scheduler
 
 from Chain.Consensus import Rounds
 
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from Chain.Consensus.Tendermint.TM_state import Tendermint
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
 import logging
 
 logger = logging.getLogger(__name__.split(".")[-1])
+
 
 def handle_timeout(state: "Tendermint", event: "Event") -> str:
     """
@@ -27,6 +29,7 @@ def handle_timeout(state: "Tendermint", event: "Event") -> str:
         str: One of "invalid", "changed_protocol", "detected_desync", or "handled".
     """
     if event.payload["round"] != state.rounds.round:
+        logger.debug(f"[Node {state.node.id}] ignoring TO - not from this round")
         return "invalid"
 
     if state.node.update(event.time):
@@ -57,6 +60,8 @@ def schedule_timeout(state: "Tendermint", time: float, add_time: bool = True) ->
 
     if state.timeout is not None and Parameters.simulation["debugging_mode"]:
         state.node.queue.remove_event(state.timeout)
+
+    logger.debug(f"[Node {state.node.id}] scheduling TO event @ {time}")
 
     event = Scheduler.schedule_event(state.node, time, payload, state.handle_event)
 
