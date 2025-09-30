@@ -33,9 +33,9 @@ nav:
       - Transaction Factory: transaction_factory.md
       - Network: network.md    
   - Consensus:
-    - Conseusus Protocols: consensus.md
     - High-Level Sync: high_level_sync.md
     - Rounds: rounds.md
+    - Consensus Protocols: consensus.md
   - Manager: manager.md
   - Reconfiguration: reconfiguration.md   
   - Parameters: simulation_parameters.md      
