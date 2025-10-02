@@ -4,15 +4,12 @@ This module implements a **generic round-change mechanism** used by consensus pr
 Its purpose is to coordinate nodes when the current round stalls, fails, or otherwise needs to be abandoned, 
 so that all honest nodes eventually converge on the same new round.
 
----
-
 ## Core Ideas
 
 Consensus protocols that use rounds (e.g., PBFT, HotStuff, Tendermint) must decide what to do when progress halts. 
 The *round-change* process ensures liveness: nodes collect votes for advancing to a new round, adopt a candidate round 
 if it gains sufficient support, and start that round when quorum is reached.
 
----
 
 ## Events
 
@@ -25,7 +22,6 @@ if it gains sufficient support, and start that round when quorum is reached.
 - **Event Handler (`handle_event`)**  
   Dispatches messages to the correct handler based on `payload["type"]`.
 
----
 
 ## State
 
@@ -40,7 +36,6 @@ Helper functions:
 - `reset_votes`: clears votes when a new round starts
 - `state_to_string`: human-readable snapshot of state
 
----
 
 ## Logic
 
@@ -68,7 +63,6 @@ Helper functions:
    - If any round has `f+1` votes, adopt the **highest** such round.  
    - Otherwise, set next round = `current_round + 1`.
 
----
 
 ## Example Flow
 
@@ -77,7 +71,6 @@ Helper functions:
 3. Nodes C and D later receive round-change messages. Once **f+1** nodes support round 6, all honest nodes adopt 6.  
 4. When **2f+1** nodes support round 6, every node starts round 6 of the consensus protocol.
 
----
 
 ## Key Properties
 
@@ -85,7 +78,6 @@ Helper functions:
 - **Safety**: nodes only move to higher rounds and votes are tracked consistently.  
 - **Extensibility**: works with different consensus protocols as long as they support round-based execution.
 
----
 
 ## Notes for Developers
 
@@ -93,8 +85,6 @@ Helper functions:
 - Quorum checks (`f+1` and `2f+1`) should be `>=` comparisons to handle duplicate votes.  
 - `reset_votes` should only be called once a new round has **started**, never earlier.  
 - Logging is available for debugging round transitions.
-
----
 
 This module forms a crucial backbone for any consensus protocol in the simulator that relies on round-based progression.
 """
