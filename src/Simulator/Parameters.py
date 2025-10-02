@@ -116,18 +116,14 @@ class Parameters:
         """Calculates f and 2f+1 using number of nodes in the simulation"""
         Parameters.application["f"] = int((1 / 3) * Parameters.application["Nn"])
 
-        Parameters.application["required_messages"] = (
-            2 * Parameters.application["f"]
-        ) + 1
+        Parameters.application["required_messages"] = (2 * Parameters.application["f"]) + 1
 
     @staticmethod
     def parameters_to_string():
         """Returns a formatted string of all simulation parameters"""
 
         def dict_to_str(x, p_name_size=30):
-            return "\n".join(
-                [f"{f'%{p_name_size}s' % key}: {value}" for key, value in x.items()]
-            )
+            return "\n".join([f"{f'%{p_name_size}s' % key}: {value}" for key, value in x.items()])
 
         s = "-" * 20 + "DYNAMIC" + "-" * 20 + "\n"
         s += dict_to_str(Parameters.dynamic_sim) + "\n"

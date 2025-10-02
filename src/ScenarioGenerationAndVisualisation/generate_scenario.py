@@ -1,16 +1,16 @@
 """
-    Scenario JSON Schema
-        'set_up':
-            num_nodes
-            duration
-        'intervals:
-            '1':
-                'start: start_time,
-                'end': end_time
-                'network' : [(node, BW)...]
-                'behaviour': [(node, fail_at, duration)]
-                'transactions': [(creator, id, timestamp, size)...]
-            '2':  ...
+Scenario JSON Schema
+    'set_up':
+        num_nodes
+        duration
+    'intervals:
+        '1':
+            'start: start_time,
+            'end': end_time
+            'network' : [(node, BW)...]
+            'behaviour': [(node, fail_at, duration)]
+            'transactions': [(creator, id, timestamp, size)...]
+        '2':  ...
 """
 
 import json
@@ -25,37 +25,28 @@ random.seed(seed)
 
 
 def generate(name: str, parameters_dict: dict) -> None:
-    dur = parameters_dict['dur']
-    ti_mu, ti_sigma = parameters_dict['ti_mu'], parameters_dict['ti_sigma']
-    num_nodes = parameters_dict['num_nodes']
-    networks = parameters_dict['networks']
-    fail_duration = parameters_dict['fail_duration']
-    workloads = parameters_dict['workloads']
-    sizes = parameters_dict['sizes']
+    dur = parameters_dict["dur"]
+    ti_mu, ti_sigma = parameters_dict["ti_mu"], parameters_dict["ti_sigma"]
+    num_nodes = parameters_dict["num_nodes"]
+    networks = parameters_dict["networks"]
+    fail_duration = parameters_dict["fail_duration"]
+    workloads = parameters_dict["workloads"]
+    sizes = parameters_dict["sizes"]
 
-    fault_tolerance = int((num_nodes - 1)/3)
+    fault_tolerance = int((num_nodes - 1) / 3)
     no_faulty = random.randint(0, fault_tolerance)  # Range
 
-    time_intervals = [i for i in range(
-        0, dur, int(random.normalvariate(ti_mu, ti_sigma)))]
+    time_intervals = [i for i in range(0, dur, int(random.normalvariate(ti_mu, ti_sigma)))]
 
     time_intervals += [dur]
 
-    time_interval_pairs = [(start, end) for start, end in zip(
-        time_intervals[:-1], time_intervals[1:])]
+    time_interval_pairs = [(start, end) for start, end in zip(time_intervals[:-1], time_intervals[1:])]
 
     ids = [x for x in range(num_nodes)]
 
     faulty = random.sample(ids, k=no_faulty)
 
-    scenario = {
-        'set_up': {
-            'num_nodes': num_nodes,
-            'duration': time_intervals[-1],
-            'parameters': parameters_dict
-        },
-        'intervals': {}
-    }
+    scenario = {"set_up": {"num_nodes": num_nodes, "duration": time_intervals[-1], "parameters": parameters_dict}, "intervals": {}}
 
     # each node gets a random network model assigned to it
     node_networks = [random.choice(networks) for _ in range(num_nodes)]
@@ -63,11 +54,11 @@ def generate(name: str, parameters_dict: dict) -> None:
     tx_id = 0
     interval = 0
     for start, end in time_interval_pairs:
-        print(f'Interval: {start}:{end}...')
-        scenario['intervals'][interval] = {'start': start, 'end': end}
-        scenario['intervals'][interval]['faults'] = []
-        scenario['intervals'][interval]['network'] = []
-        scenario['intervals'][interval]['transactions'] = []
+        print(f"Interval: {start}:{end}...")
+        scenario["intervals"][interval] = {"start": start, "end": end}
+        scenario["intervals"][interval]["faults"] = []
+        scenario["intervals"][interval]["network"] = []
+        scenario["intervals"][interval]["transactions"] = []
 
         # select faulty nodes for current interval
         f = random.sample(faulty, k=random.randint(0, no_faulty))
@@ -82,14 +73,12 @@ def generate(name: str, parameters_dict: dict) -> None:
                 f_dur = random.normalvariate(*random.choice(fail_duration))
                 f_time = random.randint(start, end)
 
-            scenario['intervals'][interval]['faults'].append(
-                (node_id, f_time, f_dur))
+            scenario["intervals"][interval]["faults"].append((node_id, f_time, f_dur))
 
         # for each node, generate the interval BW based on its network model
         for node_id in ids:
             node_BW = max(random.normalvariate(*node_networks[node_id]), 2)
-            scenario['intervals'][interval]['network'].append(
-                (node_id, node_BW))
+            scenario["intervals"][interval]["network"].append((node_id, node_BW))
 
         # get the number of transactions based on one of the workloads
         num_txions = int(random.normalvariate(*random.choice(workloads)))
@@ -104,62 +93,38 @@ def generate(name: str, parameters_dict: dict) -> None:
                 insort(transactions, tx, key=lambda x: x[2])
                 tx_id += 1
 
-        scenario['intervals'][interval]['transactions'] = transactions
+        scenario["intervals"][interval]["transactions"] = transactions
         interval += 1
 
-    with open(f'../Resources/Scenarios/{name}.json', 'w+') as f:
+    with open(f"../Resources/Scenarios/{name}.json", "w+") as f:
         json.dump(scenario, f, indent=4)
 
 
 # parameters_dict = {
-#     'dur': 3600,
-#     'ti_mu': 600,
-#     'ti_sigma': 60,
-#     'num_nodes': 16,
-#     'networks': [
-#         (10, 0.1), 
-#         (5, 0.1), 
-#         (2.5, 0.1) 
-#     ],
-#     'fail_duration': (
-#         (20, 5),
-#         (60, 10),
-#         (120, 20)
-#     ),
-#     'workloads': [
-#         (500, 100),
-#         (1_000, 200),
-#         (2_000, 500)
-#     ],
-#     'sizes': (8, 20.5),
+#     "dur": 3600,
+#     "ti_mu": 600,
+#     "ti_sigma": 60,
+#     "num_nodes": 16,
+#     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
+#     "fail_duration": ((20, 5), (60, 10), (120, 20)),
+#     "workloads": [(500, 100), (1_000, 200), (2_000, 500)],
+#     "sizes": (8, 20.5),
 # }
 
 parameters_dict = {
-    'dur': 1200,
-    'ti_mu': 300,
-    'ti_sigma': 20,
-    'num_nodes': 8,
-    'networks': [
-        (10, 0.1),  
-        (5, 0.1),  
-        (2.5, 0.1)  
-    ],
-    'fail_duration': (
-        (20, 5),
-        (60, 10),
-        (120, 20)
-    ),
-    'workloads': [
-        (50, 10),
-        (100, 20),
-        (100, 50)
-    ],
-    'sizes': (8, 20.5),
+    "dur": 1200,
+    "ti_mu": 300,
+    "ti_sigma": 20,
+    "num_nodes": 8,
+    "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
+    "fail_duration": [(20, 5), (60, 10), (120, 20)],
+    "workloads": [(50, 10), (100, 20), (100, 50)],
+    "sizes": (8, 20.5),
 }
 
 if "--name" in sys.argv:
-    name_index = sys.argv.index('--name')
-    name = sys.argv[name_index+1]
+    name_index = sys.argv.index("--name")
+    name = sys.argv[name_index + 1]
     generate(name=name, parameters_dict=parameters_dict)
 else:
     print(f"You must provide a scenario name using the --name.")

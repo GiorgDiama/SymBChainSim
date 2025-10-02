@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__.split(".")[-1])
 
 class SyncingState:
     """
-    Node state for de-synced nodes
+    Node state for de-synced nodes.
+
+    Keeps track of sync events.
     """
 
     NAME = "DESYNC"
@@ -37,15 +39,10 @@ class SyncingState:
         self.local_fast_sync_event_configuration: Optional[Event] = None
 
     def state_to_string(self):
-        return f"SYNCING STATE: data_chain_event={
-            self.local_fast_sync_event_data
-        } configuration_chain_event={self.local_fast_sync_event_configuration}"
+        return f"SYNCING STATE: data_chain_event={self.local_fast_sync_event_data} configuration_chain_event={self.local_fast_sync_event_configuration}"
 
     def ready_to_rejoin(self):
-        return (
-            self.local_fast_sync_event_configuration is None
-            and self.local_fast_sync_event_data is None
-        )
+        return self.local_fast_sync_event_configuration is None and self.local_fast_sync_event_data is None
 
 
 def handler(event: Event) -> str:
@@ -63,9 +60,7 @@ def handler(event: Event) -> str:
         return "unhandled"
 
 
-def create_local_sync_event(
-    desynced_node: "Node", request_node: "Node", time: float
-) -> None:
+def create_local_sync_event(desynced_node: "Node", request_node: "Node", time: float) -> None:
     """
     Gets missing blocks from request node
     Request node: node from which we request missing blocks
@@ -76,9 +71,7 @@ def create_local_sync_event(
     (local event of the desynced node) at the moment in time when the sync
     processes would have finished
     """
-    logger.debug(
-        f"Node {desynced_node.id} is requesting a BLOCKCHAIN sync from Node {request_node.id}..."
-    )
+    logger.debug(f"Node {desynced_node.id} is requesting a BLOCKCHAIN sync from Node {request_node.id}...")
     # get the last block of de-synced node
     latest_block = desynced_node.last_block
 
@@ -97,15 +90,9 @@ def create_local_sync_event(
     # for each missing block
     for i, b in enumerate(missing_blocks):
         # calculate the transmission delay + validation delay for the block
-        delay_network = Network.calculate_message_propagation_delay(
-            request_node, desynced_node, b.size
-        )
+        delay_network = Network.calculate_message_propagation_delay(request_node, desynced_node, b.size)
 
-        delay = (
-            delay_network
-            + Parameters.execution["block_val_delay"]
-            + Parameters.execution["sync_message_request_delay"]
-        )
+        delay = delay_network + Parameters.execution["block_val_delay"] + Parameters.execution["sync_message_request_delay"]
 
         # add the delay of the current block to the total delay
         total_delay += delay
@@ -123,9 +110,7 @@ def create_local_sync_event(
         "blocks": missing_blocks,
         "fail": False,
     }
-    event = Scheduler.schedule_event(
-        desynced_node, time + total_delay, payload, handler
-    )
+    event = Scheduler.schedule_event(desynced_node, time + total_delay, payload, handler)
 
     if desynced_node.cp is None or desynced_node.cp.NAME != "DESYNC":
         desynced_node.cp = SyncingState(desynced_node)
@@ -133,9 +118,7 @@ def create_local_sync_event(
     desynced_node.cp.local_fast_sync_event_data = event
 
 
-def create_local_sync_event_configuration(
-    desynced_node: "Node", request_node: "Node", time: float
-) -> None:
+def create_local_sync_event_configuration(desynced_node: "Node", request_node: "Node", time: float) -> None:
     """
     Gets missing configuration blocks from request node
     Request node: node from which we request missing blocks
@@ -146,9 +129,7 @@ def create_local_sync_event_configuration(
     (local event of the desynced node) at the moment in time when the sync
     processes would have finished
     """
-    logger.debug(
-        f"Node {desynced_node.id} is requesting a CONFIGURATION sync from Node {request_node.id}..."
-    )
+    logger.debug(f"Node {desynced_node.id} is requesting a CONFIGURATION sync from Node {request_node.id}...")
 
     latest_block = desynced_node.reconfiguration_state.confchain[-1]
     sync_chain = request_node.reconfiguration_state.confchain
@@ -164,15 +145,9 @@ def create_local_sync_event_configuration(
 
     for i, b in enumerate(missing_blocks):
         # calculate the transmission delay + validation delay for the block
-        delay_network = Network.calculate_message_propagation_delay(
-            sender=request_node, receiver=desynced_node, message_size=b.size
-        )
+        delay_network = Network.calculate_message_propagation_delay(sender=request_node, receiver=desynced_node, message_size=b.size)
 
-        delay = (
-            delay_network
-            + Parameters.execution["block_val_delay"]
-            + Parameters.execution["sync_message_request_delay"]
-        )
+        delay = delay_network + Parameters.execution["block_val_delay"] + Parameters.execution["sync_message_request_delay"]
 
         total_delay += delay
         missing_blocks[i].time_added = time + total_delay
@@ -188,9 +163,7 @@ def create_local_sync_event_configuration(
         "fail": False,
     }
 
-    event = Scheduler.schedule_event(
-        desynced_node, time + total_delay, payload, handler
-    )
+    event = Scheduler.schedule_event(desynced_node, time + total_delay, payload, handler)
 
     if desynced_node.cp is None or desynced_node.cp.NAME != "DESYNC":
         desynced_node.cp = SyncingState(desynced_node)
@@ -198,7 +171,7 @@ def create_local_sync_event_configuration(
     desynced_node.cp.local_fast_sync_event_configuration = event
 
 
-def handle_local_sync_event(event):
+def handle_local_sync_event(event) -> str:
     """
     Copies missing blocks to end of the callers blockchain.
     Additionally, checks if the node we are syncing with has received
@@ -228,9 +201,7 @@ def handle_local_sync_event(event):
             )
 
     if blockchain[-1].depth < sync_chain[-1].depth:
-        logger.debug(
-            f"Node {node.id} is still out of sync in BLOCKCHAIN! Scheduling a new sync event..."
-        )
+        logger.debug(f"Node {node.id} is still out of sync in BLOCKCHAIN! Scheduling a new sync event...")
 
         create_local_sync_event(
             desynced_node=node,
@@ -254,7 +225,7 @@ def handle_local_sync_event(event):
     return "still_out_of_sync"
 
 
-def handle_local_sync_event_configuration(event: Event):
+def handle_local_sync_event_configuration(event: Event) -> str:
     """
     Copies missing blocks to end of the callers configuration blockchain.
     Additionally, checks if the node we are syncing with has received any
@@ -285,9 +256,7 @@ def handle_local_sync_event_configuration(event: Event):
             )
 
     if blockchain[-1].depth < sync_chain[-1].depth:
-        logger.debug(
-            f"Node {node.id} is still out of sync in CONFCHAIN! Scheduling a new sync event..."
-        )
+        logger.debug(f"Node {node.id} is still out of sync in CONFCHAIN! Scheduling a new sync event...")
         create_local_sync_event_configuration(
             desynced_node=node,
             request_node=event.payload["request_node"],

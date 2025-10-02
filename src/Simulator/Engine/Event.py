@@ -7,7 +7,8 @@ if TYPE_CHECKING:
 
 
 class Event:
-    """Models a local event in SBS.
+    """
+    Models a local event in SBS.
 
     When ID is not provided (-1), event receives an incremental ID based on Parameters.simulation['event_id'].
 
@@ -42,9 +43,7 @@ class Event:
         return self.time >= other.time
 
     def __str__(self) -> str:
-        return (
-            f"LCL: {self.creator.id} at {round(self.time, 3)} - payload {self.payload}"
-        )
+        return f"LCL: {self.creator.id} at {round(self.time, 3)} - payload {self.payload}"
 
     def __repr__(self) -> str:
         return f"LCL: {self.creator.id} {round(self.time, 3)} {self.payload['type']}"
@@ -72,7 +71,8 @@ class Event:
 
 
 class MessageEvent(Event):
-    """Models network messages between nodes (i.e., CP message, sync message, new blocks, etc.).
+    """
+    Models network messages between nodes (i.e., CP message, sync message, new blocks, etc.).
 
     MessageEvents are created by the Network model so that relative delays can be calculated.
 
@@ -82,14 +82,10 @@ class MessageEvent(Event):
     """
 
     def __str__(self) -> str:
-        return f"MSG: {self.creator} -> {self.receiver}  {
-            round(self.time, 3)
-        } - payload {self.payload}"
+        return f"MSG: {self.creator} -> {self.receiver}  {round(self.time, 3)} - payload {self.payload}"
 
     def __repr__(self) -> str:
-        return f"MSG: {self.creator} -> {self.receiver} - time {
-            round(self.time, 3)
-        } - payload {self.payload}"
+        return f"MSG: {self.creator} -> {self.receiver} - time {round(self.time, 3)} - payload {self.payload}"
 
     def __init__(
         self,
@@ -106,7 +102,8 @@ class MessageEvent(Event):
         self.forwarded_by: Optional[str] = None
 
     def is_same(self, other: "MessageEvent") -> bool:
-        """Checks if this message event is the same as another based on their IDs.
+        """
+        Checks if this message event is the same as another based on their IDs.
 
         Args:
             other (MessageEvent): The other message event to compare with.
@@ -118,7 +115,8 @@ class MessageEvent(Event):
 
     @staticmethod
     def from_Event(event: Event, receiver: "Node") -> "MessageEvent":
-        """Creates a MessageEvent from an existing Event.
+        """
+        Creates a MessageEvent from an existing Event.
 
         Args:
             event (Event): The source event to convert.
@@ -127,13 +125,12 @@ class MessageEvent(Event):
         Returns:
             MessageEvent: A new MessageEvent instance based on the source event.
         """
-        return MessageEvent(
-            event.handler, event.creator, event.time, event.payload, event.id, receiver
-        )
+        return MessageEvent(event.handler, event.creator, event.time, event.payload, event.id, receiver)
 
 
 class SystemEvent(Event):
-    """Simplified event for simulation management tasks.
+    """
+    Simplified event for simulation management tasks.
 
     Attributes:
         id (int): Unique identifier for the system event.

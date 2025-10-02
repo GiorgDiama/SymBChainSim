@@ -11,7 +11,7 @@ from Chain.Consensus import ConsensusProtocol
 from Engine.Handler import handle_backlog
 
 from random import randint
-from typing import Optional, TYPE_CHECKING, List, Dict, Union, Any, Sequence
+from typing import Optional, TYPE_CHECKING, List, Dict
 import logging
 
 if TYPE_CHECKING:
@@ -54,9 +54,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         self.node: "Node" = node
 
     def set_state(self) -> None:
-        """
-        Reset the PBFT state to its initial values.
-        """
+        """Reset the PBFT state to its initial values."""
         self.rounds = Rounds.init_round_change_state()
         self.state = ""
         self.miner = ""
@@ -78,17 +76,11 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             f"block: {self.block.id if self.block is not None else -1} | "
             f"msgs: {self.msgs} | "
             f"timeout_event: "
-            f"{
-                (round(self.timeout.time, 3), self.timeout.payload['round'])
-                if self.timeout is not None
-                else -1
-            }"
+            f"{(round(self.timeout.time, 3), self.timeout.payload['round']) if self.timeout is not None else -1}"
         )
 
     def reset_msgs(self) -> None:
-        """
-        Reset the state of the consensus messages and change round votes.
-        """
+        """Reset the state of the consensus messages and change round votes."""
         self.msgs = {"prepare": [], "commit": []}
         Rounds.reset_votes(self.node)
 
@@ -182,30 +174,25 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         Implements proposer selection algorithms to determine the proposer for the current round.
 
         Selection can be either:
-        - round_robin: current round mod number of block producers
-        - hash_based: (last_block_hash + self.round) mod number of block producers
+            - round_robin: current round mod number of block producers
+            - hash_based: (last_block_hash + self.round) mod number of block producers
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
             self.miner = self.rounds.round % Parameters.application["Nn"]
         elif Parameters.execution["proposer_selection"] == "hash":
-            self.miner = (
-                self.node.last_block.id + self.rounds.round
-            ) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
         else:
-            raise ValueError(
-                f"No such 'proposer_selection {
-                    Parameters.execution['proposer_selection']
-                }"
-            )
-        logger.debug(
-            f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}"
-        )
+            raise ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}")
+        logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")
 
     def create_PBFT_block(self, time: float) -> tuple[Optional["Block"], float]:
         """
         Creates a new PBFT block with the current pending transactions.
+
         If no transactions are available, looks ahead in the transaction pool and returns the time of the earliest future transactions.
+
         This is used to know exactly when to reschedule this event.
+
         Args:
             time: Current simulation time
 
@@ -227,29 +214,24 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             "configuration_depth": self.node.reconfiguration_state.confchain[-1].depth,
         }
 
-        transactions, size = TransactionFactory.execute_transactions(
-            self.node.reconfiguration_state.configuration, self.node.pool, time
-        )
+        transactions, size = TransactionFactory.execute_transactions(self.node.reconfiguration_state.configuration, self.node.pool, time)
 
         if transactions:
             block.transactions = transactions
             block.size = size + Parameters.data["base_block_size"]
             time += Parameters.execution["creation_time"]
             time += len(transactions) * Parameters.execution["time_per_tx"]
-            logger.debug(
-                f"Node {self.node.id}: Successfully created block {block.id} with {len(transactions)} transactions, size: {block.size}, extra_data: {block.extra_data}"
-            )
+            logger.debug(f"Node {self.node.id}: Successfully created block {block.id} with {len(transactions)} transactions, size: {block.size}, extra_data: {block.extra_data}")
             return block, time
         else:
-            logger.debug(
-                f"Node {self.node.id}: Block creation failed - no transactions available, will retry at time {time}"
-            )
+            logger.debug(f"Node {self.node.id}: Block creation failed - no transactions available, will retry at time {time}")
             return None, time
 
     def start(self, time: float, new_round: int) -> Optional[int]:
         """
-        Entry point into the protocol. Initializes state and utilizes the
-        proposer selection mechanisms to dictate the behavior of the node.
+        Entry point into the protocol.
+
+        Initializes state and utilizes the proposer selection mechanisms to dictate the behavior of the node.
 
         Args:
             new_round: The round number to start from
@@ -258,14 +240,10 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         Returns:
             Optional[int]: 0 if node needs update, None otherwise
         """
-        logger.debug(
-            f"Node {self.node.id}: Starting new consensus round {new_round} at time {time}"
-        )
+        logger.debug(f"Node {self.node.id}: Starting new consensus round {new_round} at time {time}")
 
         if self.node.update(time):
-            logger.debug(
-                f"Node {self.node.id}: Node update returned True, aborting round start"
-            )
+            logger.debug(f"Node {self.node.id}: Node update returned True, aborting round start")
             return 0
 
         self.state = "new_round"
@@ -278,14 +256,11 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         timeouts.schedule_timeout(self, time)
 
         if self.miner == self.node.id:
-            logger.debug(
-                f"Node {self.node.id}: This node is the miner for round {new_round}, scheduling propose message"
-            )
+            logger.debug(f"Node {self.node.id}: This node is the miner for round {new_round}, scheduling propose message")
             messages.schedule_propose(self, time)
         else:
-            logger.debug(
-                f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events"
-            )
+            logger.debug(f"Node {self.node.id}: This node is not the miner (miner: {self.miner}), checking backlog for future events")
+            # check for any existing events!
             handle_backlog(self.node, time)
         return None
 
@@ -296,9 +271,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         Args:
             time: Current simulation time
         """
-        logger.debug(
-            f"Node {self.node.id}: Initializing round change timeout at time {time}"
-        )
+        logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time, add_time=True)
 
     def rejoin(self, time: float) -> None:
@@ -313,11 +286,13 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         self.set_state()
         round = self.node.blockchain[-1].extra_data["round"] + 1
 
-        logger.debug(
-            f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)"
-        )
+        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
 
         self.start(time, round)
+
+    # -----------------------------------------------------------
+    #                      HANDLER
+    # -----------------------------------------------------------
 
     @staticmethod
     def handle_event(event: "Event") -> str:
@@ -331,11 +306,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             str: Result of event handling ("different protocol", "unhandled", or protocol-specific result)
         """
         if not event.actor or not event.actor.cp or event.actor.cp.NAME != PBFT.NAME:
-            print(
-                f"actor with {event.actor.cp.NAME} tried to execute event {
-                    event
-                } at PBFT state"
-            )
+            print(f"actor with {event.actor.cp.NAME} tried to execute event {event} at PBFT state")
             return "different protocol"
 
         match event.payload["type"]:
@@ -352,7 +323,5 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             case "new_block":
                 return state_transitions.new_block(event.actor.cp, event)
             case _:
-                logger.debug(
-                    f"Node {event.actor.id}: Unhandled event type: {event.payload['type']}"
-                )
+                logger.debug(f"Node {event.actor.id}: Unhandled event type: {event.payload['type']}")
                 return "unhandled"

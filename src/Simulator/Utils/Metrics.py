@@ -16,7 +16,8 @@ if TYPE_CHECKING:
 
 
 class Metrics:
-    """Handles collection and calculation of various blockchain metrics.
+    """
+    Handles collection and calculation of various blockchain metrics.
 
     This class provides static methods for measuring different aspects of the blockchain
     including latency, throughput, block times, and decentralization.
@@ -47,7 +48,8 @@ class Metrics:
 
     @staticmethod
     def confirmed_blocks(sim: "Simulation") -> int:
-        """Returns the number of blocks common among ALL nodes.
+        """
+        Returns the number of blocks common among ALL nodes.
 
         Note:
             When a node is offline this metric appears stuck, but this is expected
@@ -67,7 +69,8 @@ class Metrics:
 
     @staticmethod
     def measure_all(sim: "Simulation", start_from: float = 0) -> None:
-        """Measures all implemented metrics for a given blockchain state.
+        """
+        Measures all implemented metrics for a given blockchain state.
 
         Args:
             sim (Simulation): The simulation instance to measure.
@@ -89,7 +92,7 @@ class Metrics:
 
             gini = Metrics.measure_decentralisation_nodes(sim, BC)
             Metrics.decentralisation[node.id] = gini
-            
+
             tx_info = Metrics.measure_transactions(node)
             Metrics.transaction_info[node.id] = tx_info
 
@@ -135,7 +138,8 @@ class Metrics:
 
     @staticmethod
     def measure_latency(blocks: List["Block"]) -> tuple[List[float], float]:
-        """Measures transaction latency for a sequence of blocks.
+        """
+        Measures transaction latency for a sequence of blocks.
 
         Args:
             blocks (List[Block]): List of blocks to measure latency for.
@@ -150,14 +154,13 @@ class Metrics:
 
         for b in blocks:
             latencies = [b.time_added - t.timestamp for t in b.transactions]
-            per_block.append(
-                st.mean(latencies) if latencies else 0
-            )
+            per_block.append(st.mean(latencies) if latencies else 0)
         return per_block, st.mean(per_block) if per_block else 0
 
     @staticmethod
     def measure_throughput(blocks: List["Block"]) -> float:
-        """Calculates transactions per second for a sequence of blocks.
+        """
+        Calculates transactions per second for a sequence of blocks.
 
         Args:
             blocks (List[Block]): List of blocks to measure throughput for.
@@ -173,10 +176,9 @@ class Metrics:
         return sum_tx / time
 
     @staticmethod
-    def measure_interblock_time(
-        blocks: List["Block"],
-    ) -> tuple[Dict[str, float], float]:
-        """Measures time between consecutive blocks.
+    def measure_interblock_time(blocks: List["Block"]) -> tuple[Dict[str, float], float]:
+        """
+        Measures time between consecutive blocks.
 
         Args:
             blocks (List[Block]): List of blocks to measure interblock times for.
@@ -187,18 +189,15 @@ class Metrics:
         if len(blocks) < 2:
             return [], 0
 
-        # for each pair of blocks create the key value pair "curr -> next":
-        # next.time_added - current.time_added
-        diffs = {
-            f"{curr.id} -> {next.id}": next.time_added - curr.time_added
-            for curr, next in zip(blocks[:-1], blocks[1:])
-        }
+        # for each pair of blocks create the key value pair "curr -> next": next.time_added - current.time_added
+        diffs = {f"{curr.id} -> {next.id}": next.time_added - curr.time_added for curr, next in zip(blocks[:-1], blocks[1:])}
 
         return diffs, st.mean(diffs.values() if diffs.values() else 0)
 
     @staticmethod
     def gini_coeficient(lorenz_curve: List[float]) -> float:
-        """Calculates the Gini coefficient from a Lorenz curve.
+        """
+        Calculates the Gini coefficient from a Lorenz curve.
 
         Args:
             lorenz_curve (List[float]): The Lorenz curve values.
@@ -207,9 +206,7 @@ class Metrics:
             float: The Gini coefficient.
         """
         # calculating the perfect equality for the given population
-        perfect_equality = [
-            (x + 1) / len(lorenz_curve) for x in range(len(lorenz_curve))
-        ]
+        perfect_equality = [(x + 1) / len(lorenz_curve) for x in range(len(lorenz_curve))]
 
         x_axis = [x for x in range(len(perfect_equality))]
 
@@ -223,10 +220,9 @@ class Metrics:
         return 1 - lorenz_area / perfect_equality_area
 
     @staticmethod
-    def measure_decentralisation_nodes(
-        sim: "Simulation", blocks: List["Block"]
-    ) -> float:
-        """Measures decentralization using Gini coefficient of block production.
+    def measure_decentralisation_nodes(sim: "Simulation", blocks: List["Block"]) -> float:
+        """
+        Measures decentralization using Gini coefficient of block production.
 
         Note:
             This method assumes all nodes are accounted for in the final system state.
@@ -265,7 +261,8 @@ class Metrics:
 
     @staticmethod
     def measure_transactions(node: "Node") -> Dict[str, int]:
-        """Measures transaction statistics for a node.
+        """
+        Measures transaction statistics for a node.
 
         Args:
             node (Node): The node to measure transactions for.
@@ -284,7 +281,8 @@ class Metrics:
 
     @staticmethod
     def processed_tx_system(sim: "Simulation") -> float:
-        """Calculates average number of processed transactions across all nodes.
+        """
+        Calculates average number of processed transactions across all nodes.
 
         Args:
             sim (Simulation): The simulation instance.
@@ -303,7 +301,8 @@ class Metrics:
 
     @staticmethod
     def measure_block_sizes(blocks: List["Block"]) -> List[float]:
-        """Measures sizes of blocks.
+        """
+        Measures sizes of blocks.
 
         Args:
             blocks (List[Block]): List of blocks to measure sizes for.

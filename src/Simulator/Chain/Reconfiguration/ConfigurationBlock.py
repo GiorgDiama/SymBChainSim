@@ -3,8 +3,10 @@ from Parameters import Parameters
 from copy import deepcopy
 from typing import Dict, Any
 
+
 class ConfigurationBlock:
-    """Defines a configuration block used to define and updated the blockchains configuration.
+    """
+    Defines a configuration block used to define and updated the blockchains configuration.
 
     Attributes:
         depth (int): The depth of the block in the blockchain.
@@ -19,9 +21,7 @@ class ConfigurationBlock:
         extra_data (Dict[str, Any]): Additional metadata associated with the block.
     """
 
-    def __init__(self, depth: int = 0, id: int = 0, previous: int = -1,
-        proposer: int = None, size: float = 0, consensus: str = None
-    ) -> None:
+    def __init__(self, depth: int = 0, id: int = 0, previous: int = -1, proposer: int = None, size: float = 0, consensus: str = None) -> None:
         self.depth: int = depth
         self.id: int = id
         self.previous: int = previous
@@ -34,14 +34,13 @@ class ConfigurationBlock:
         self.extra_data: Dict[str, Any] = {}
 
     def copy(self) -> "ConfigurationBlock":
-        """Returns a deep copy of the configuration block.
+        """
+        Returns a deep copy of the configuration block.
 
         Returns:
             ConfigurationBlock: A new ConfigurationBlock instance with the same attributes as the original.
         """
-        new_block = ConfigurationBlock(
-            self.depth, self.id, self.previous, self.proposer, self.size, self.consensus
-        )
+        new_block = ConfigurationBlock(self.depth, self.id, self.previous, self.proposer, self.size, self.consensus)
         new_block.time_added = self.time_added
         new_block.time_created = self.time_created
         new_block.extra_data = deepcopy(self.extra_data)
@@ -51,7 +50,8 @@ class ConfigurationBlock:
 
     @staticmethod
     def from_json(data: Dict[str, Any]) -> "ConfigurationBlock":
-        """Creates a ConfigurationBlock instance from JSON data.
+        """
+        Creates a ConfigurationBlock instance from JSON data.
 
         Args:
             data (Dict[str, Any]): Dictionary containing block data.
@@ -74,7 +74,8 @@ class ConfigurationBlock:
 
     @staticmethod
     def genesis_block() -> "ConfigurationBlock":
-        """Generates the genesis configuration block with the initial configuration.
+        """
+        Generates the genesis configuration block with the initial configuration.
 
         The initial configuration is read from the config file.
 
@@ -94,12 +95,11 @@ class ConfigurationBlock:
 
     def __str__(self) -> str:
         return (
-            f"[block: {self.id} | depth: {self.depth} | created:{self.time_created:.2f}" + 
-            f"| added: {round(self.time_added, 2)} | size: {round(self.size, 2)}" + 
-            f"| prev {self.previous} | {self.extra_data.keys()} | {self.consensus}]" +
-            f"\n|=====> Configuration: {self.configuration}"
+            f"[block: {self.id} | depth: {self.depth} | created:{self.time_created:.2f}"
+            + f"| added: {round(self.time_added, 2)} | size: {round(self.size, 2)}"
+            + f"| prev {self.previous} | {self.extra_data.keys()} | {self.consensus}]"
+            + f"\n|=====> Configuration: {self.configuration}"
         )
-
 
     def __repr__(self) -> str:
         return f"|block:{self.id} time:{self.time_created:.2f}-{self.time_added:.2f}|"

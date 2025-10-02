@@ -8,8 +8,9 @@ if TYPE_CHECKING:
     from Manager.Manager import Manager
 
 
-def schedule_event(manager: "Manager", init: bool = False) -> None:
-    """Schedule the next periodic transaction generation system event.
+def schedule_transaction_generation_event(manager: "Manager", init: bool = False) -> None:
+    """
+    Schedule the next periodic transaction generation system event.
 
     Args:
         manager (Manager): Simulation manager.
@@ -32,8 +33,9 @@ def schedule_event(manager: "Manager", init: bool = False) -> None:
     manager.sim.q.add_event(event)
 
 
-def handle_event(manager: "Manager", event: SystemEvent) -> None:
-    """Handle a transaction generation event by producing interval transactions.
+def handle_transaction_generation_event(manager: "Manager", event: SystemEvent) -> None:
+    """
+    Handle a transaction generation event by producing interval transactions.
 
     Args:
         manager (Manager): Simulation manager.
@@ -43,4 +45,4 @@ def handle_event(manager: "Manager", event: SystemEvent) -> None:
         None
     """
     TransactionFactory.generate_interval_txions(event.time)
-    schedule_event(manager)
+    schedule_transaction_generation_event(manager)

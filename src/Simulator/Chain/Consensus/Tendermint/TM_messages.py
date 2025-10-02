@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
 
 def schedule_propose(state: "Tendermint", time: float) -> "Event":
-    """Schedule a local propose event.
+    """
+    Schedule a local propose event.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -29,7 +30,8 @@ def schedule_propose(state: "Tendermint", time: float) -> "Event":
 
 
 def broadcast_pre_prepare(state: "Tendermint", time: float, block: "Block") -> "Event":
-    """Broadcast a pre-prepare message with the proposed block.
+    """
+    Broadcast a pre-prepare message with the proposed block.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -49,15 +51,14 @@ def broadcast_pre_prepare(state: "Tendermint", time: float, block: "Block") -> "
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
 
 def broadcast_prepare(state: "Tendermint", time: float, block_hash: int) -> "Event":
-    """Broadcast a prepare vote for a block hash.
+    """
+    Broadcast a prepare vote for a block hash.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -77,15 +78,14 @@ def broadcast_prepare(state: "Tendermint", time: float, block_hash: int) -> "Eve
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
 
 def broadcast_commit(state: "Tendermint", time: float, block_hash: int) -> "Event":
-    """Broadcast a commit vote for a block hash.
+    """
+    Broadcast a commit vote for a block hash.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -105,15 +105,14 @@ def broadcast_commit(state: "Tendermint", time: float, block_hash: int) -> "Even
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
 
 def broadcast_new_block(state: "Tendermint", time: float, block: "Block") -> "Event":
-    """Broadcast a message announcing a newly decided block.
+    """
+    Broadcast a message announcing a newly decided block.
 
     Args:
         state (Tendermint): The Tendermint protocol state instance.
@@ -133,15 +132,14 @@ def broadcast_new_block(state: "Tendermint", time: float, block: "Block") -> "Ev
     if Parameters.Tendermint["use_net_msg_size"]:
         payload["net_msg_size"] = get_payload_size(payload)
 
-    event = Scheduler.schedule_broadcast_message(
-        state.node, time, payload, state.handle_event
-    )
+    event = Scheduler.schedule_broadcast_message(state.node, time, payload, state.handle_event)
 
     return event
 
 
 def get_payload_size(payload: dict[str, Any]) -> float:
-    """Compute an approximate network payload size in MB for Tendermint messages.
+    """
+    Compute an approximate network payload size in MB for Tendermint messages.
 
     Args:
         payload (dict[str, Any]): The payload dictionary to estimate.
@@ -154,9 +152,7 @@ def get_payload_size(payload: dict[str, Any]) -> float:
     for key in payload:
         match key:
             case "block":
-                size += (
-                    payload[key].size + Parameters.Tendermint["base_block_size"] / 1e6
-                )
+                size += payload[key].size + Parameters.Tendermint["base_block_size"] / 1e6
             case "block_hash":
                 size += Parameters.Tendermint["hash_size"] / 1e6
             case _:

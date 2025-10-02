@@ -26,6 +26,7 @@ import logging
 
 logger = logging.getLogger(__name__.split(".")[-1])
 
+
 class Manager:
     """
     The manager module controls the 'flow' of the simulation. Through system events
@@ -47,10 +48,9 @@ class Manager:
 
         self.sim: Simulation = None
 
-
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
     #                    Set Up and Configuration
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
 
     def load_params(self, config: str = "base.yaml") -> None:
         """
@@ -66,13 +66,10 @@ class Manager:
 
         logger.debug(f"Loaded simulation parameters from config: {config}")
 
-
         Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
         Parameters.simulation["event_id"] = 0
 
-        logger.debug(
-            f"Parameters loaded. Application CP: {Parameters.application['CP']}"
-        )
+        logger.debug(f"Parameters loaded. Application CP: {Parameters.application['CP']}")
 
     def set_up(self, num_nodes: int = -1) -> None:
         """
@@ -84,9 +81,7 @@ class Manager:
         if num_nodes != -1:
             Parameters.application["Nn"] = num_nodes
             Parameters.calculate_fault_tolerance()
-            logger.debug(
-                f"Number of nodes set to {num_nodes} and fault tolerance calculated."
-            )
+            logger.debug(f"Number of nodes set to {num_nodes} and fault tolerance calculated.")
 
         self.sim = Simulation()
         self.sim.manager = self
@@ -108,20 +103,17 @@ class Manager:
         if Parameters.simulation.get("print_info", False):
             print(self.simulation_details_to_string())
 
-    
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
     #                      Managed Simulation Logic
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
 
     def run(self) -> None:
-        """
-        Runs the managed simulation loop until a finish condition is met.
-        """
+        """Runs the managed simulation loop until a finish condition is met."""
         logger.debug("\n\n########### STARTING SIMULATION LOOP! ###############\n")
         while not self.finished():
             self.sim.sim_next_event()
             self.update_sim()
-        
+
         if Parameters.simulation["snapshot_interval"] != -1:
             Snapshots.save_snapshots()
 
@@ -136,17 +128,11 @@ class Manager:
             times_out = self.sim.clock >= Parameters.simulation["simTime"]
 
         if reached_blocks := (Parameters.simulation["stop_after_blocks"] != -1):
-            reached_blocks = (
-                Metrics.confirmed_blocks(self.sim)
-                >= Parameters.simulation["stop_after_blocks"]
-            )
+            reached_blocks = Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"]
 
         if processed_all := (Parameters.simulation["stop_after_tx"] != -1):
             # TODO: Every node keeps track of processed transactions
-            curr_processed = [
-                sum([len(block.transactions) for block in node.blockchain])
-                for node in self.sim.nodes
-            ]
+            curr_processed = [sum([len(block.transactions) for block in node.blockchain]) for node in self.sim.nodes]
             processed_all = all(
                 map(
                     lambda x: x >= Parameters.simulation["stop_after_tx"],
@@ -158,65 +144,38 @@ class Manager:
         return finished
 
     def update_sim(self) -> None:
-        """
-        Performs time-based updates controlled by system events.
-        """
+        """Performs time-based updates controlled by system events."""
         updates.print_progress(self.sim)
         updates.start_debug(self.sim)
 
+    # -----------------------------------------------------------
+    #                      SYSTEM EVENTS
+    # -----------------------------------------------------------
     def init_system_events(self) -> None:
-        """
-        Sets up the system events that dynamically manage the simulation, such as transaction generation, dynamic simulation, behaviour.
-        """
+        """Sets up the system events that dynamically manage the simulation."""
         logger.debug("Initializing system events.")
         if Parameters.simulation.get("workload", "generate") == "generate":
             logger.debug("Scheduling transaction generation event.")
-            generate_txionsSE.schedule_event(self, init=True)
+            generate_txionsSE.schedule_transaction_generation_event(self, init=True)
 
         if Parameters.dynamic_sim["use"]:
-            logger.debug(
-                "Dynamic simulation enabled. Initializing dynamic parameters and scheduling events."
-            )
+            logger.debug("Dynamic simulation enabled. Initializing dynamic parameters and scheduling events.")
             dynamic_simulationSE.DynamicParameters.init_parameters()
             dynamic_simulationSE.schedule_update_network_event(self, init=True)
             dynamic_simulationSE.schedule_update_workload_event(self, init=True)
 
         if Parameters.simulation["snapshot_interval"] != -1:
-            logger.debug(f"Scheduling snapshot events with an interval of {Parameters.simulation["snapshot_interval"]}.")
+            logger.debug(f"Scheduling snapshot events with an interval of {Parameters.simulation['snapshot_interval']}.")
             snapshotSE.schedule_snapshot_event(self)
 
         if Parameters.behaviour["use"]:
-            logger.debug(
-                "Behaviour events enabled. Initializing and scheduling random fault event."
-            )
+            logger.debug("Behaviour events enabled. Initializing and scheduling random fault event.")
             behaviourSE.Behaviour.init(self)
             behaviourSE.schedule_random_fault_event(self, self.sim.clock)
 
         if Parameters.reconfiguration.get("reconfigure", False):
             logger.debug("Scheduling reconfiguration system events.")
             reconfigurationSE.schedule_centralised_reconfiguration_event(self, self.sim.clock)
-
-    
-    #-----------------------------------------------------------
-    #                      SYSTEM EVENTS
-    #-----------------------------------------------------------
-
-    def schedule_system_event(self, time: float, payload: dict) -> SystemEvent:
-        """
-        Schedules a system event in the simulation event queue.
-
-        Args:
-            time (float): The simulation time at which the event should occur.
-            payload (dict): The payload containing information about the event
-
-        Returns:
-            SystemEvent: The scheduled system event.
-        """
-        logger.debug(f"Scheduling system event at time {time} with payload: {payload}")
-        event = SystemEvent(time=time, payload=payload)
-        self.sim.q.add_event(event)
-
-        return event
 
     def handle_system_event(self, event: Event) -> None:
         """
@@ -226,28 +185,28 @@ class Manager:
             event (Event): The system event to handle.
         """
         match event.payload["type"]:
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Transactions
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "generate_txions":
-                generate_txionsSE.handle_event(self, event)
-            #-----------------------------------------------------------
+                generate_txionsSE.handle_transaction_generation_event(self, event)
+            # -----------------------------------------------------------
             #                      Dynamic Simulation
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "update_network":
                 dynamic_simulationSE.handle_update_network_event(self, event)
             case "update_workload":
                 dynamic_simulationSE.handle_update_workload_event(self, event)
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Behaviour
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "random_fault":
                 behaviourSE.handle_random_fault_event(self, event)
             case "recovery":
                 behaviourSE.handle_recover_event(self, event)
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Scenario Events
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "scenario_generate_txions":
                 scenarioSE.handle_scenario_transactions_event(self, event)
             case "scenario_update_network":
@@ -256,31 +215,26 @@ class Manager:
                 scenarioSE.handle_scenario_fault_event(self, event)
             case "scenario_recovery":
                 scenarioSE.handle_scenario_recovery_event(self, event)
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Reconfiguration
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "random_centralised":
                 reconfigurationSE.handle_random_centralised_reconfiguration_event(self, event)
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Snapshots
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case "snapshot":
                 snapshotSE.handle_snapshot_event(self, event)
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             #                      Default Case
-            #-----------------------------------------------------------
+            # -----------------------------------------------------------
             case _:
                 logger.error(f"Unhandled system event type: {event.payload['type']}")
-                raise ValueError(
-                    f"Event '{
-                        event.payload['type']
-                    }'was not handled by its own handler..."
-                )
+                raise ValueError(f"Event '{event.payload['type']}'was not handled by its own handler...")
 
-
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
     #                      UTILITY
-    #-----------------------------------------------------------
+    # -----------------------------------------------------------
 
     def simulation_details_to_string(self) -> str:
         """
@@ -297,11 +251,7 @@ class Manager:
             if n.cp is not None:
                 cp_name = n.cp.NAME
 
-            s += (
-                f"{n.id:3d} {n.location:12}\t{n.bandwidth}\t{cp_name:10}\t{
-                    neigh_list:12}"
-                + "\n"
-            )
+            s += f"{n.id:3d} {n.location:12}\t{n.bandwidth}\t{cp_name:10}\t{neigh_list:12}" + "\n"
 
         s += Tools.color("-" * 25 + "SIM PARAMETERS" + "-" * 25) + "\n"
         s += Parameters.parameters_to_string()

@@ -10,11 +10,10 @@ import yaml
 import json
 import logging
 
-"""
-    A collection of useful utility functions and tools for SBS
-"""
+""" A collection of useful utility functions and tools for SBS """
 
-LOG_PATH = '../Outputs/Logs/log.txt'
+LOG_PATH = "../Outputs/Logs/log.txt"
+
 
 def set_up_logging():
     LOGGER_FORMAT = "%(name)s:%(funcName)s || %(message)s"
@@ -27,7 +26,7 @@ def set_up_logging():
         handlers.append(file_handler)
     except FileNotFoundError:
         print("WARNING: logs directory not found, skipping writing logs...")
-    
+
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
     handlers.append(console_handler)
@@ -45,6 +44,7 @@ def set_up_logging():
 
     logging.basicConfig(level=LEVEL, handlers=handlers, force=True)
 
+
 def get_named_cmd_arg(name):
     """
     Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
@@ -53,6 +53,7 @@ def get_named_cmd_arg(name):
         return sys.argv[sys.argv.index(name) + 1]
     else:
         return None
+
 
 def parse_cmd_args():
     """
@@ -90,6 +91,7 @@ def parse_cmd_args():
 
 
 ####################### Simulation Results Analysis #############################
+
 
 def save_simulation_results(sim, name="results"):
     blockchains = {}
@@ -160,16 +162,12 @@ def dump_reconfiguration_chain(manager):
 
         for node in manager.sim.nodes:
             for block in node.reconfiguration_state.confchain:
-                conf_block_ids[block.id][node.id] = (
-                    Serialise.serialisable_configuration_block(block)
-                )
+                conf_block_ids[block.id][node.id] = Serialise.serialisable_configuration_block(block)
 
-        Parameters.reconfiguration["Metrics"]["global_chain"] = [
-            Serialise.serialisable_block(block, transactions=False)
-            for block in Parameters.simulation["blockchain"].values()
-        ]
+        Parameters.reconfiguration["Metrics"]["global_chain"] = [Serialise.serialisable_block(block, transactions=False) for block in Parameters.simulation["blockchain"].values()]
         with open("Results/Sensitivity/data.json", "w") as f:
             json.dump(Parameters.reconfiguration["Metrics"], f, indent=2)
+
 
 def print_events():
     for key, value in Parameters.simulation["events"].items():
@@ -181,7 +179,9 @@ def print_events():
         else:
             print(f"{key:<18}: {value}")
 
+
 ############################ DEBUGGER ###########################
+
 
 def debug_logs(msg, **kwargs):
     """
@@ -270,18 +270,14 @@ def sim_info(simulator, print_event_queues=True):
             # later
             events_per_node = {-1: ""}
 
-            for e in sorted(
-                simulator.q.prio_queue.pq, key=lambda x: x[0], reverse=True
-            ):
+            for e in sorted(simulator.q.prio_queue.pq, key=lambda x: x[0], reverse=True):
                 # get the event (prio_queue stores (priority, event))
                 event = e[1]
                 # decide what todo based on type
                 if not isinstance(event, SystemEvent):
                     # simulation events
                     if isinstance(event, MessageEvent):
-                        event_string = (
-                            str(e[1]) + " from: " + str(e[1].forwarded_by) + "\n"
-                        )
+                        event_string = str(e[1]) + " from: " + str(e[1].forwarded_by) + "\n"
                     else:
                         event_string = str(e[1]) + "\n"
 
@@ -302,11 +298,7 @@ def sim_info(simulator, print_event_queues=True):
                 if key != -1:
                     s += color(("-" * 30 + "NODE " + str(key) + "-" * 30), 41) + "\n"
                     node_cp_states += (
-                        f"({simulator.nodes[key]} alive:{simulator.nodes[key].state.alive}) -"
-                        + simulator.nodes[key].cp.state_to_string()
-                        + " BW:"
-                        + str(simulator.nodes[key].bandwidth)
-                        + "\n"
+                        f"({simulator.nodes[key]} alive:{simulator.nodes[key].state.alive}) -" + simulator.nodes[key].cp.state_to_string() + " BW:" + str(simulator.nodes[key].bandwidth) + "\n"
                     )
                 else:
                     s += color(("-" * 30 + "SYSTEM" + "-" * 30), 42) + "\n"
@@ -354,6 +346,3 @@ def color(string, c=44):
     color codes: 40:black | 41:red | 42:green | 43:yellow | 44:light_blue | 45:purple | 46:cyan | 47:white
     """
     return f"\x1b[1;37;{c}m" + string + "\x1b[0m"
-
-
-###################### Distributions #############
