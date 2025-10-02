@@ -1,25 +1,25 @@
 # SymbChainSims approach to reconfiguration
 
-Modeling dynamic reconfiguration is core to SBS due to dynamic blockchain management being one of the tools core use cases. SBS utilises the same ideas for dynamic updating of the blockchain conditions to reconfiguration. However, reconfiguration in SBS is not abstracted (as simple simulation state updated) it is modeled as a mechanism of the blockchain system allowing SBS to capture the dynamics of the reconfiguration and their interactions with the systems conditions.
+Modeling dynamic reconfiguration is core to SBS due to dynamic blockchain management being one of the tools core use cases. SBS utilises the same ideas for dynamic updating of the blockchain conditions to reconfiguration. However, reconfiguration in SBS is not abstracted (as simple simulation state updated) it is modelled as a mechanism of the blockchain system allowing SBS to capture the dynamics of the reconfiguration and their interactions with the systems conditions.
 
 ## Reconfiguration mechanism
 
-To model reconfiguration the idea of a configuration chain is introduced and modeled in SBS. Briefly, the configuration chain is a utility, secondary blockchain that consists of configuration blocks. Configuration blocks are typical blockchain blocks that, instead of transactions included system configurations. This mechanisms enables linking the configuration of the blockchain nodes to the latest block in the nodes configuration chain.
+To model reconfiguration the idea of a configuration chain is introduced and modelled in SBS. Briefly, the configuration chain is a utility, secondary blockchain that consists of configuration blocks. Configuration blocks are typical blockchain blocks that, instead of transactions included system configurations. This mechanisms enables linking the configuration of the blockchain nodes to the latest block in the nodes configuration chain.
 
 The above has numerous benefits:
-- It allows modeling the propagation and reconfiguration of nodes through modeling the propagation of configuration blocks
+- It allows modelling the propagation and reconfiguration of nodes through modelling the propagation of configuration blocks
 - As a blockchain structure, its immutable and transparent nature allows linking data blocks to configuration blocks immutably. This ensures the main chain will remain verifiable and can simplifies block validation under  reconfiguration
-- Finally, as a blockchain structure it can be constructed in a decentralised manner ensuring the management process does not violate the decentraliation properties of the underlying blockchain system.
+- Finally, as a blockchain structure it can be constructed in a decentralised manner ensuring the management process does not violate the decentralisation properties of the underlying blockchain system.
 
-More information about this can be found in the following publication proposing the approach:
+<!-- More information about this can be found in the following publication proposing the approach:
 
-> Cite AsiaSim paper when online
+> Cite AsiaSim paper when online -->
 
 ## Modeling in SBS
 
-This section briefly described how the above is modeled in SBS.
+This section briefly described how the above is modelled in SBS.
 
-Initially the node model is updated with a configuration chain. The initial configuration of the blockchain is in the genesis block (this is the case even when reconfiguration is not used; the configuration chain simply never get any new blocks). The node model also gets the updated method, which when called, checks whether any new blocks were added in the local configuration blockchain and updates the configuration of the node. The update process asynchronous (meaning that new blocks do not immediately trigger reconfiguration) to prevent disrupting ongoing consensus rounds. Thus, when modeling new consensus protocols it is at the discretion of the developer to call node.update() at times when doing so is generally safe (after new blocks, timeouts, end of rounds etc..). For an example see any of the implemented protocols.
+Initially the node model is updated with a configuration chain. The initial configuration of the blockchain is in the genesis block (this is the case even when reconfiguration is not used; the configuration chain simply never get any new blocks). The node model also gets the updated method, which when called, checks whether any new blocks were added in the local configuration blockchain and updates the configuration of the node. The update process asynchronous (meaning that new blocks do not immediately trigger reconfiguration) to prevent disrupting ongoing consensus rounds. Thus, when modelling new consensus protocols it is at the discretion of the developer to call node.update() at times when doing so is generally safe (after new blocks, timeouts, end of rounds etc..). For an example see any of the implemented protocols.
 
 To model the dynamics of reconfiguration, the future_receive_configuration event is added, which when triggered, models a configuration block arriving at the node. The node then validates it, request any missing configuration blocks before it, and gossips the block to its peers that do the same. With the new block added to their blockchain nodes will eventually adopt the new configuration when update is called.
 
@@ -133,7 +133,7 @@ To add a new reconfiguration approach:
 
 Currently only centralised (and random) reconfiguration is supported. Although the random part can be easily changed by incorporating various optimisation approaches (heuristics, machine learning, RL, traditional optimisation etc..).
 
-The decentralised version utilising a secondary blockchain for decentralsised agreement on decisions will be added soon.
+The decentralised version utilising a secondary blockchain for decentralised agreement on decisions will be added soon.
 
 ### Instrumenting the blockchain system to feed the optimisation process
 
