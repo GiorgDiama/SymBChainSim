@@ -29,6 +29,16 @@ The Node class models a generic blockchain node in SBS. It encapsulates the loca
   - `starting_round = last_block_round + 1`
 - `update(time)`: Attempts to adopt a newly synced configuration by delegating to `ReconfigurationState.try_apply_configuration(...)`. Should be called at protocol-defined safe points to avoid mid-round interference.
 
+
+### The Backlog
+
+Nodes maintain a backlog of messages that arrived too early to be processed (e.g., messages from future rounds, commit messages when in a 'round_start' state etc..). Instead of discarding these outright, nodes store them in an ordered backlog.
+
+When a node transitions into a new state—such as syncing, adopting a new configuration, or advancing consensus rounds—the handler replays the backlog via handle_backlog(node, time). This updates each backlog event’s timestamp to the current call time and attempts re-processing. Events that now pass validation are consumed and removed, while still-premature ones remain queued.
+
+This mechanism is crucial because blockchains are inherently asynchronous: messages may arrive out of order, ahead of local progress, or under an old consensus view. By retaining and retrying “future” messages at safe points, nodes reduce wasted communication and smooth consensus progress.
+
+
 ### Block intake and validation
 `validate_block(block)` performs CP-agnostic checks before protocol-specific handling:
 - Round check: block round must match `cp.rounds.round`
