@@ -26,6 +26,9 @@
     
       <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
       
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
       
 
 
@@ -53,7 +56,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -102,6 +112,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -271,7 +307,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../high_level_sync/" class="md-tabs__link">
+        <a href="../consensus/" class="md-tabs__link">
           
   
   
@@ -290,17 +326,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -317,6 +356,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -599,6 +676,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#the-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Backlog
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#block-intake-and-validation" class="md-nav__link">
     <span class="md-ellipsis">
       Block intake and validation
@@ -798,6 +884,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../high_level_sync/" class="md-nav__link">
         
   
@@ -837,6 +946,60 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -844,12 +1007,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../consensus/" class="md-nav__link">
+      <a href="../manager/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Consensus Protocols
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
     
   </span>
   
@@ -874,12 +1060,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../manager/" class="md-nav__link">
+      <a href="../reconfiguration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Manager
+    Reconfiguration
     
   </span>
   
@@ -896,12 +1082,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../reconfiguration/" class="md-nav__link">
+      <a href="../metrics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Reconfiguration
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
     
   </span>
   
@@ -989,6 +1197,15 @@
   <a href="#lifecycle-and-consensus-integration" class="md-nav__link">
     <span class="md-ellipsis">
       Lifecycle and consensus integration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-backlog" class="md-nav__link">
+    <span class="md-ellipsis">
+      The Backlog
     </span>
   </a>
   
@@ -1106,6 +1323,10 @@
 <li><code>starting_round = last_block_round + 1</code></li>
 <li><code>update(time)</code>: Attempts to adopt a newly synced configuration by delegating to <code>ReconfigurationState.try_apply_configuration(...)</code>. Should be called at protocol-defined safe points to avoid mid-round interference.</li>
 </ul>
+<h3 id="the-backlog">The Backlog</h3>
+<p>Nodes maintain a backlog of messages that arrived too early to be processed (e.g., messages from future rounds, commit messages when in a 'round_start' state etc..). Instead of discarding these outright, nodes store them in an ordered backlog.</p>
+<p>When a node transitions into a new state—such as syncing, adopting a new configuration, or advancing consensus rounds—the handler replays the backlog via handle_backlog(node, time). This updates each backlog event’s timestamp to the current call time and attempts re-processing. Events that now pass validation are consumed and removed, while still-premature ones remain queued.</p>
+<p>This mechanism is crucial because blockchains are inherently asynchronous: messages may arrive out of order, ahead of local progress, or under an old consensus view. By retaining and retrying “future” messages at safe points, nodes reduce wasted communication and smooth consensus progress.</p>
 <h3 id="block-intake-and-validation">Block intake and validation</h3>
 <p><code>validate_block(block)</code> performs CP-agnostic checks before protocol-specific handling:
 - Round check: block round must match <code>cp.rounds.round</code>

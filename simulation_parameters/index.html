@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../reconfiguration/">
+        <link rel="prev" href="../scenarios/">
       
       
       
@@ -23,6 +23,9 @@
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -51,7 +54,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -100,6 +110,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -267,7 +303,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../high_level_sync/" class="md-tabs__link">
+        <a href="../consensus/" class="md-tabs__link">
           
   
   
@@ -286,17 +322,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -313,6 +352,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -657,6 +734,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../high_level_sync/" class="md-nav__link">
         
   
@@ -696,6 +796,60 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -703,12 +857,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../consensus/" class="md-nav__link">
+      <a href="../manager/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Consensus Protocols
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
     
   </span>
   
@@ -733,12 +910,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../manager/" class="md-nav__link">
+      <a href="../reconfiguration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Manager
+    Reconfiguration
     
   </span>
   
@@ -755,12 +932,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../reconfiguration/" class="md-nav__link">
+      <a href="../metrics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Reconfiguration
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
     
   </span>
   
@@ -1072,60 +1271,50 @@
 
 
 <h1 id="configuring-symbchainsim-simulations">Configuring SymbChainSim simulations</h1>
-<p>Most of SymbChainSims components are controlled through the configuration yaml files found is the Configs directory. The yaml file is split up into named categories according to the broad area that they control. Specifically these are: simulation, application, execution, data, network, consensus, behaviour, dynamic_sim and reconfiguration.</p>
+<p>Most of SymbChainSim’s components are controlled through the configuration yaml files found in the <code>Configs</code> directory. The yaml file is split into named categories according to the broad area they control. Specifically these are: <code>simulation</code>, <code>application</code>, <code>execution</code>, <code>data</code>, <code>network</code>, <code>consensus</code>, <code>behaviour</code>, <code>dynamic_sim</code>, and <code>reconfiguration</code>.</p>
 <h2 id="simulation">simulation</h2>
 <table>
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>init_CP</code></td>
-<td><code>"PBFT"</code></td>
-<td>Initial consensus protocol (Options: "PBFT", "Tendermint", "BigFoot")</td>
+<td>Initial consensus protocol at simulation start (Options: "PBFT", "Tendermint", "BigFoot")</td>
 </tr>
 <tr>
 <td><code>simTime</code></td>
-<td><code>1800</code></td>
-<td>Stop after simulating X seconds (s)</td>
+<td>Stop simulation after this many seconds (-1 = no limit)</td>
 </tr>
 <tr>
 <td><code>stop_after_blocks</code></td>
-<td><code>-1</code></td>
-<td>Stop after producing X blocks (-1 = no limit)</td>
+<td>Stop after this many blocks are produced (-1 = no limit)</td>
 </tr>
 <tr>
 <td><code>stop_after_tx</code></td>
-<td><code>-1</code></td>
-<td>Stop after processing X transactions (-1 = no limit)</td>
+<td>Stop after this many transactions are processed (-1 = no limit)</td>
 </tr>
 <tr>
 <td><code>debugging_mode</code></td>
-<td><code>False</code></td>
 <td>Enable detailed debugging mode (step-by-step event processing)</td>
 </tr>
 <tr>
 <td><code>logging_level</code></td>
-<td><code>"INFO"</code></td>
 <td>Logging verbosity level ("DEBUG" or "INFO")</td>
 </tr>
 <tr>
 <td><code>print_every</code></td>
-<td><code>100</code></td>
 <td>Print simulation progress every N seconds</td>
 </tr>
 <tr>
 <td><code>snapshot_interval</code></td>
-<td><code>30</code></td>
 <td>Take snapshots of simulation state every N seconds</td>
 </tr>
 <tr>
 <td><code>print_info</code></td>
-<td><code>True</code></td>
 <td>Print simulation information at the start of execution</td>
 </tr>
 </tbody>
@@ -1135,45 +1324,37 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Nn</code></td>
-<td><code>16</code></td>
 <td>Number of nodes in the blockchain network</td>
 </tr>
 <tr>
 <td><code>workload</code></td>
-<td><code>'generate'</code></td>
-<td>Workload generation mode: 'generate' (based on parameters) or 'path_to_workload_trace' (use transitions from trace)</td>
+<td>Workload generation mode: <code>'generate'</code> (parameter based) or <code>'path_to_workload_trace'</code> (trace-based)</td>
 </tr>
 <tr>
 <td><code>TI_dur</code></td>
-<td><code>10</code></td>
 <td>Transaction generation interval (every N seconds generate transactions for the next N seconds)</td>
 </tr>
 <tr>
 <td><code>Tn</code></td>
-<td><code>180</code></td>
 <td>Total number of transactions to generate per second</td>
 </tr>
 <tr>
 <td><code>base_transaction_size</code></td>
-<td><code>0.0016</code></td>
 <td>Base size of transactions in MB</td>
 </tr>
 <tr>
 <td><code>Tsize</code></td>
-<td><code>0.0008</code></td>
 <td>Transaction size variation in MB (standard deviation)</td>
 </tr>
 <tr>
 <td><code>transaction_model</code></td>
-<td><code>"global"</code></td>
-<td>Transaction pool model: "global" (abstracted model with 1 global pool) or "local" (each node gets its own pool)</td>
+<td>Transaction pool model: <code>"global"</code> (one pool) or <code>"local"</code> (each node has its own pool)</td>
 </tr>
 </tbody>
 </table>
@@ -1182,40 +1363,33 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>creation_time</code></td>
-<td><code>0.02</code></td>
 <td>Time required to create a block (s)</td>
 </tr>
 <tr>
 <td><code>block_val_delay</code></td>
-<td><code>0.01</code></td>
 <td>Time required for block validation (s)</td>
 </tr>
 <tr>
 <td><code>msg_val_delay</code></td>
-<td><code>0.001</code></td>
 <td>Time required to validate a network message (s)</td>
 </tr>
 <tr>
 <td><code>sync_message_request_delay</code></td>
-<td><code>0.1</code></td>
 <td>Time required to request missing data from a peer (s)</td>
 </tr>
 <tr>
 <td><code>time_per_tx</code></td>
-<td><code>0.001</code></td>
 <td>Time required to validate each transaction in a received block (s)</td>
 </tr>
 <tr>
 <td><code>proposer_selection</code></td>
-<td><code>"hash"</code></td>
-<td>Proposer selection algorithm: "hash" (pseudorandom based on latest block hash) or "round_robin"</td>
+<td>Proposer selection algorithm: <code>"hash"</code> (based on latest block hash) or <code>"round_robin"</code></td>
 </tr>
 </tbody>
 </table>
@@ -1224,24 +1398,20 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Bsize</code></td>
-<td><code>1</code></td>
 <td>Maximum block size in MB</td>
 </tr>
 <tr>
 <td><code>base_block_size</code></td>
-<td><code>0.002</code></td>
 <td>Base block size in MB (excluding transactions)</td>
 </tr>
 <tr>
 <td><code>block_time</code></td>
-<td><code>0.2</code></td>
 <td>Minimum time interval between blocks in seconds</td>
 </tr>
 </tbody>
@@ -1251,50 +1421,41 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>base_msg_size</code></td>
-<td><code>0.1</code></td>
 <td>Base message size in MB</td>
 </tr>
 <tr>
 <td><code>gossip</code></td>
-<td><code>True</code></td>
-<td>Enable gossip protocol for message propagation (True: cascading peer multicast, False: full network broadcasts)</td>
+<td>Enable gossip protocol for message propagation (True = cascading peer multicast, False = full broadcasts)</td>
 </tr>
 <tr>
 <td><code>num_neighbours</code></td>
-<td><code>6</code></td>
 <td>Number of neighbors each node connects to</td>
 </tr>
 <tr>
 <td><code>use_latency</code></td>
-<td><code>"measured"</code></td>
-<td>Latency model: "measured" (based on dataset), "distance" (calculated based on geographical distance), "local" (uses only local model), "off" (no additional delay)</td>
+<td>Latency model: <code>"measured"</code>, <code>"distance"</code>, <code>"local"</code>, or <code>"off"</code></td>
 </tr>
 <tr>
 <td><code>same_city_latency_ms</code></td>
-<td><code>5</code></td>
-<td>Latency for nodes in the same city in milliseconds</td>
+<td>Latency for nodes in the same city (ms)</td>
 </tr>
 <tr>
 <td><code>same_city_dev_ms</code></td>
-<td><code>0</code></td>
-<td>Standard deviation for same-city latency in milliseconds</td>
+<td>Standard deviation for same-city latency (ms)</td>
 </tr>
 <tr>
 <td><code>queueing_delay</code></td>
-<td><code>0</code></td>
-<td>Additional queueing delay in seconds</td>
+<td>Additional queueing delay (s)</td>
 </tr>
 <tr>
 <td><code>processing_delay</code></td>
-<td><code>0</code></td>
-<td>Additional processing delay in seconds</td>
+<td>Additional processing delay (s)</td>
 </tr>
 </tbody>
 </table>
@@ -1303,57 +1464,48 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>mean</code></td>
-<td><code>5</code></td>
 <td>Mean bandwidth in Mbps</td>
 </tr>
 <tr>
 <td><code>dev</code></td>
-<td><code>2</code></td>
 <td>Standard deviation of bandwidth in Mbps</td>
 </tr>
 <tr>
 <td><code>min</code></td>
-<td><code>2</code></td>
 <td>Minimum bandwidth in Mbps</td>
 </tr>
 <tr>
 <td><code>sample</code></td>
-<td><code>'always'</code></td>
-<td>Bandwidth sampling frequency: 'always' (sample from distribution always), 'once' (sample once), 'scenario' (never, scenario logic handles network state)</td>
+<td>Bandwidth sampling frequency: <code>'always'</code>, <code>'once'</code>, or <code>'scenario'</code></td>
 </tr>
 </tbody>
 </table>
 <h2 id="consensus">consensus</h2>
-<p>Links the protocol names to a path that contains a specific configuration file for that protocol</p>
+<p>Links the protocol names to a path that contains a specific configuration file for that protocol.</p>
 <table>
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>BigFoot</code></td>
-<td><code>Chain/Consensus/BigFoot/BigFoot_config.yaml</code></td>
 <td>Path to BigFoot consensus protocol configuration</td>
 </tr>
 <tr>
 <td><code>PBFT</code></td>
-<td><code>Chain/Consensus/PBFT/PBFT_config.yaml</code></td>
 <td>Path to PBFT consensus protocol configuration</td>
 </tr>
 <tr>
 <td><code>Tendermint</code></td>
-<td><code>Chain/Consensus/Tendermint/TM_config.yaml</code></td>
 <td>Path to Tendermint consensus protocol configuration</td>
 </tr>
 </tbody>
@@ -1363,25 +1515,21 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>use</code></td>
-<td><code>False</code></td>
-<td>Enable behavioral modeling</td>
+<td>Enable behavioural modeling</td>
 </tr>
 <tr>
 <td><code>config</code></td>
-<td><code>"Configs/behaviour_config.yaml"</code></td>
-<td>Path to behavior configuration file</td>
+<td>Path to behaviour configuration file</td>
 </tr>
 <tr>
 <td><code>print_updates</code></td>
-<td><code>True</code></td>
-<td>Print behavior updates during simulation</td>
+<td>Print behaviour updates during simulation</td>
 </tr>
 </tbody>
 </table>
@@ -1390,24 +1538,20 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>use</code></td>
-<td><code>False</code></td>
 <td>Enable dynamic simulation features</td>
 </tr>
 <tr>
 <td><code>config</code></td>
-<td><code>"Configs/dynamic_config.yaml"</code></td>
 <td>Path to dynamic simulation configuration file</td>
 </tr>
 <tr>
 <td><code>print_updates</code></td>
-<td><code>True</code></td>
 <td>Print dynamic simulation updates during execution</td>
 </tr>
 </tbody>
@@ -1417,60 +1561,53 @@
 <thead>
 <tr>
 <th>Parameter</th>
-<th>Default Value</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>reconfigure</code></td>
-<td><code>True</code></td>
 <td>Enable reconfiguration of blockchain system</td>
 </tr>
 <tr>
 <td><code>reconfiguration_interval</code></td>
-<td><code>300</code></td>
-<td>How often to reconfigure the system (seconds)</td>
+<td>How often to reconfigure the system (s)</td>
 </tr>
 <tr>
 <td><code>reconfiguration_interval_range</code></td>
-<td><code>[-20,20]</code></td>
-<td>Range used to randomly change the interval duration (seconds)</td>
+<td>Random range to adjust reconfiguration interval (s)</td>
 </tr>
 <tr>
 <td><code>conf_block_size</code></td>
-<td><code>0.25</code></td>
 <td>Block size of produced configuration blocks in MB</td>
 </tr>
 <tr>
 <td><code>reconfiguration_method</code></td>
-<td><code>'random_centralised'</code></td>
-<td>How to reconfigure the system: "random_centralised" (randomly picks configuration from random_configuration)</td>
+<td>How to reconfigure the system (e.g., <code>"random_centralised"</code>)</td>
 </tr>
 <tr>
 <td><code>random_configuration</code></td>
-<td><code>{protocols: ["PBFT", "BigFoot", "Tendermint"], block_sizes: [0.5, 1, 2, 5, 10], block_times: [0.1, 0.2, 0.5, 1, 2]}</code></td>
-<td>List of configuration parameters used to randomly reconfigure the blockchain</td>
+<td>Parameters used for random reconfiguration (<code>protocols</code>, <code>block_sizes</code>, <code>block_times</code>)</td>
 </tr>
 <tr>
 <td><code>propagation.model</code></td>
-<td><code>True</code></td>
-<td>Controls whether configuration block is instantly added (False) or propagated with delay (True)</td>
+<td>If True, config block is propagated with delay; if False, instantly applied to all nodes</td>
 </tr>
 <tr>
 <td><code>propagation.delay</code></td>
-<td><code>[0.02, 0.1]</code></td>
-<td>Delay range for configuration block propagation (seconds)</td>
+<td>Delay range for configuration block propagation (s)</td>
 </tr>
 <tr>
 <td><code>propagation.per_cent_nodes</code></td>
-<td><code>0.25</code></td>
-<td>Percentage of nodes that initially receive the configuration block</td>
+<td>Percentage of nodes initially receiving the config block</td>
 </tr>
 <tr>
 <td><code>print_updates</code></td>
-<td><code>True</code></td>
-<td>Controls printing the details of the reconfiguration</td>
+<td>Print details of reconfiguration</td>
+</tr>
+<tr>
+<td>"""</td>
+<td></td>
 </tr>
 </tbody>
 </table>
@@ -1509,7 +1646,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../reconfiguration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Reconfiguration">
+          <a href="../scenarios/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Scenarios">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1519,7 +1656,7 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Reconfiguration
+                Scenarios
               </div>
             </div>
           </a>

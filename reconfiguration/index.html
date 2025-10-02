@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../manager/">
+        <link rel="prev" href="../dynamic_simulation/">
       
       
-        <link rel="next" href="../simulation_parameters/">
+        <link rel="next" href="../metrics/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -25,6 +25,9 @@
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -53,7 +56,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -102,6 +112,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -269,7 +305,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../high_level_sync/" class="md-tabs__link">
+        <a href="../consensus/" class="md-tabs__link">
           
   
   
@@ -288,17 +324,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -317,6 +356,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -659,6 +736,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../high_level_sync/" class="md-nav__link">
         
   
@@ -698,29 +798,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../consensus/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Consensus Protocols
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -730,6 +807,53 @@
     
       
       
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
@@ -746,6 +870,37 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -959,6 +1114,50 @@
   
   
     <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../simulation_parameters/" class="md-nav__link">
         
   
@@ -1158,20 +1357,20 @@
 
 
 <h1 id="symbchainsims-approach-to-reconfiguration">SymbChainSims approach to reconfiguration</h1>
-<p>Modeling dynamic reconfiguration is core to SBS due to dynamic blockchain management being one of the tools core use cases. SBS utilises the same ideas for dynamic updating of the blockchain conditions to reconfiguration. However, reconfiguration in SBS is not abstracted (as simple simulation state updated) it is modeled as a mechanism of the blockchain system allowing SBS to capture the dynamics of the reconfiguration and their interactions with the systems conditions.</p>
+<p>Modeling dynamic reconfiguration is core to SBS due to dynamic blockchain management being one of the tools core use cases. SBS utilises the same ideas for dynamic updating of the blockchain conditions to reconfiguration. However, reconfiguration in SBS is not abstracted (as simple simulation state updated) it is modelled as a mechanism of the blockchain system allowing SBS to capture the dynamics of the reconfiguration and their interactions with the systems conditions.</p>
 <h2 id="reconfiguration-mechanism">Reconfiguration mechanism</h2>
-<p>To model reconfiguration the idea of a configuration chain is introduced and modeled in SBS. Briefly, the configuration chain is a utility, secondary blockchain that consists of configuration blocks. Configuration blocks are typical blockchain blocks that, instead of transactions included system configurations. This mechanisms enables linking the configuration of the blockchain nodes to the latest block in the nodes configuration chain.</p>
+<p>To model reconfiguration the idea of a configuration chain is introduced and modelled in SBS. Briefly, the configuration chain is a utility, secondary blockchain that consists of configuration blocks. Configuration blocks are typical blockchain blocks that, instead of transactions included system configurations. This mechanisms enables linking the configuration of the blockchain nodes to the latest block in the nodes configuration chain.</p>
 <p>The above has numerous benefits:
-- It allows modeling the propagation and reconfiguration of nodes through modeling the propagation of configuration blocks
+- It allows modelling the propagation and reconfiguration of nodes through modelling the propagation of configuration blocks
 - As a blockchain structure, its immutable and transparent nature allows linking data blocks to configuration blocks immutably. This ensures the main chain will remain verifiable and can simplifies block validation under  reconfiguration
-- Finally, as a blockchain structure it can be constructed in a decentralised manner ensuring the management process does not violate the decentraliation properties of the underlying blockchain system.</p>
-<p>More information about this can be found in the following publication proposing the approach:</p>
-<blockquote>
-<p>Cite AsiaSim paper when online</p>
-</blockquote>
+- Finally, as a blockchain structure it can be constructed in a decentralised manner ensuring the management process does not violate the decentralisation properties of the underlying blockchain system.</p>
+<!-- More information about this can be found in the following publication proposing the approach:
+
+> Cite AsiaSim paper when online -->
+
 <h2 id="modeling-in-sbs">Modeling in SBS</h2>
-<p>This section briefly described how the above is modeled in SBS.</p>
-<p>Initially the node model is updated with a configuration chain. The initial configuration of the blockchain is in the genesis block (this is the case even when reconfiguration is not used; the configuration chain simply never get any new blocks). The node model also gets the updated method, which when called, checks whether any new blocks were added in the local configuration blockchain and updates the configuration of the node. The update process asynchronous (meaning that new blocks do not immediately trigger reconfiguration) to prevent disrupting ongoing consensus rounds. Thus, when modeling new consensus protocols it is at the discretion of the developer to call node.update() at times when doing so is generally safe (after new blocks, timeouts, end of rounds etc..). For an example see any of the implemented protocols.</p>
+<p>This section briefly described how the above is modelled in SBS.</p>
+<p>Initially the node model is updated with a configuration chain. The initial configuration of the blockchain is in the genesis block (this is the case even when reconfiguration is not used; the configuration chain simply never get any new blocks). The node model also gets the updated method, which when called, checks whether any new blocks were added in the local configuration blockchain and updates the configuration of the node. The update process asynchronous (meaning that new blocks do not immediately trigger reconfiguration) to prevent disrupting ongoing consensus rounds. Thus, when modelling new consensus protocols it is at the discretion of the developer to call node.update() at times when doing so is generally safe (after new blocks, timeouts, end of rounds etc..). For an example see any of the implemented protocols.</p>
 <p>To model the dynamics of reconfiguration, the future_receive_configuration event is added, which when triggered, models a configuration block arriving at the node. The node then validates it, request any missing configuration blocks before it, and gossips the block to its peers that do the same. With the new block added to their blockchain nodes will eventually adopt the new configuration when update is called.</p>
 <p>As a blockchain, the logic for synchronising and validating configuration blocks remains largely unchanged. </p>
 <p>Furthermore, in a reconfigurable blockchain validating data blocks required ensuring the block was produced under the latest configuration. This is achieved by linking configuration blocks to data blocks (with hash references)</p>
@@ -1290,7 +1489,7 @@
 </ol>
 <h2 id="supported-reconfiguration">Supported reconfiguration</h2>
 <p>Currently only centralised (and random) reconfiguration is supported. Although the random part can be easily changed by incorporating various optimisation approaches (heuristics, machine learning, RL, traditional optimisation etc..).</p>
-<p>The decentralised version utilising a secondary blockchain for decentralsised agreement on decisions will be added soon.</p>
+<p>The decentralised version utilising a secondary blockchain for decentralised agreement on decisions will be added soon.</p>
 <h3 id="instrumenting-the-blockchain-system-to-feed-the-optimisation-process">Instrumenting the blockchain system to feed the optimisation process</h3>
 <p>Due to blockchain's  decentralised nature and Byzantine assumptions extracting the state of the blockchain network is non-trivial. Although the existence of the simulation state trivialises state extraction such approaches are not realistic. An approach for blockchain network state extraction is proposes in:</p>
 <blockquote>
@@ -1332,7 +1531,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../manager/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Manager">
+          <a href="../dynamic_simulation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Dynamic Simulation">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1342,20 +1541,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Manager
+                Dynamic Simulation
               </div>
             </div>
           </a>
         
         
           
-          <a href="../simulation_parameters/" class="md-footer__link md-footer__link--next" aria-label="Next: Parameters">
+          <a href="../metrics/" class="md-footer__link md-footer__link--next" aria-label="Next: Metrics">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Parameters
+                Metrics
               </div>
             </div>
             <div class="md-footer__button md-icon">

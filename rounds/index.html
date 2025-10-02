@@ -12,7 +12,7 @@
         <link rel="prev" href="../high_level_sync/">
       
       
-        <link rel="next" href="../consensus/">
+        <link rel="next" href="../manager/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -25,6 +25,9 @@
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -53,7 +56,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -102,6 +112,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -271,7 +307,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../high_level_sync/" class="md-tabs__link">
+        <a href="../consensus/" class="md-tabs__link">
           
   
   
@@ -290,17 +326,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -317,6 +356,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -664,6 +741,29 @@
   
   
     <li class="md-nav__item">
+      <a href="../consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../high_level_sync/" class="md-nav__link">
         
   
@@ -808,6 +908,60 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -815,12 +969,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../consensus/" class="md-nav__link">
+      <a href="../manager/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Consensus Protocols
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
     
   </span>
   
@@ -845,12 +1022,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../manager/" class="md-nav__link">
+      <a href="../reconfiguration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Manager
+    Reconfiguration
     
   </span>
   
@@ -867,12 +1044,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../reconfiguration/" class="md-nav__link">
+      <a href="../metrics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Reconfiguration
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
     
   </span>
   
@@ -1016,12 +1215,10 @@
 <p>This module implements a <strong>generic round-change mechanism</strong> used by consensus protocols that operate in rounds. 
 Its purpose is to coordinate nodes when the current round stalls, fails, or otherwise needs to be abandoned, 
 so that all honest nodes eventually converge on the same new round.</p>
-<hr />
 <h2 id="core-ideas">Core Ideas</h2>
 <p>Consensus protocols that use rounds (e.g., PBFT, HotStuff, Tendermint) must decide what to do when progress halts. 
 The <em>round-change</em> process ensures liveness: nodes collect votes for advancing to a new round, adopt a candidate round 
 if it gains sufficient support, and start that round when quorum is reached.</p>
-<hr />
 <h2 id="events">Events</h2>
 <ul>
 <li><strong>Round Change Message</strong><br />
@@ -1036,7 +1233,6 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
   Dispatches messages to the correct handler based on <code>payload["type"]</code>.</p>
 </li>
 </ul>
-<hr />
 <h2 id="state">State</h2>
 <p>The round-change state is represented by <code>RoundChangeState</code>:</p>
 <ul>
@@ -1048,7 +1244,6 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
 - <code>init_round_change_state</code>: initializes state
 - <code>reset_votes</code>: clears votes when a new round starts
 - <code>state_to_string</code>: human-readable snapshot of state</p>
-<hr />
 <h2 id="logic">Logic</h2>
 <ol>
 <li><strong>Initiating a Round Change (<code>change_round</code>)</strong>  </li>
@@ -1088,7 +1283,6 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
 <li>If any round has <code>f+1</code> votes, adopt the <strong>highest</strong> such round.  </li>
 <li>Otherwise, set next round = <code>current_round + 1</code>.</li>
 </ol>
-<hr />
 <h2 id="example-flow">Example Flow</h2>
 <ol>
 <li>Node A detects round 5 is stalled. It calls <code>change_round</code>, proposing round 6.  </li>
@@ -1096,14 +1290,12 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
 <li>Nodes C and D later receive round-change messages. Once <strong>f+1</strong> nodes support round 6, all honest nodes adopt 6.  </li>
 <li>When <strong>2f+1</strong> nodes support round 6, every node starts round 6 of the consensus protocol.</li>
 </ol>
-<hr />
 <h2 id="key-properties">Key Properties</h2>
 <ul>
 <li><strong>Liveness</strong>: ensures nodes can escape stalled rounds.  </li>
 <li><strong>Safety</strong>: nodes only move to higher rounds and votes are tracked consistently.  </li>
 <li><strong>Extensibility</strong>: works with different consensus protocols as long as they support round-based execution.</li>
 </ul>
-<hr />
 <h2 id="notes-for-developers">Notes for Developers</h2>
 <ul>
 <li>Ensure voter identity (<code>node.id</code>) is used consistently when tracking votes.  </li>
@@ -1111,7 +1303,6 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
 <li><code>reset_votes</code> should only be called once a new round has <strong>started</strong>, never earlier.  </li>
 <li>Logging is available for debugging round transitions.</li>
 </ul>
-<hr />
 <p>This module forms a crucial backbone for any consensus protocol in the simulator that relies on round-based progression.
 """</p>
 
@@ -1166,13 +1357,13 @@ if it gains sufficient support, and start that round when quorum is reached.</p>
         
         
           
-          <a href="../consensus/" class="md-footer__link md-footer__link--next" aria-label="Next: Consensus Protocols">
+          <a href="../manager/" class="md-footer__link md-footer__link--next" aria-label="Next: Manager">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Consensus Protocols
+                Manager
               </div>
             </div>
             <div class="md-footer__button md-icon">

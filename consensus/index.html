@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../rounds/">
+        <link rel="prev" href="../network/">
       
       
-        <link rel="next" href="../manager/">
+        <link rel="next" href="../high_level_sync/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -25,6 +25,9 @@
     
     
       <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -53,13 +56,25 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#consensus-protocols-in-symbchainsim" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -97,6 +112,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -266,7 +307,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../high_level_sync/" class="md-tabs__link">
+        <a href="./" class="md-tabs__link">
           
   
   
@@ -285,17 +326,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="../manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="../manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -312,6 +356,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -656,6 +738,167 @@
                 
   
   
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model fidelity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modularity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-consensusprotocol-abstract-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      The ConsensusProtocol abstract class
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transitions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-pbft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: PBFT
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example: PBFT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pbft-protocol-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      PBFT Protocol State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Timeouts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposer-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposer Selection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
   
     <li class="md-nav__item">
@@ -698,37 +941,6 @@
 
               
             
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    Consensus Protocols
-    
-  </span>
-  
-
-      </a>
-      
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -738,6 +950,53 @@
     
       
       
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
@@ -757,6 +1016,37 @@
     </li>
   
 
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -771,6 +1061,50 @@
   
   <span class="md-ellipsis">
     Reconfiguration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
     
   </span>
   
@@ -819,6 +1153,112 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#model-fidelity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model fidelity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modularity
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-consensusprotocol-abstract-class" class="md-nav__link">
+    <span class="md-ellipsis">
+      The ConsensusProtocol abstract class
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transitions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-pbft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: PBFT
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example: PBFT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pbft-protocol-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      PBFT Protocol State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Timeouts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      Messages
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proposer-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Proposer Selection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      Summary
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -837,9 +1277,189 @@
   
 
 
-  <h1>Consensus Protocols</h1>
-
-<p>coming soon...</p>
+<h1 id="consensus-protocols-in-symbchainsim">Consensus Protocols in SymbChainSim</h1>
+<p>The consensus process is the heart of the blockchain system. It is this process that governs block production through decentralised consensus. As a result, accurately capturing the dynamics of the consensus process in key to a fidel blockchain model. </p>
+<p>Besides accuracy, another critical consideration is modularity and extensibility. With SBS being designed for blockchain management, a modular and extensible consensus model allows for both easy reconfiguration and an easily extensible solution space.</p>
+<h3 id="model-fidelity">Model fidelity</h3>
+<p>To ensure the dynamics of consensus protocols are captured as accurately as possible, SBS takes a very low abstraction to modelling the consensus process. This means the following:</p>
+<ul>
+<li>All message exchanges are modelled as events</li>
+<li>Abstraction at a significant cost of accuracy is avoided </li>
+</ul>
+<p>Abstractions that sacrifice little in accuracy for a big increase in efficiency are most welcome and should be made to ensure the simulation can execute faster-than-real-time (FTRT).</p>
+<h3 id="modularity">Modularity</h3>
+<p>Reconfiguration and runtime adaptation of the simulation benefit greatly from a modular approach to modelling. Keeping models and their logic self contained and enforcing minimal connections between the models ensures that adaptation affects the rest of the models as little as possible.</p>
+<p>A core example of this is separating the consensus state from the node state (most existing simulators have the node and consensus logic mixes; a reasonable approach but one that complicated reconfiguration). </p>
+<h2 id="the-consensusprotocol-abstract-class">The ConsensusProtocol abstract class</h2>
+<p>The <code>ConsensusProtocol</code> abstract class introduces all the necessary methods a round based consensus protocol requires. Specifically, <code>ConsensusProtocol</code> models the state of a node in the modelled blockchain and contains logic to propose and validate blocks, and general auxiliary logic necessary for the consensus process. </p>
+<p>Specifically, protocols implementing <code>ConsensusProtocol</code> require the following method implementation:</p>
+<ul>
+<li>
+<p><code>__init__(node)</code>: Initializes the consensus protocol instance for a given node.</p>
+<ul>
+<li>This method defines the state variables of the modelled protocol</li>
+</ul>
+</li>
+<li>
+<p><code>set_state()</code><br />
+  Resets or initializes the internal state variables of the protocol. Used to prepare the protocol for a fresh start or recovery.  </p>
+</li>
+<li>
+<p><code>validate_message(event)</code><br />
+  Checks whether an incoming message is valid for the current protocol state. Returns a tuple <code>(is_valid, action)</code>, where <code>action</code> can be <code>None</code> or <code>"backlog"</code> if the message should be deferred.  </p>
+</li>
+<li>
+<p><code>validate_block(block, time)</code><br />
+  Determines if a proposed block is valid according to the rules of the protocol.</p>
+<ul>
+<li>general validity is also checked through a node specific method (see <code>Chain.Consensus.PBFT_state.validate_block(...)</code>)</li>
+</ul>
+</li>
+<li>
+<p><code>init(time, starting_round)</code><br />
+  Initializes the consensus protocol and starts the first round at the given time and round index.  </p>
+</li>
+<li>
+<p><code>start(time, starting_round)</code><br />
+  Starts a new consensus round and returns the round number.  </p>
+</li>
+<li>
+<p><code>init_round_change(time)</code><br />
+  Handles logic for initiating a round change when the current round cannot progress.  </p>
+</li>
+<li>
+<p><code>rejoin(time)</code><br />
+  Defines the behavior of a node rejoining the protocol after being offline, ensuring it synchronizes with the current state of the network.  </p>
+</li>
+<li>
+<p><code>handle_event(event)</code> <em>(static)</em><br />
+  Processes protocol-specific events and returns the outcome as a string.  </p>
+</li>
+</ul>
+<h2 id="transitions">Transitions</h2>
+<p>Consensus protocols in SymbChainSim are modeled as <strong>finite state machines (FSMs)</strong>. Each protocol implementation defines the valid states of a node (in a class implementing <code>ConsensusProtocol</code> if a round based protocol), the transitions between those states, and the messages/events that trigger those transitions ( (usually in a separate python files).  </p>
+<p>All transitions are explicit and modeled as <strong>simulation events</strong>. This ensures that the passage of time, message delays, and asynchronous execution are captured.  </p>
+<h2 id="example-pbft">Example: PBFT</h2>
+<p>PBFT (Practical Byzantine Fault Tolerance) is one of the provided consensus protocols. Its operation can be described in terms of <strong>phases</strong>:</p>
+<ol>
+<li><strong>Propose phase</strong> (<code>propose</code>)  </li>
+<li>The designated miner (proposer) for the round attempts to create a new block.  </li>
+<li>If successful, it transitions to <code>pre_prepared</code> and broadcasts a <code>pre_prepare</code> message to the network.  </li>
+<li>
+<p>If unsuccessful (no transactions available), it may reschedule the propose attempt within the same round if time permits.  </p>
+</li>
+<li>
+<p><strong>Pre-prepare phase</strong> (<code>pre_prepare</code>)  </p>
+</li>
+<li>Nodes receive the proposed block.  </li>
+<li>They validate the block and, if valid, transition from <code>new_round</code> to <code>pre_prepared</code>.  </li>
+<li>
+<p>At this point, each node broadcasts a <code>prepare</code> message and logs its vote.  </p>
+</li>
+<li>
+<p><strong>Prepare phase</strong> (<code>prepare</code>)  </p>
+</li>
+<li>Nodes collect <code>prepare</code> messages from others.  </li>
+<li>Once a node gathers a sufficient number of <code>prepare</code> votes (≥ <code>2f</code> where <code>f</code> is the number of tolerated Byzantine faults), it transitions to the <code>prepared</code> state.  </li>
+<li>
+<p>Upon reaching <code>prepared</code>, the node broadcasts a <code>commit</code> message.  </p>
+</li>
+<li>
+<p><strong>Commit phase</strong> (<code>commit</code>)  </p>
+</li>
+<li>Nodes collect <code>commit</code> messages.  </li>
+<li>Once a node gathers a sufficient number of <code>commit</code> votes (≥ <code>2f + 1</code>), the block is finalized.  </li>
+<li>The block is appended to the node’s blockchain, and the node transitions to the next round (<code>new_round</code>).  </li>
+<li>
+<p>If the node was the proposer, it also broadcasts the finalized block.  </p>
+</li>
+<li>
+<p><strong>Round change phase</strong> (<code>timeout</code> / <code>round_change</code>)  </p>
+</li>
+<li>If progress stalls (e.g., insufficient votes or missing proposals), a timeout is triggered.  </li>
+<li>The node transitions into <code>round_change</code> state and initiates the next consensus round.  </li>
+<li>
+<p>Round changes prevent deadlocks and ensure eventual consensus.  </p>
+</li>
+<li>
+<p><strong>Rejoin</strong>  </p>
+</li>
+<li>Nodes that were offline rejoin by syncing to the latest block and starting consensus from the next round.  </li>
+<li>This ensures resilience against temporary network failures.  </li>
+</ol>
+<h3 id="pbft-protocol-state">PBFT Protocol State</h3>
+<p>The PBFT implementation in SymbChainSim tracks the following <strong>state variables</strong> for each node:</p>
+<ul>
+<li>
+<p><code>rounds</code><br />
+  Stores the current round number and round-change metadata.  </p>
+</li>
+<li>
+<p><code>state</code><br />
+  The protocol state of the node (<code>new_round</code>, <code>pre_prepared</code>, <code>prepared</code>, <code>committed</code>, <code>round_change</code>).  </p>
+</li>
+<li>
+<p><code>miner</code><br />
+  The designated proposer for the current round, determined by the configured proposer selection algorithm.  </p>
+</li>
+<li>
+<p><code>msgs</code><br />
+  A dictionary tracking received messages of types <code>prepare</code> and <code>commit</code>. Used to count votes.  </p>
+</li>
+<li>
+<p><code>timeout</code><br />
+  Reference to the timeout event for the current round. If consensus stalls, this is used to trigger a round change.  </p>
+</li>
+<li>
+<p><code>block</code><br />
+  The current proposed block being processed in the round.  </p>
+</li>
+<li>
+<p><code>node</code><br />
+  A back-reference to the parent <code>Node</code> object for access to node-level state and logic.  </p>
+</li>
+</ul>
+<h3 id="timeouts">Timeouts</h3>
+<p>Timeouts are essential to guarantee <strong>liveness</strong>.<br />
+- Each round schedules a timeout event.<br />
+- If the timeout expires without reaching consensus, the node transitions to <code>round_change</code>.<br />
+- Timeouts are adaptive, and the configuration (<code>PBFT_config.yaml</code>) defines the base timeout duration.  </p>
+<p>Timeout handling ensures the protocol does not stall indefinitely even in the presence of faulty or malicious nodes.  </p>
+<h3 id="messages">Messages</h3>
+<p>All messages in SymbChainSim are modeled as <strong>simulation events</strong>. PBFT defines four primary message types:</p>
+<ul>
+<li><code>propose</code> – Internal event for block proposal.  </li>
+<li><code>pre_prepare</code> – Broadcast of a proposed block.  </li>
+<li><code>prepare</code> – Broadcast vote on a proposed block.  </li>
+<li><code>commit</code> – Broadcast final vote to commit the block.  </li>
+<li><code>new_block</code> – Broadcast of a finalized block by the proposer.  </li>
+</ul>
+<p>Each message carries metadata such as:
+- The round number.<br />
+- The consensus protocol identifier (<code>CP</code>).<br />
+- The block being voted on (when applicable).  </p>
+<p>By modeling these as events, the simulator captures <strong>message delays, ordering, and network effects</strong>.  </p>
+<h3 id="proposer-selection">Proposer Selection</h3>
+<p>The proposer (or leader) is responsible for initiating block proposals in each round.<br />
+SymbChainSim supports multiple proposer selection mechanisms:</p>
+<ul>
+<li>
+<p><strong>Round robin</strong><br />
+<code>miner = round_number mod N</code><br />
+  where <code>N</code> is the number of nodes.  </p>
+</li>
+<li>
+<p><strong>Hash-based</strong><br />
+<code>(last_block_hash + round_number) mod N</code><br />
+  This ties proposer selection to blockchain state, ensuring randomness and fairness.  </p>
+</li>
+</ul>
+<p>The selection algorithm is defined in the global <code>Parameters.execution["proposer_selection"]</code>.  </p>
+<h2 id="summary">Summary</h2>
+<p>The consensus model in SymbChainSim emphasizes:
+- <strong>Accuracy</strong>: Low-abstraction, event-driven modeling of consensus.<br />
+- <strong>Extensibility</strong>: Protocols are modular and self-contained.  </p>
+<p>By capturing the full state machine dynamics of consensus protocols, SymbChainSim provides a powerful platform for studying blockchain consensus. </p>
 
 
 
@@ -875,7 +1495,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../rounds/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Rounds">
+          <a href="../network/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Network">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -885,20 +1505,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Rounds
+                Network
               </div>
             </div>
           </a>
         
         
           
-          <a href="../manager/" class="md-footer__link md-footer__link--next" aria-label="Next: Manager">
+          <a href="../high_level_sync/" class="md-footer__link md-footer__link--next" aria-label="Next: High-Level Sync">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Manager
+                High-Level Sync
               </div>
             </div>
             <div class="md-footer__button md-icon">

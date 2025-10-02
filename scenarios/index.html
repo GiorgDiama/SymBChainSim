@@ -9,10 +9,10 @@
       
       
       
-        <link rel="prev" href="../quick_start/">
+        <link rel="prev" href="../metrics/">
       
       
-        <link rel="next" href="../node/">
+        <link rel="next" href="../simulation_parameters/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -20,7 +20,7 @@
     
     
       
-        <title>Simulation Engine - SymbChainSim</title>
+        <title>Scenarios - SymbChainSim</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#simulation-engine-des-core" class="md-skip">
+        <a href="#scenario-generation-in-symbchainsim-sbs" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Simulation Engine
+              Scenarios
             
           </span>
         </div>
@@ -260,11 +260,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../simulation_engine/" class="md-tabs__link">
         
   
   
@@ -385,9 +383,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../scenarios/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -512,32 +512,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Simulation Engine
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../simulation_engine/" class="md-nav__link">
         
   
   
@@ -548,62 +526,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#core-components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Core components
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#at-a-glance" class="md-nav__link">
-    <span class="md-ellipsis">
-      At a glance
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-lives-outside-the-engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      What lives outside the engine
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#extending-the-simulation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Extending the simulation
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1031,10 +953,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../scenarios/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1045,6 +989,119 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#generation-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Generation Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generation Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate_scenariopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_scenario.py
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-parameters-from-generate_scenariopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Parameters (from generate_scenario.py)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-json-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario JSON Schema
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executing Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executing Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1098,38 +1155,95 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-components" class="md-nav__link">
+  <a href="#generation-scenarios" class="md-nav__link">
     <span class="md-ellipsis">
-      Core components
+      Generation Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Generation Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#generate_scenariopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      generate_scenario.py
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#at-a-glance" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
-      At a glance
+      Usage
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#what-lives-outside-the-engine" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
     <span class="md-ellipsis">
-      What lives outside the engine
+      Parameters
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#extending-the-simulation" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#example-parameters-from-generate_scenariopy" class="md-nav__link">
     <span class="md-ellipsis">
-      Extending the simulation
+      Example Parameters (from generate_scenario.py)
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-json-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario JSON Schema
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#executing-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Executing Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Executing Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1152,36 +1266,100 @@
   
 
 
-<h1 id="simulation-engine-des-core">Simulation Engine (DES core)</h1>
-<p>SymBChainSim uses a minimal Discrete Event Simulation (DES) engine to drive the blockchain models. The engine is intentionally simple and model-agnostic: it advances a virtual clock by processing timestamped events, and leaves protocol logic, networking behaviors, and reconfiguration mechanics to the <code>Chain/</code> and <code>Manager/</code> modules.</p>
-<h2 id="core-components">Core components</h2>
+<h1 id="scenario-generation-in-symbchainsim-sbs">Scenario Generation in SymBChainSim (SBS)</h1>
+<p>This document outlines the process of generating custom scenarios for the SymBChainSim (SBS) blockchain simulator. Scenarios define the network conditions, node behaviors, and transaction workloads to be simulated, allowing for comprehensive testing of different consensus protocols and network configurations.</p>
+<h2 id="generation-scenarios">Generation Scenarios</h2>
+<p>The <code>src/ScenarioGenerationAndVisualisation</code> directory contains tools for creating and visualizing blockchain simulation scenarios. The primary script for scenario generation is <code>generate_scenario.py</code>.</p>
+<h3 id="generate_scenariopy"><code>generate_scenario.py</code></h3>
+<p>The <code>generate_scenario.py</code> script is responsible for creating JSON scenario files. These files encapsulate various aspects of a simulation, including:</p>
 <ul>
-<li><code>Engine.Event</code> (<code>src/Simulator/Engine/Event.py</code>): Lightweight container for a scheduled action with fields such as <code>time</code>, <code>type</code>, <code>payload</code>, and a <code>handler</code> reference.</li>
-<li><code>Engine.EventQueue</code> (<code>src/Simulator/Engine/EventQueue.py</code>): Min-heap priority queue ordered by event time; supports push/pop and basic stats.</li>
-<li><code>Engine.Scheduler</code> (<code>src/Simulator/Engine/Scheduler.py</code>): Convenience layer for creating and scheduling future events from within models.</li>
-<li><code>Engine.Handler</code> (<code>src/Simulator/Engine/Handler.py</code>): Dispatches events to the appropriate model logic (nodes, network, manager, etc.).</li>
-<li><code>Engine.Simulation</code> (<code>src/Simulator/Engine/Simulation.py</code>): Owns the main loop, event queue, and simulation clock.</li>
+<li><strong>Network Configuration</strong>: Defines the bandwidth characteristics for each node in the network.</li>
+<li><strong>Node Behavior</strong>: Simulates node failures, specifying their timing and duration.</li>
+<li><strong>Transaction Workloads</strong>: Generates streams of transactions with configurable rates and sizes.</li>
+<li><strong>Time Intervals</strong>: Divides the total simulation duration into distinct segments, allowing for dynamic changes in network conditions and node behavior.</li>
 </ul>
-<h2 id="at-a-glance">At a glance</h2>
-<ol>
-<li>The queue pops the earliest event; the simulation clock jumps to that event's <code>time</code>.</li>
-<li><code>Handler</code> executes the event, allowing models to mutate state and schedule new future events.<ul>
-<li><strong>Note:</strong> Information about the backlog handling is provided in the documentation of the <a href="../node/">Node</a> model   </li>
+<h3 id="usage">Usage</h3>
+<p>To generate a scenario, to run the <code>generate_scenario.py</code> script with a specified name:</p>
+<pre><code class="language-bash">cd src/ScenarioGenerationAndVisualisation
+uv run generate_scenario.py --name &lt;scenario_name&gt;
+</code></pre>
+<p>Replace <code>&lt;scenario_name&gt;</code> with your desired name for the scenario. The generated JSON file will be saved in <code>../Resources/Scenarios/&lt;scenario_name&gt;.json</code>.</p>
+<h3 id="parameters">Parameters</h3>
+<p>The <code>generate_scenario.py</code> script uses a dictionary of parameters to define the characteristics of the generated scenario. These parameters are currently defined within the script and can be modified for different simulation needs. Below are the key parameters and their descriptions:</p>
+<ul>
+<li><code>dur</code> (int): Total duration of the simulation in seconds.</li>
+<li><code>ti_mu</code> (float): Mean of the normal distribution used to determine the length of time intervals.</li>
+<li><code>ti_sigma</code> (float): Standard deviation of the normal distribution used to determine the length of time intervals.</li>
+<li><code>num_nodes</code> (int): The total number of blockchain nodes participating in the simulation.</li>
+<li><code>networks</code> (list of tuples <code>(mean, std_dev)</code>): <ul>
+<li>A list of network models. Each tuple represents a normal distribution from which node bandwidths (in some unit, e.g., Mbps) are sampled. Each node is randomly assigned one of these network models.</li>
 </ul>
 </li>
-<li>Repeat until termination conditions (simulation time limit, block limit, etc...).</li>
-</ol>
-<h2 id="what-lives-outside-the-engine">What lives outside the engine</h2>
-<ul>
-<li>Everything that is not directly relevant to the DES aspect of the simulation.</li>
+<li><code>fail_duration</code> (list of tuples <code>(mean, std_dev)</code>):<ul>
+<li>A list of normal distributions defining the duration of node failures. When a node fails, its downtime is sampled from one of these distributions.</li>
 </ul>
-<h2 id="extending-the-simulation">Extending the simulation</h2>
-<ul>
-<li>Add a new event type by defining its handling in <code>Handler</code> and scheduling it from your model.</li>
-<li>Keep events small: pass identifiers in <code>payload</code> and fetch heavy state from the owning model when executing.</li>
-<li>Prefer a few coarse-grained events (e.g., high-level sync completions) over simulating every micro-step when appropriate.</li>
+</li>
+<li><code>workloads</code> (list of tuples <code>(mean, std_dev)</code>): A list of normal distributions representing transaction rates (e.g., transactions per second) within a given interval. The number of transactions for an interval is sampled from one of these distributions.</li>
+<li><code>sizes</code> (tuple <code>(min, max)</code>): A tuple specifying the minimum and maximum transaction sizes. Transaction sizes are uniformly sampled within this range.</li>
 </ul>
-<p>In short, the engine provides the DES backbone; the blockchain-specific behavior is largely modeled in the surrounding components. Try to keep as much of the blockchain logic as possible outside of <code>Engine/</code>.</p>
+<h3 id="example-parameters-from-generate_scenariopy">Example Parameters (from <code>generate_scenario.py</code>)</h3>
+<pre><code class="language-python">parameters_dict = {
+    &quot;dur&quot;: 1200,          # Total simulation duration in seconds
+    &quot;ti_mu&quot;: 300,         # Mean for time interval length
+    &quot;ti_sigma&quot;: 20,       # Standard deviation for time interval length
+    &quot;num_nodes&quot;: 8,       # Number of nodes in the simulation
+    &quot;networks&quot;: [(10, 0.1), (5, 0.1), (2.5, 0.1)], # Bandwidth models (mean, std_dev)
+    &quot;fail_duration&quot;: [(20, 5), (60, 10), (120, 20)], # Failure duration models
+    &quot;workloads&quot;: [(50, 10), (100, 20), (100, 50)], # Transaction rate models
+    &quot;sizes&quot;: (8, 20.5),   # Transaction size range (min, max)
+}
+</code></pre>
+<h3 id="scenario-json-schema">Scenario JSON Schema</h3>
+<p>Generated scenarios adhere to the following JSON structure:</p>
+<pre><code class="language-json">{
+    &quot;set_up&quot;: {
+        &quot;num_nodes&quot;: &lt;number&gt;,
+        &quot;duration&quot;: &lt;total_time&gt;,
+        &quot;parameters&quot;: &lt;generation_parameters&gt;
+    },
+    &quot;intervals&quot;: {
+        &quot;&lt;interval_id&gt;&quot;: {
+            &quot;start&quot;: &lt;start_time&gt;,
+            &quot;end&quot;: &lt;end_time&gt;,
+            &quot;network&quot;: [(node_id, bandwidth), ...],
+            &quot;faults&quot;: [(node_id, fail_time, duration), ...],
+            &quot;transactions&quot;: [(creator, id, timestamp, size), ...]
+        }
+    }
+}
+</code></pre>
+<ul>
+<li><strong><code>set_up</code></strong>: Contains overall simulation parameters.<ul>
+<li><code>num_nodes</code>: The total number of nodes in the simulation.</li>
+<li><code>duration</code>: The total simulation duration.</li>
+<li><code>parameters</code>: The dictionary of parameters used to generate this specific scenario.</li>
+</ul>
+</li>
+<li><strong><code>intervals</code></strong>: An object where each key is an <code>interval_id</code> (0, 1, 2, ...) representing a time segment within the simulation.<ul>
+<li><code>start</code>: The start time of the interval.</li>
+<li><code>end</code>: The end time of the interval.</li>
+<li><code>network</code>: A list of tuples, where each tuple <code>(node_id, bandwidth)</code> specifies the assigned bandwidth for a given node during this interval.</li>
+<li><code>faults</code>: A list of tuples <code>(node_id, fail_time, duration)</code> indicating when a specific node fails and for how long within this interval.</li>
+<li><code>transactions</code>: A sorted list of tuples <code>(creator, id, timestamp, size)</code> representing the transactions generated during this interval. Transactions are sorted by <code>timestamp</code>.</li>
+</ul>
+</li>
+</ul>
+<h3 id="output">Output</h3>
+<p>Generated scenarios are saved as JSON files in the <code>../Resources/Scenarios/</code> directory, named after the <code>--name</code> parameter provided during script execution (e.g., <code>../Resources/Scenarios/my_scenario.json</code>). These files are then used as input for the blockchain simulator to test various consensus protocols and network conditions.</p>
+<h2 id="executing-scenarios">Executing Scenarios</h2>
+<p>Scenario files can be used to run a simulation with SymBChainSim. The main entry point for running simulations is the <code>src/Simulator/Blockchain.py</code> script.</p>
+<p>To execute a simulation using a previously generated scenario, you need to specify the scenario's name using the <code>--sc</code> command-line argument.</p>
+<pre><code class="language-bash">uv run src/Simulator/Blockchain.py --sc &lt;scenario_name&gt;
+</code></pre>
+<p>Replace <code>&lt;scenario_name&gt;</code> with the name you provided when generating the scenario (e.g., <code>my_scenario</code>). The system will automatically look for the scenario file in the <code>Resources/Scenarios/</code> directory.</p>
+<p>A default scenario <code>light_scenario.json</code> is provided for testing.</p>
+<h3 id="scenario-configuration">Scenario Configuration</h3>
+<p>The <code>src/Configs/scenario.yaml</code> file allows for control over parameters that are not defined by the scenario itself. While a scenario file defines dynamic elements like network changes and transaction loads, <code>scenario.yaml</code> configures the static properties and operational parameters of the simulation engine and blockchain components. The parameters in <code>scenario.yaml</code> are a subset of those in <code>base.yaml</code> thus details on the specifics for each can be found in the parameters section. </p>
 
 
 
@@ -1217,7 +1395,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../quick_start/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Quick Start">
+          <a href="../metrics/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Metrics">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1227,20 +1405,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Quick Start
+                Metrics
               </div>
             </div>
           </a>
         
         
           
-          <a href="../node/" class="md-footer__link md-footer__link--next" aria-label="Next: Node">
+          <a href="../simulation_parameters/" class="md-footer__link md-footer__link--next" aria-label="Next: Parameters">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Node
+                Parameters
               </div>
             </div>
             <div class="md-footer__button md-icon">

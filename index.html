@@ -24,6 +24,9 @@
     
       <link rel="stylesheet" href="assets/stylesheets/main.e53b48f4.min.css">
       
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
       
 
 
@@ -51,7 +54,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -100,6 +110,32 @@
         </div>
       </div>
     </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
     
     
       <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
@@ -269,7 +305,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="high_level_sync/" class="md-tabs__link">
+        <a href="consensus/" class="md-tabs__link">
           
   
   
@@ -288,17 +324,20 @@
   
   
   
-    <li class="md-tabs__item">
-      <a href="manager/" class="md-tabs__link">
-        
+    
+    
+      <li class="md-tabs__item">
+        <a href="manager/" class="md-tabs__link">
+          
   
   
     
   
   Manager
 
-      </a>
-    </li>
+        </a>
+      </li>
+    
   
 
       
@@ -315,6 +354,44 @@
     
   
   Reconfiguration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="metrics/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Metrics
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="scenarios/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Scenarios
 
       </a>
     </li>
@@ -442,11 +519,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Table of Contents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#learn-more" class="md-nav__link">
     <span class="md-ellipsis">
       Learn more
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -708,6 +800,29 @@
   
   
     <li class="md-nav__item">
+      <a href="consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus Protocols
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="high_level_sync/" class="md-nav__link">
         
   
@@ -747,6 +862,60 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Manager
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Manager
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -754,12 +923,35 @@
   
   
     <li class="md-nav__item">
-      <a href="consensus/" class="md-nav__link">
+      <a href="manager/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Consensus Protocols
+    Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="dynamic_simulation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Dynamic Simulation
     
   </span>
   
@@ -784,12 +976,12 @@
   
   
     <li class="md-nav__item">
-      <a href="manager/" class="md-nav__link">
+      <a href="reconfiguration/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Manager
+    Reconfiguration
     
   </span>
   
@@ -806,12 +998,34 @@
   
   
     <li class="md-nav__item">
-      <a href="reconfiguration/" class="md-nav__link">
+      <a href="metrics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Reconfiguration
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Scenarios
     
   </span>
   
@@ -870,11 +1084,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Table of Contents
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Table of Contents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#learn-more" class="md-nav__link">
     <span class="md-ellipsis">
       Learn more
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -900,9 +1129,35 @@
 <h1 id="introduction-to-symbchainsim">Introduction to SymbChainSim</h1>
 <p><strong>SymbChainSim (SBS)</strong> is a blockchain simulation tool written in Python that supports dynamic updates <strong>during runtime</strong>. The motivation behind SymbChainSim is dynamic blockchain optimisation / management while the ultimate goal is the creation of blockchain digital twins. SymbChainSim is designed to be modular and takes a low abstraction approach to modelling consensus protocols to accurately capture their dynamics. </p>
 <p>SymbChainSim is a Discrete Event Simulation (DES) tool. A quick introduction to DES can be found <a href="https://softwaresim.com/blog/a-gentle-introduction-to-discrete-event-simulation/">here</a>. In general, working with SymbChainSim does not require deep understanding of the concepts behind DES; an intuitive idea of DES is enough to start using and even extending SBS.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="quick_start/"><strong>Quick Start</strong></a>: Get up and running with SymBChainSim. This section covers installation, basic execution, and configuration of your first simulation.</li>
+<li><a href="simulation_engine/"><strong>Simulation Engine</strong></a>: Delve into the core Discrete Event Simulation (DES) engine that powers SymBChainSim, understanding its components and how to extend them.</li>
+<li><a href="node/"><strong>Blockchain Models</strong></a>: Details on the fundamental building blocks of the simulated blockchain.s<ul>
+<li><strong>Node</strong>: Details about the generic blockchain node model, its responsibilities and attributes.</li>
+<li><strong>Block</strong>: Details on the data structure for blocks, including their key fields and helpers.</li>
+<li><strong>Transaction Factory</strong>: Details on how transactions are produced, propagated, selected, and finalized across the network.</li>
+<li><strong>Network</strong>: Details on the peer-to-peer layer model, message propagation, delay models, and network topology.</li>
+</ul>
+</li>
+<li><a href="consensus/"><strong>Consensus</strong></a>: Understand how consensus is modeled in SBS.<ul>
+<li><strong>Consensus Protocols</strong>: Details the low-abstraction, modular approach to modeling various consensus protocols.</li>
+<li><strong>High-Level Sync</strong>: The node synchronization mechanism for catching up on missing blockchain data and configuration chains.</li>
+<li><strong>Rounds</strong>: A generic round-change mechanism used by round-based consensus protocols.</li>
+</ul>
+</li>
+<li><a href="manager/"><strong>Manager</strong></a>: The central orchestrator for dynamic simulations.<ul>
+<li><strong>Manager</strong>: The module responsible for setting up, running, and dynamically controlling the simulation.</li>
+<li><strong>Dynamic Simulation</strong>: Explore how parameters, network behaviors, and workloads are dynamically updated during runtime.</li>
+</ul>
+</li>
+<li><a href="reconfiguration/"><strong>Reconfiguration</strong></a>: Details on how SymBChainSim models dynamic reconfiguration of the blockchain system.</li>
+<li><a href="metrics/"><strong>Metrics</strong></a>: Understand how performance metrics are collected and calculated to provide insights into the blockchain network's behavior.</li>
+<li><a href="scenarios/"><strong>Scenarios</strong></a>: Details on how to generate custom scenarios that define network conditions, node behaviors, and transaction workloads for comprehensive testing.</li>
+<li><a href="simulation_parameters/"><strong>Parameters</strong></a>: Get a detailed overview of all configurable parameters that control SymBChainSim's components and behaviors.</li>
+</ul>
 <h3 id="learn-more">Learn more</h3>
-<p>For more detailed documentation and information about the inner working of SymbChainSim check out quick start and the rest of the documentation on the models, simulation engine etc..</p>
-<p>You may also find the following publication useful as they discuss the higher level ideas behind the simulator and motivate the design choices. (If you use SymbChainSim please cite the following):</p>
+<p>You may find the following publication useful as they discuss the higher level ideas behind the simulator and motivate the design choices. (If you use SymbChainSim please also cite these):</p>
 <blockquote>
 <p><em>Diamantopoulos, G., Bahsoon, R., Tziritas, N., &amp; Theodoropoulos, G. (2023, June). Symbchainsim: A novel simulation tool for dynamic and adaptive blockchain management and its trilemma tradeoff. In Proceedings of the 2023 ACM SIGSIM Conference on Principles of Advanced Discrete Simulation (pp. 118-127).</em></p>
 <p><em>Diamantopoulos, G., Bahsoon, R., Tziritas, N., &amp; Theodoropoulos, G. (2025). SymBChainSim: A novel simulation system for info-symbiotic blockchain management. ACM Transactions on Modeling and Computer Simulation, 35(2), 1-25.</em> </p>
