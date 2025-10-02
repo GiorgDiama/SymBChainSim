@@ -1,6 +1,6 @@
 # Simulation Engine (DES core)
 
-SymBChainSim uses a minimal Discrete Event Simulation (DES) engine to drive the blockchain models. The engine is intentionally simple and model-agnostic: it advances a virtual clock by processing timestamped events, and leaves protocol logic, networking behavior, and reconfiguration mechanics to the `Chain/` and `Manager/` modules.
+SymBChainSim uses a minimal Discrete Event Simulation (DES) engine to drive the blockchain models. The engine is intentionally simple and model-agnostic: it advances a virtual clock by processing timestamped events, and leaves protocol logic, networking behaviors, and reconfiguration mechanics to the `Chain/` and `Manager/` modules.
 
 ## Core components
 
@@ -12,9 +12,10 @@ SymBChainSim uses a minimal Discrete Event Simulation (DES) engine to drive the 
 
 ## At a glance
 
-2. The queue pops the earliest event; the simulation clock jumps to that event's `time`.
-3. `Handler` executes the event, allowing models to mutate state and schedule new future events.
-4. Repeat until termination conditions (simulation time limit, block limit, etc...).
+1. The queue pops the earliest event; the simulation clock jumps to that event's `time`.
+2. `Handler` executes the event, allowing models to mutate state and schedule new future events.
+    - **Note:** Information about the backlog handling is provided in the documentation of the [Node](node.md) model   
+3. Repeat until termination conditions (simulation time limit, block limit, etc...).
 
 ## What lives outside the engine
 - Everything that is not directly relevant to the DES aspect of the simulation.
