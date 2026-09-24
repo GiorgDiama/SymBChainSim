@@ -152,7 +152,7 @@ def get_payload_size(payload: dict[str, Any]) -> float:
     for key in payload:
         match key:
             case "block":
-                size += payload[key].size + Parameters.Tendermint["base_block_size"] / 1e6
+                size += payload[key].size
             case "block_hash":
                 size += Parameters.Tendermint["hash_size"] / 1e6
             case _:
