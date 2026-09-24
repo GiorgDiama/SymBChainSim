@@ -50,7 +50,7 @@ class Network:
 
         for key in msg.payload:
             if key == "block":
-                size += msg.payload[key].size + Parameters.data["base_block_size"]
+                size += msg.payload[key].size
             else:
                 size += float(getsizeof(msg.payload[key]) / 1_000_000)
         return size
