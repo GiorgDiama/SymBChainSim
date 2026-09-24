@@ -111,5 +111,8 @@ def handle_backlog(node: "Node", call_time: float) -> None:
             logger.debug("BACKLOG STATUS: not time for this yet...")
 
     # some events may clear the backlog - this prevents trying to remove already removed events
+    # Event.__eq__ compares timestamps and every replayed event now shares call_time,
+    # so filter by identity - otherwise every pending future event would be dropped too
     if node.backlog:
-        node.backlog = [e for e in node.backlog if e not in remove_list]
+        removed = {id(e) for e in remove_list}
+        node.backlog = [e for e in node.backlog if id(e) not in removed]

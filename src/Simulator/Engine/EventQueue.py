@@ -49,9 +49,12 @@ class PrioQueue:
         return len(self.pq)
 
     def remove(self, task: Event, priority: float):
-        if (priority, task) in self.pq:
-            self.pq.remove((priority, task))
-            heapq.heapify(self.pq)
+        # match by identity: Event.__eq__ compares timestamps only
+        for i, (_, t) in enumerate(self.pq):
+            if t is task:
+                self.pq.pop(i)
+                heapq.heapify(self.pq)
+                return
 
 
 class Queue:
