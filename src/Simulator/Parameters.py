@@ -114,7 +114,7 @@ class Parameters:
     @staticmethod
     def calculate_fault_tolerance():
         """Calculates f and 2f+1 using number of nodes in the simulation"""
-        Parameters.application["f"] = int((1 / 3) * Parameters.application["Nn"])
+        Parameters.application["f"] = (Parameters.application["Nn"] - 1) // 3
 
         Parameters.application["required_messages"] = (2 * Parameters.application["f"]) + 1
 
