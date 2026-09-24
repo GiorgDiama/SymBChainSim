@@ -181,7 +181,7 @@ def process_round_change_vote(node: "Node", new_round: int, voter: "Node"):
 
     for key, value in msgs.items():
         # check if the voter has voted for some other round
-        if voter in value:
+        if voter_id in value:
             # if the voter voted for a smaller round then that vote is removed
             if key < new_round:
                 msgs[key].remove(voter_id)
