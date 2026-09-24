@@ -183,16 +183,19 @@ class TransactionFactory:
         transactions: List[Transaction] = []
         size: float = 0
 
-        while pool:
-            tx = pool[0]
+        # drop transactions already committed from the front of the pool
+        while pool and pool[0].processed:
+            pool.popleft()
+
+        # selected transactions stay in the pool until their block is committed
+        # (mark_transactions_as_processed) so that failed rounds do not lose them
+        for tx in pool:
             if tx.processed:
-                pool.popleft()
                 continue
 
             if tx.timestamp <= time and size + tx.size <= configuration.block_size:
                 transactions.append(tx)
                 size += tx.size
-                pool.popleft()
             else:
                 break
 
