@@ -68,7 +68,7 @@ def set_up_scenario(manager, scenario, config="scenario.yaml"):
 
 
 def load_workload():
-    with open(Parameters.simulation["workload"], "r") as f:
+    with open(Parameters.application["workload"], "r") as f:
         data = json.load(f)
 
     Parameters.simulation["stop_after_tx"] = len(data)

@@ -226,7 +226,7 @@ class BigFoot(ConsensusProtocol):
 
         if transactions:
             block.transactions = transactions
-            block.size = size
+            block.size = size + Parameters.data["base_block_size"]
             time += +Parameters.execution["creation_time"]
             time += len(transactions) * Parameters.execution["time_per_tx"]
 

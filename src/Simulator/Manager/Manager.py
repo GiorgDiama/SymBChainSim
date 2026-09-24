@@ -154,7 +154,7 @@ class Manager:
     def init_system_events(self) -> None:
         """Sets up the system events that dynamically manage the simulation."""
         logger.debug("Initializing system events.")
-        if Parameters.simulation.get("workload", "generate") == "generate":
+        if Parameters.application.get("workload", "generate") == "generate":
             logger.debug("Scheduling transaction generation event.")
             generate_txionsSE.schedule_transaction_generation_event(self, init=True)
 

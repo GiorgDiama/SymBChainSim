@@ -211,7 +211,7 @@ class Tendermint(ConsensusProtocol):
             "configuration_depth": self.node.reconfiguration_state.confchain[-1].depth,
         }
 
-        if "votes" in self.node.blockchain[-1].extra_data.keys() and self.node.blockchain[-1].consensus == Tendermint:
+        if "votes" in self.node.blockchain[-1].extra_data.keys() and self.node.blockchain[-1].consensus == Tendermint.NAME:
             block.extra_data["last_proof"] = self.node.blockchain[-1].extra_data["votes"]["commit"]
 
         transactions, size = TransactionFactory.execute_transactions(self.node.reconfiguration_state.configuration, self.node.pool, time)

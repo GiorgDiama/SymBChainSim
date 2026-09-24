@@ -45,6 +45,9 @@ def propose(state: "PBFT", event: "Event") -> str:
             logger.debug(f"[Node {state.node.id}] PROPOSE: No time left in round for retry")
         return "no transactions - rescheduled"
     else:
+        # account for block creation and transaction execution time
+        time = creation_time
+
         # block created, change state, and broadcast it.
         logger.debug(f"[Node {state.node.id}] PROPOSE: Block created successfully, transitioning from {state.state} to pre_prepared")
         state.state = "pre_prepared"
