@@ -43,6 +43,9 @@ def propose(state: "BigFoot", event: "Event") -> str:
             logger.debug(f"[Node {state.node.id}] PROPOSE: No time left in round for retry")
 
     else:
+        # account for block creation and transaction execution time
+        time = creation_time
+
         # block created, change state, and broadcast it.
         state.state = "pre_prepared"
         state.block = block.copy()
