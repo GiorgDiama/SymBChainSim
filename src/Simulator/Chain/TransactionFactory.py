@@ -79,11 +79,11 @@ class TransactionFactory:
             case "local":
                 for node in TransactionFactory.nodes:
                     if node.id == tx.creator:
+                        node.pool.append(tx)
                         continue
                     prop_delay = Network.calculate_message_propagation_delay(TransactionFactory.nodes[tx.creator], node, tx.size)
                     new_timestamp = tx.timestamp + prop_delay
-                    tx = Transaction(tx.creator, tx.id, new_timestamp, tx.size)
-                    node.pool.append(tx)
+                    node.pool.append(Transaction(tx.creator, tx.id, new_timestamp, tx.size))
             case "global":
                 prop_delay = Network.calculate_message_propagation_delay(
                     TransactionFactory.nodes[tx.creator],
