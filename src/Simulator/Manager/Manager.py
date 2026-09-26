@@ -115,7 +115,7 @@ class Manager:
             self.update_sim()
 
         if Parameters.simulation["snapshot_interval"] != -1:
-            Snapshots.save_snapshots(Parameters.simulation.get("run_name", "snapshot"))
+            Snapshots.save_snapshots(Parameters.simulation["run_name"])
 
     def finished(self) -> bool:
         """

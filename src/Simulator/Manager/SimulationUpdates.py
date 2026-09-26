@@ -36,5 +36,5 @@ def print_progress(sim):
 
 def start_debug(sim):
     """Starts the built-in debugger `Parameters.simulation.start_debugging_at`"""
-    if "start_debugging_at" in Parameters.simulation and sim.clock >= Parameters.simulation["start_debugging_at"]:
+    if Parameters.simulation["start_debugging_at"] != -1 and sim.clock >= Parameters.simulation["start_debugging_at"]:
         Parameters.simulation["debugging_mode"] = True

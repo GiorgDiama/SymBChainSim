@@ -23,6 +23,12 @@ simulation:
   
   # Take snapshots of simulation state every N seconds
   snapshot_interval: 30
+
+  # Snapshots are saved to Outputs/Snapshots/<run_name>.json
+  run_name: "snapshot"
+
+  # Switch to debugging mode once the simulation clock reaches this time (-1 = never)
+  start_debugging_at: -1
   
   # Print simulation simulation information at the start of execution
   print_info: True
