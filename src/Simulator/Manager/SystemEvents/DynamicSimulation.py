@@ -1,4 +1,4 @@
-from Parameters import Parameters
+from Parameters import Parameters, read_yaml
 from Engine.Event import SystemEvent
 from Chain.Network import Network
 
@@ -29,7 +29,7 @@ class DynamicParameters:
         Returns:
             None
         """
-        params = Parameters.read_yaml(Parameters.dynamic_sim["config"])
+        params = read_yaml(Parameters.dynamic_sim["config"])
 
         DynamicParameters.network = params["network"]
         DynamicParameters.workload = params["workload"]
