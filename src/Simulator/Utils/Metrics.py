@@ -233,10 +233,9 @@ class Metrics:
             Dict[str, int]: Transaction statistics including pool size and processed transactions.
         """
         node_info = {}
-        if Parameters.application["transaction_model"] == "local":
-            node_info["pool"] = len(node.pool)
-        else:
-            node_info["pool"] = len(TransactionFactory.global_mempool)
+        pool = node.pool if Parameters.application["transaction_model"] == "local" else TransactionFactory.global_mempool
+        # committed transactions are only marked as processed and removed from the pool later
+        node_info["pool"] = sum(1 for tx in pool if not tx.processed)
 
         node_info["processed_tx"] = sum(len(b.transactions) for b in node.blockchain)
         return node_info
