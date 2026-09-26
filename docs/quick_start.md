@@ -76,7 +76,7 @@ VS Code may automatically detect and prompt you to set this interpreter.
 uv run Blockchain.py
 
 # Run with existing example scenario
-uv run Blockchain.py --sc light_scenario
+uv run Blockchain.py --scenario light_scenario
 ```
 
 ### Default Configuration

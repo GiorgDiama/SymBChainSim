@@ -98,10 +98,10 @@ Generated scenarios are saved as JSON files in the `../Resources/Scenarios/` dir
 
 Scenario files can be used to run a simulation with SymBChainSim. The main entry point for running simulations is the `src/Simulator/Blockchain.py` script.
 
-To execute a simulation using a previously generated scenario, you need to specify the scenario's name using the `--sc` command-line argument.
+To execute a simulation using a previously generated scenario, you need to specify the scenario's name using the `--scenario` command-line argument.
 
 ```bash
-uv run src/Simulator/Blockchain.py --sc <scenario_name>
+uv run src/Simulator/Blockchain.py --scenario <scenario_name>
 ```
 
 Replace `<scenario_name>` with the name you provided when generating the scenario (e.g., `my_scenario`). The system will automatically look for the scenario file in the `Resources/Scenarios/` directory.
