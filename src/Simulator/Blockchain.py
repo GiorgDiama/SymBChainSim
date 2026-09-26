@@ -13,9 +13,16 @@ import numpy as np
 from datetime import datetime
 
 ############### SEEDS ############
-seed = 1837413
-random.seed(seed)
-np.random.seed(seed)
+DEFAULT_SEED = 1837413
+
+
+def set_seed():
+    """Seeds the random generators (override the default with --seed <int>)"""
+    seed = int(Tools.get_named_cmd_arg("--seed") or DEFAULT_SEED)
+    random.seed(seed)
+    np.random.seed(seed)
+
+
 ############## SEEDS ############
 
 
@@ -65,6 +72,8 @@ def run_scenario(scenario_name):
 
 
 if __name__ == "__main__":
+    set_seed()
+
     if "--sc" in sys.argv:
         name = Tools.get_named_cmd_arg("--sc")
         run_scenario(scenario_name=name)
