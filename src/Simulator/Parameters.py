@@ -1,4 +1,7 @@
 import yaml
+import logging
+
+logger = logging.getLogger(__name__.split(".")[-1])
 
 
 def read_yaml(path: str):
@@ -61,42 +64,42 @@ class Parameters:
         try:
             Parameters.dynamic_sim = params["dynamic_sim"]
         except KeyError:
-            print("NO 'dynamic_sim' Parameters")
+            logger.debug("NO 'dynamic_sim' Parameters")
 
         try:
             Parameters.simulation = params["simulation"]
         except KeyError:
-            print("NO 'simulation' Parameters")
+            logger.debug("NO 'simulation' Parameters")
 
         Parameters.simulation["events"] = {}  # cnt events of each type
 
         try:
             Parameters.behaviour = params["behaviour"]
         except KeyError:
-            print("NO 'behaviour' Parameters")
+            logger.debug("NO 'behaviour' Parameters")
 
         try:
             Parameters.network = params["network"]
         except KeyError:
-            print("NO 'network' Parameters")
+            logger.debug("NO 'network' Parameters")
 
         try:
             Parameters.application = params["application"]
             Parameters.calculate_fault_tolerance()
         except KeyError:
-            print("NO 'application' Parameters")
+            logger.debug("NO 'application' Parameters")
 
         Parameters.application["txIDS"] = 0
 
         try:
             Parameters.execution = params["execution"]
         except KeyError:
-            print("NO 'execution' Parameters")
+            logger.debug("NO 'execution' Parameters")
 
         try:
             Parameters.data = params["data"]
         except KeyError:
-            print("NO 'data' Parameters")
+            logger.debug("NO 'data' Parameters")
 
         Parameters.BigFoot = read_yaml(params["consensus"]["BigFoot"])
         Parameters.PBFT = read_yaml(params["consensus"]["PBFT"])
@@ -105,7 +108,7 @@ class Parameters:
         try:
             Parameters.reconfiguration = params["reconfiguration"]
         except KeyError:
-            print("NO 'reconfiguration' Parameters")
+            logger.debug("NO 'reconfiguration' Parameters")
 
     @staticmethod
     def apply_overrides(overrides):
