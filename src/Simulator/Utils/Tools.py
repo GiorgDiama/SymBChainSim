@@ -68,6 +68,9 @@ def parse_cmd_args():
     if "--no-reconfig" in sys.argv:
         Parameters.reconfiguration["reconfigure"] = False
 
+    if (param := get_named_cmd_arg("--name")) is not None:
+        Parameters.simulation["run_name"] = param
+
     if param := get_named_cmd_arg("--debug-at"):
         Parameters.simulation["start_debugging_at"] = float(param)
 

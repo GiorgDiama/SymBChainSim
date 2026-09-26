@@ -91,5 +91,8 @@ def save_snapshots(name: str = "snapshot") -> None:
     Args:
         name (str): Name of the output file.
     """
-    with open(SNAPSHOT_PATH + f"{name}.json", "w") as f:
+    path = SNAPSHOT_PATH + f"{name}.json"
+    with open(path, "w") as f:
         json.dump(Metrics.snapshots, f, indent=2)
+
+    print(f"Snapshots saved to {path} (plot them with ScenarioGenerationAndVisualisation/snapshot_visualisation.ipynb)")
