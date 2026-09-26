@@ -1,5 +1,4 @@
 import yaml
-import sys
 
 
 def read_yaml(path: str):
@@ -57,9 +56,6 @@ class Parameters:
     @staticmethod
     def load_params_from_config(config):
         """Parses config yaml file and initialises parameter dictionaries"""
-        if "--config" in sys.argv:
-            config = sys.argv[sys.argv.index("--config") + 1]
-
         params = read_yaml(f"../Configs/{config}")
 
         try:
@@ -110,6 +106,35 @@ class Parameters:
             Parameters.reconfiguration = params["reconfiguration"]
         except KeyError:
             print("NO 'reconfiguration' Parameters")
+
+    @staticmethod
+    def apply_overrides(overrides):
+        """
+        Overrides loaded parameters using dotted keys, e.g. {"network.num_neighbours": 4}
+
+        The first part of the key is the parameter group (simulation, network, PBFT, ...),
+        the rest is the path to the value inside it. The key must already exist in the
+        loaded config, which catches typos.
+        """
+        for key, value in overrides.items():
+            group, *path = key.split(".")
+            params = getattr(Parameters, group, None)
+
+            if not isinstance(params, dict) or not path:
+                raise ValueError(f"'{key}' is not a valid parameter (expected <group>.<name>, e.g. network.num_neighbours)")
+
+            for name in path[:-1]:
+                if not isinstance(params.get(name), dict):
+                    raise ValueError(f"'{key}' is not a valid parameter ('{name}' is not a parameter group)")
+                params = params[name]
+
+            if path[-1] not in params:
+                raise ValueError(f"'{key}' is not a valid parameter ('{path[-1]}' not found in the loaded config)")
+
+            params[path[-1]] = value
+
+        if "application.Nn" in overrides:
+            Parameters.calculate_fault_tolerance()
 
     @staticmethod
     def calculate_fault_tolerance():

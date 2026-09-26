@@ -5,7 +5,6 @@ from Engine.Event import MessageEvent, SystemEvent
 from Utils import Serialise
 
 import os
-import sys
 import yaml
 import json
 import logging
@@ -43,51 +42,6 @@ def set_up_logging():
         LEVEL = logging.DEBUG
 
     logging.basicConfig(level=LEVEL, handlers=handlers, force=True)
-
-
-def get_named_cmd_arg(name):
-    """
-    Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
-    """
-    if name in sys.argv:
-        return sys.argv[sys.argv.index(name) + 1]
-    else:
-        return None
-
-
-def parse_cmd_args():
-    """
-    Modifies simulation parameters based on cmd arguments
-    """
-    if "--no-debug" in sys.argv:
-        Parameters.simulation["debugging_mode"] = False
-
-    if "--debug" in sys.argv:
-        Parameters.simulation["debugging_mode"] = True
-
-    if "--no-reconfig" in sys.argv:
-        Parameters.reconfiguration["reconfigure"] = False
-
-    if (param := get_named_cmd_arg("--name")) is not None:
-        Parameters.simulation["run_name"] = param
-
-    if param := get_named_cmd_arg("--debug-at"):
-        Parameters.simulation["start_debugging_at"] = float(param)
-
-    if (param := get_named_cmd_arg("--gossip")) is not None:
-        Parameters.network["gossip"] = False if param == "False" else True
-
-    if param := get_named_cmd_arg("--peers"):
-        Parameters.network["num_neighbours"] = int(param)
-
-    if (param := get_named_cmd_arg("--bandwidth_mean")) is not None:
-        Parameters.network["bandwidth"]["mean"] = float(param)
-
-    if (param := get_named_cmd_arg("--bandwidth_dev")) is not None:
-        Parameters.network["bandwidth"]["dev"] = float(param)
-
-    if (param := get_named_cmd_arg("--cp")) is not None:
-        Parameters.simulation["init_CP"] = param
 
 
 ####################### Simulation Results Analysis #############################

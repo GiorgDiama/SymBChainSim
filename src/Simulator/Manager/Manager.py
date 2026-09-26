@@ -52,15 +52,17 @@ class Manager:
     #                    Set Up and Configuration
     # -----------------------------------------------------------
 
-    def load_params(self, config: str = "base.yaml") -> None:
+    def load_params(self, config: str = "base.yaml", overrides: dict | None = None) -> None:
         """
-        Loads simulation parameters from environment variables, config file, and command line arguments.
+        Loads simulation parameters from a config file and applies any overrides.
 
         Args:
             config (str): The configuration file to load parameters from. Defaults to "base.yaml".
+            overrides (dict | None): Parameter overrides with dotted keys, e.g. {"network.num_neighbours": 4}.
+                Keys must exist in the config (see Parameters.apply_overrides).
         """
         Parameters.load_params_from_config(config)
-        Tools.parse_cmd_args()
+        Parameters.apply_overrides(overrides or {})
 
         Tools.set_up_logging()
 

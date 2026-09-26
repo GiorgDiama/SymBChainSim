@@ -13,8 +13,8 @@ import json
 PATH_TO_SCENARIOS = "../Resources/Scenarios/"
 
 
-def set_up_scenario(manager, scenario, config="scenario.yaml"):
-    manager.load_params(config)
+def set_up_scenario(manager, scenario, config="scenario.yaml", overrides=None):
+    manager.load_params(config, overrides)
 
     with open(PATH_TO_SCENARIOS + scenario + ".json", "r") as f:
         scenario = json.load(f)
