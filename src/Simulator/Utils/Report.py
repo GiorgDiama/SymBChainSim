@@ -126,9 +126,9 @@ def print_summary(sim: "Simulation") -> None:
         ("Blocks", f"{number(blocks)}" + (f"  ({per_cp})" if per_cp else "")),
         ("Transactions", f"{number(confirmed)} confirmed, {number(pending)} pending"),
         ("Throughput", fmt(mean([Metrics.throughput[n] for n in nodes]), "tx/s", 1)),
-        ("Latency", fmt(mean([Metrics.latency[n]["AVG"] for n in nodes]), "s")),
-        ("Block time", fmt(mean([Metrics.blocktime[n]["AVG"] for n in nodes]), "s")),
-        ("Block size", fmt(mean([Metrics.block_info[n]["AVG"] for n in nodes]), "MB")),
+        ("Mean latency", fmt(mean([Metrics.latency[n]["AVG"] for n in nodes]), "s")),
+        ("Mean block time", fmt(mean([Metrics.blocktime[n]["AVG"] for n in nodes]), "s")),
+        ("Mean block size", fmt(mean([Metrics.block_info[n]["AVG"] for n in nodes]), "MB")),
         ("Decentralisation (Gini)", fmt(mean([Metrics.decentralisation[n] for n in nodes]), "(0 = perfectly decentralised)")),
     ]
 
@@ -141,8 +141,9 @@ def print_summary(sim: "Simulation") -> None:
 def print_per_node(sim: "Simulation") -> None:
     """Prints the metrics of each node (shown with --verbose)"""
     print(title("PER NODE"))
-    header = ["node", "blocks", "synced", "latency", "throughput", "block time", "block size", "Gini", "mempool", "confirmed"]
-    print("  " + "".join(f"{h:>11}" for h in header))
+    header = ["node", "blocks", "synced", "mean latency", "throughput", "mean block time", "mean block size", "Gini", "mempool", "confirmed"]
+    widths = [max(len(h), 6) + 2 for h in header]
+    print("  " + "".join(f"{h:>{w}}" for h, w in zip(header, widths)))
 
     for n in sim.nodes:
         synced = len([b for b in n.blockchain[1:] if b.extra_data.get("synced", False)])
@@ -158,7 +159,7 @@ def print_per_node(sim: "Simulation") -> None:
             Metrics.transaction_info[n.id]["pool"],
             Metrics.transaction_info[n.id]["processed_tx"],
         ]
-        print("  " + "".join(f"{str(v):>11}" for v in row))
+        print("  " + "".join(f"{str(v):>{w}}" for v, w in zip(row, widths)))
     print()
 
 
