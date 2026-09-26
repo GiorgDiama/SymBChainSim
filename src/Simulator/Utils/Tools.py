@@ -66,10 +66,7 @@ def parse_cmd_args():
         Parameters.simulation["debugging_mode"] = True
 
     if "--no-reconfig" in sys.argv:
-        Parameters.reconfiguration["optimisation_chain"] = False
-
-    if "--docker" in sys.argv:
-        Parameters.reconfiguration["local_service"] = False
+        Parameters.reconfiguration["reconfigure"] = False
 
     if param := get_named_cmd_arg("--debug-at"):
         Parameters.simulation["start_debugging_at"] = float(param)
