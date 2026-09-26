@@ -35,7 +35,7 @@ The `generate_scenario.py` script uses a dictionary of parameters to define the 
 -   `ti_sigma` (float): Standard deviation of the normal distribution used to determine the length of time intervals.
 -   `num_nodes` (int): The total number of blockchain nodes participating in the simulation.
 -   `networks` (list of tuples `(mean, std_dev)`): 
-    - A list of network models. Each tuple represents a normal distribution from which node bandwidths (in some unit, e.g., Mbps) are sampled. Each node is randomly assigned one of these network models.
+    - A list of network models. Each tuple represents a normal distribution from which node bandwidths (in MB/s) are sampled. Each node is randomly assigned one of these network models.
 -   `fail_duration` (list of tuples `(mean, std_dev)`):
     - A list of normal distributions defining the duration of node failures. When a node fails, its downtime is sampled from one of these distributions.
 -   `workloads` (list of tuples `(mean, std_dev)`): A list of normal distributions representing transaction rates (e.g., transactions per second) within a given interval. The number of transactions for an interval is sampled from one of these distributions.

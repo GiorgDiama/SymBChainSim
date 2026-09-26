@@ -122,13 +122,13 @@ network:
   processing_delay: 0
 
   bandwidth:
-    # Mean bandwidth in Mbps
+    # Mean bandwidth in MB/s
     mean: 5
     
-    # Standard deviation of bandwidth in Mbps
+    # Standard deviation of bandwidth in MB/s
     dev: 2
     
-    # Minimum bandwidth in Mbps
+    # Minimum bandwidth in MB/s
     min: 2
     
     # Bandwidth sampling frequency: 

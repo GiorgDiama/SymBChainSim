@@ -2,7 +2,7 @@ network:
   # Dictates whether the network is dynamically updated 
   use: True
 
-  # Bandwidth distribution mew and sigma ranges to sample from when updating the network
+  # Bandwidth (MB/s) distribution mean and sigma ranges to sample from when updating the network
   mu_dist: [9, 2]
   sigma_dist: [2, 0.5]
 

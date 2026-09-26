@@ -208,7 +208,7 @@ class Network:
             receiver (Node): The receiving node.
 
         Returns:
-            float: Effective bandwidth in Mbps.
+            float: Effective bandwidth in MB/s.
         """
         if isinstance(sender.bandwidth, tuple):
             sender_bw = random.normalvariate(*sender.bandwidth)

@@ -58,9 +58,9 @@ Most of SymbChainSim’s components are controlled through the configuration yam
 ### bandwidth
 | Parameter | Description |
 | --------- | ----------- |
-| `mean`    | Mean bandwidth in Mbps |
-| `dev`     | Standard deviation of bandwidth in Mbps |
-| `min`     | Minimum bandwidth in Mbps |
+| `mean`    | Mean bandwidth in MB/s |
+| `dev`     | Standard deviation of bandwidth in MB/s |
+| `min`     | Minimum bandwidth in MB/s |
 | `sample`  | Bandwidth sampling frequency: `'always'`, `'once'`, or `'scenario'` |
 
 ## consensus

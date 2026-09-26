@@ -134,7 +134,7 @@ network:
   num_neighbours: 6         # Number of neighbors per node
   use_latency: "measured"   # Latency model
   bandwidth:
-    mean: 5                 # Mean bandwidth (Mbps)
+    mean: 5                 # Mean bandwidth (MB/s)
     dev: 2                  # Standard deviation
 ```
 

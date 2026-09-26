@@ -86,7 +86,7 @@ def handle_update_network_event(manager: "Manager", event: SystemEvent) -> None:
 
     if Parameters.dynamic_sim.get("print_updates", False):
         bandwidth = Parameters.network["bandwidth"]
-        Report.print_update(event.time, "DYNAMIC", "network", f"bandwidth {bandwidth['mean']:.1f} ± {bandwidth['dev']:.1f} Mbps")
+        Report.print_update(event.time, "DYNAMIC", "network", f"bandwidth {bandwidth['mean']:.1f} ± {bandwidth['dev']:.1f} MB/s")
 
     Network.set_bandwidths()
 
