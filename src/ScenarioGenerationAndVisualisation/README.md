@@ -29,8 +29,8 @@ uv run generate_scenario.py --name <scenario_name>
 ### `scenario_visualistation.ipynb`
 Jupyter notebook for visualizing generated scenarios. Provides:
 
-### `result_viz.ipynb`
-Jupyter notebook for visualising simulation results. Features:
+### `snapshot_visualisation.ipynb`
+Jupyter notebook for visualising simulation results. Plots throughput, latency and decentralisation over time from the snapshots in `../Outputs/Snapshots/`, and can overlay several runs (saved with `--name <run_name>`) to compare them.
 
 ## Scenario Schema
 
