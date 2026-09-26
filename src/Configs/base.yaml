@@ -159,7 +159,7 @@ dynamic_sim:
 
 reconfiguration:
   # Enable reconfiguration of blockchain system
-  reconfigure: True
+  reconfigure: False
 
   # How often to reconfigure the system
   reconfiguration_interval: 300
