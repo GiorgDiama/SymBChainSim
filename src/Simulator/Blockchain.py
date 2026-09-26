@@ -33,9 +33,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED, help=f"random seed (default: {DEFAULT_SEED})")
     parser.add_argument("--name", help="snapshots are saved to src/Outputs/Snapshots/<name>.json (default: snapshot)")
     parser.add_argument("--cp", choices=["PBFT", "Tendermint", "BigFoot"], help="consensus protocol to start with")
-    parser.add_argument(
-        "--reconfig", action=argparse.BooleanOptionalAction, help="enable/disable random reconfiguration (not available with --scenario)"
-    )
+    parser.add_argument("--reconfig", action=argparse.BooleanOptionalAction, help="enable/disable random reconfiguration (not available with --scenario)")
     parser.add_argument("-v", "--verbose", action="store_true", default=None, help="also print the nodes, parameters, per-node metrics and event counts")
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, help="enable/disable step-by-step debugging mode")
     parser.add_argument("--debug-at", type=float, metavar="TIME", help="switch to debugging mode at this simulation time")

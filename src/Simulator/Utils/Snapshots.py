@@ -75,4 +75,3 @@ def save_snapshots(name: str = "snapshot") -> None:
     path = SNAPSHOT_PATH + f"{name}.json"
     with open(path, "w") as f:
         json.dump(Metrics.snapshots, f, indent=2)
-

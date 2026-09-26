@@ -1,4 +1,3 @@
-
 from Engine.Event import SystemEvent
 
 from Chain.TransactionFactory import TransactionFactory
