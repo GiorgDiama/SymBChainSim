@@ -9,7 +9,7 @@ Scenario JSON Schema
             'end': end_time
             'network' : [(node, BW)...]
             'behaviour': [(node, fail_at, duration)]
-            'transactions': [(creator, id, timestamp, size)...]
+            'transactions': [(creator, id, timestamp, size in MB)...]
         '2':  ...
 """
 
@@ -103,7 +103,7 @@ def generate(name: str, parameters_dict: dict) -> None:
 #     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
 #     "fail_duration": ((20, 5), (60, 10), (120, 20)),
 #     "workloads": [(500, 100), (1_000, 200), (2_000, 500)],
-#     "sizes": (8, 20.5),
+#     "sizes": (0.0016, 0.004),
 # }
 
 DEFAULT_PARAMETERS = {
@@ -114,7 +114,7 @@ DEFAULT_PARAMETERS = {
     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
     "fail_duration": [(20, 5), (60, 10), (120, 20)],
     "workloads": [(50, 10), (100, 20), (100, 50)],
-    "sizes": (8, 20.5),
+    "sizes": (0.0016, 0.004),  # transaction size range in MB
 }
 
 

@@ -39,7 +39,7 @@ The `generate_scenario.py` script uses a dictionary of parameters to define the 
 -   `fail_duration` (list of tuples `(mean, std_dev)`):
     - A list of normal distributions defining the duration of node failures. When a node fails, its downtime is sampled from one of these distributions.
 -   `workloads` (list of tuples `(mean, std_dev)`): A list of normal distributions representing transaction rates (e.g., transactions per second) within a given interval. The number of transactions for an interval is sampled from one of these distributions.
--   `sizes` (tuple `(min, max)`): A tuple specifying the minimum and maximum transaction sizes. Transaction sizes are uniformly sampled within this range.
+-   `sizes` (tuple `(min, max)`): A tuple specifying the minimum and maximum transaction sizes in MB. Transaction sizes are uniformly sampled within this range.
 
 ### Example Parameters (from `generate_scenario.py`)
 
@@ -52,7 +52,7 @@ parameters_dict = {
     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)], # Bandwidth models (mean, std_dev)
     "fail_duration": [(20, 5), (60, 10), (120, 20)], # Failure duration models
     "workloads": [(50, 10), (100, 20), (100, 50)], # Transaction rate models
-    "sizes": (8, 20.5),   # Transaction size range (min, max)
+    "sizes": (0.0016, 0.004),   # Transaction size range in MB (min, max)
 }
 ```
 
@@ -88,7 +88,7 @@ Generated scenarios adhere to the following JSON structure:
     -   `end`: The end time of the interval.
     -   `network`: A list of tuples, where each tuple `(node_id, bandwidth)` specifies the assigned bandwidth for a given node during this interval.
     -   `faults`: A list of tuples `(node_id, fail_time, duration)` indicating when a specific node fails and for how long within this interval.
-    -   `transactions`: A sorted list of tuples `(creator, id, timestamp, size)` representing the transactions generated during this interval. Transactions are sorted by `timestamp`.
+    -   `transactions`: A sorted list of tuples `(creator, id, timestamp, size)` (size in MB) representing the transactions generated during this interval. Transactions are sorted by `timestamp`.
 
 ### Output
 

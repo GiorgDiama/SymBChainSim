@@ -24,7 +24,7 @@ class Transaction:
         creator (int): ID of the node that created the transaction.
         id (int): Unique identifier for the transaction.
         timestamp (float): Time when the transaction was created.
-        size (float): Size of the transaction in bytes.
+        size (float): Size of the transaction in MB.
         processed (bool): Whether the transaction has been processed/committed.
     """
 
@@ -103,12 +103,12 @@ class TransactionFactory:
         Adds transactions from a list (provided by a scenario) to the simulation.
 
         Args:
-            txion_list (List[tuple]): List of transactions in format (creator, id, timestamp, size).
+            txion_list (List[tuple]): List of transactions in format (creator, id, timestamp, size in MB).
         """
         logger.debug(f"Adding scenario transactions: {len(txion_list)} transactions")
 
         for creator, id, timestamp, size in txion_list:
-            t = Transaction(creator, id, timestamp, size / 1e6)
+            t = Transaction(creator, id, timestamp, size)
             TransactionFactory.transaction_prop(t)
 
     @staticmethod
