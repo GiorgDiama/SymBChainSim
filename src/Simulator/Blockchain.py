@@ -66,7 +66,11 @@ def get_overrides(args: argparse.Namespace) -> dict:
     for item in args.set:
         key, value = item.split("=", 1)
         # parse values like YAML so numbers, booleans and lists get their proper type
-        overrides[key.strip()] = yaml.safe_load(value)
+        parsed = yaml.safe_load(value)
+        # YAML also reads on/off/yes/no as booleans, keep them as text (e.g. network.use_latency=off)
+        if isinstance(parsed, bool) and value.strip().lower() not in ("true", "false"):
+            parsed = value.strip()
+        overrides[key.strip()] = parsed
 
     named = {
         "simulation.run_name": args.name,
