@@ -88,8 +88,8 @@ def wrap_items(items: list[str], width: int) -> list[str]:
 
 
 def print_progress(sim: "Simulation") -> None:
-    """Prints one line of progress e.g., [ 100 / 300 s]   41 blocks   16,361 tx"""
-    clock = f"{sim.clock:5.0f}"
+    """Prints one line of progress e.g., 100 / 300 s   41 blocks   16,361 tx (updates are printed indented below it)"""
+    clock = f"{sim.clock:.0f}"
     if Parameters.simulation["sim_time"] != -1:
         clock += f" / {Parameters.simulation['sim_time']}"
 
@@ -101,7 +101,16 @@ def print_progress(sim: "Simulation") -> None:
     if Parameters.simulation["stop_after_tx"] != -1:
         tx += f" / {Parameters.simulation['stop_after_tx']:,}"
 
-    print(f"[{clock} s]  {blocks:>5} blocks  {tx:>8} tx")
+    print(f"{clock + ' s':<14}{blocks:>13} blocks  {tx:>10} tx")
+
+
+def print_update(time: float, source: str, what: str, details: str = "") -> None:
+    """
+    Prints a change made while the simulation runs (e.g., workload change, node failure)
+
+    source: the feature making the change e.g., DYNAMIC (dynamic_sim), FAULT (behaviour), RECONFIG (reconfiguration)
+    """
+    print(f"    {f'[{source}]':<11}{time:7.1f} s  {what:<14}{details}".rstrip())
 
 
 def blocks_per_cp(node) -> dict[str, int]:

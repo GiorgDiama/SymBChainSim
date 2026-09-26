@@ -1,6 +1,7 @@
 from Parameters import Parameters
 
 from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
+from Utils import Report
 
 import random
 import logging
@@ -57,7 +58,8 @@ def propagate_configuration_block(manager: "Manager", configuration_block: Confi
         - Model==False: append the block to the configuration chains of all nodes directly and immediately
     """
     if Parameters.reconfiguration["print_updates"]:
-        print("RECONFIGURATION:", configuration_block.configuration)
+        conf = configuration_block.configuration
+        Report.print_update(time, "RECONFIG", "switched to", f"{conf['CP']}, max block size {conf['block_size']} MB, block time {conf['block_time']} s")
 
     if Parameters.reconfiguration["propagation"]["model"]:
         percent_receivers = Parameters.reconfiguration["propagation"]["per_cent_nodes"]

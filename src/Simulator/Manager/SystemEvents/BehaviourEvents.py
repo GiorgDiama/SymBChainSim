@@ -2,7 +2,7 @@ from Parameters import Parameters, read_yaml
 
 from Engine.Event import SystemEvent
 
-from Utils import Tools
+from Utils import Report
 
 import random
 
@@ -100,7 +100,7 @@ def handle_random_fault_event(manager: "Manager", event) -> None:
     event.payload["node"].kill()
 
     if Parameters.behaviour.get("print_updates", False):
-        print(Tools.color(f"Node {event.payload['node'].id} failed!", c=41))
+        Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} failed")
 
     schedule_recovery_event(manager, event.time, event.payload["node"])
 
@@ -147,6 +147,6 @@ def handle_recover_event(manager: "Manager", event) -> None:
     node.resurrect(time)
 
     if Parameters.behaviour.get("print_updates", False):
-        print(Tools.color(f"Node {event.payload['node'].id} recovered!", c=42))
+        Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} recovered")
 
     schedule_random_fault_event(manager, event.time, event.payload["node"])

@@ -1,6 +1,7 @@
 from Parameters import Parameters, read_yaml
 from Engine.Event import SystemEvent
 from Chain.Network import Network
+from Utils import Report
 
 from random import normalvariate
 
@@ -84,7 +85,8 @@ def handle_update_network_event(manager: "Manager", event: SystemEvent) -> None:
     Parameters.network["bandwidth"]["dev"] = normalvariate(*DynamicParameters.network["sigma_dist"])
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        print(f"{'Network updated':<20}: mu= {Parameters.network['bandwidth']['mean']} sigma= {Parameters.network['bandwidth']['dev']}")
+        bandwidth = Parameters.network["bandwidth"]
+        Report.print_update(event.time, "DYNAMIC", "network", f"bandwidth {bandwidth['mean']:.1f} ± {bandwidth['dev']:.1f} Mbps")
 
     Network.set_bandwidths()
 
@@ -142,6 +144,6 @@ def handle_update_workload_event(manager: "Manager", event: SystemEvent) -> None
     Parameters.application["tx_size"] = abs(normalvariate(*DynamicParameters.workload["tx_size_norm_dist"]))
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        print(f"{'Workload  updated':<20}: TPS= {Parameters.application['tx_per_sec']} size= {Parameters.application['tx_size']}")
+        Report.print_update(event.time, "DYNAMIC", "workload", f"{Parameters.application['tx_per_sec']} tx/s, tx size {Parameters.application['tx_size'] * 1000:.1f} KB")
 
     schedule_update_workload_event(manager)
