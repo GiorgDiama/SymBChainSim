@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 resolution-markers = [
     "python_full_version >= '3.14'",
@@ -1755,7 +1755,6 @@ dependencies = [
     { name = "mkdocs-material" },
     { name = "numpy" },
     { name = "pyyaml" },
-    { name = "requests" },
 ]
 
 [package.metadata]
@@ -1765,7 +1764,6 @@ requires-dist = [
     { name = "mkdocs-material", specifier = ">=9.6.20" },
     { name = "numpy", specifier = ">=2.3.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
-    { name = "requests", specifier = ">=2.32.4" },
 ]
 
 [[package]]
