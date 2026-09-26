@@ -62,8 +62,8 @@ class ConfigurationBlock:
         genesis_block.extra_data["round"] = -1
         genesis_block.size = 0.1
         genesis_block.configuration = {
-            "CP": Parameters.simulation["init_CP"],
-            "block_size": Parameters.data["Bsize"],
+            "CP": Parameters.simulation["init_cp"],
+            "block_size": Parameters.data["max_block_size"],
             "block_time": Parameters.data["block_time"],
         }
         Parameters.global_configuration_chain = [genesis_block]

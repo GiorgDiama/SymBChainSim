@@ -28,7 +28,7 @@ The delayed copy preserves `creator`, `id`, and `size`, and sets `timestamp = or
 Note: sizes provided are divided by `1e6` before use (treating the input as bytes and converting to MB for the network model).
 
 ### Interval-based generation
-`generate_interval_txions(start)` produces transactions for the window `[start, start + TI_dur]`:
+`generate_interval_txions(start)` produces transactions for the window `[start, start + tx_interval]`:
 - For each second in the interval, create `tx_per_sec` transactions unless `stop_after_tx` is reached
 - `id` comes from and updates `Parameters.application["txIDS"]`
 - `timestamp = second`
@@ -58,7 +58,7 @@ Note: sizes provided are divided by `1e6` before use (treating the input as byte
 ### Configuration Parameters
 - `application.transaction_model`: `local` or `global`
 - `application.tx_per_sec`: transactions per second
-- `application.TI_dur`: interval duration for generation
+- `application.tx_interval`: interval duration for generation
 - `application.tx_size`: mean for exponential tx size
 - `application.base_transaction_size`: minimum/offset size
 - `application.txIDS`: running counter for tx IDs

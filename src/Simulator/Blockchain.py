@@ -70,7 +70,7 @@ def get_overrides(args: argparse.Namespace) -> dict:
 
     named = {
         "simulation.run_name": args.name,
-        "simulation.init_CP": args.cp,
+        "simulation.init_cp": args.cp,
         "simulation.print_info": args.verbose,
         "simulation.debugging_mode": args.debug,
         "simulation.start_debugging_at": args.debug_at,

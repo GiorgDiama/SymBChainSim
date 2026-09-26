@@ -114,14 +114,14 @@ class TransactionFactory:
     @staticmethod
     def generate_interval_txions(start: float) -> None:
         """
-        Generates transactions for the interval [start, start+TI_dur] based on the current configuration.
+        Generates transactions for the interval [start, start+tx_interval] based on the current configuration.
 
         Args:
             start (float): Start time for transaction generation.
         """
         logger.debug(f"Generating interval transactions starting at {start}")
 
-        for second in range(round(start), round(start + Parameters.application["TI_dur"])):
+        for second in range(round(start), round(start + Parameters.application["tx_interval"])):
             for _ in range(Parameters.application["tx_per_sec"]):
                 if Parameters.simulation["stop_after_tx"] != -1 and TransactionFactory.produced_tx == Parameters.simulation["stop_after_tx"]:
                     logger.debug("Reached stop_after_tx limit, stopping transaction generation.")

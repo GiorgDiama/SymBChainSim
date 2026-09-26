@@ -1,7 +1,7 @@
 simulation:
   # Initial consensus protocol to use at simulation start
   #   Options: "PBFT", "Tendermint", "BigFoot"
-  init_CP: "PBFT"
+  init_cp: "PBFT"
   
   # Stop simulation after this many seconds (-1 = no limit)
   sim_time: 1800
@@ -43,7 +43,7 @@ application:
   workload: 'generate'
   
   # Transaction generation interval (every N seconds generate transactions for the next N seconds)
-  TI_dur: 10
+  tx_interval: 10
   
   # Total number of transactions to generate per second
   tx_per_sec: 120
@@ -82,7 +82,7 @@ execution:
 
 data:
   # Maximum block size in MBs
-  Bsize: 1
+  max_block_size: 1
   
   # Base block size in MB (excluding transactions)
   base_block_size: 0.002

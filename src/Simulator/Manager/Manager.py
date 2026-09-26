@@ -68,7 +68,7 @@ class Manager:
 
         logger.debug(f"Loaded simulation parameters from config: {config}")
 
-        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
+        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_cp"]]
         Parameters.simulation["event_id"] = 0
 
         logger.debug(f"Parameters loaded. Application CP: {Parameters.application['CP']}")

@@ -112,7 +112,7 @@ SBS uses YAML configuration files located in `src/Configs/`:
 #### Simulation Parameters
 ```yaml
 simulation:
-  init_CP: "PBFT"           # Initial consensus protocol
+  init_cp: "PBFT"           # Initial consensus protocol
   sim_time: 1800            # Simulation duration (seconds)
   stop_after_blocks: -1     # Stop after N blocks (-1 = disabled)
   debugging_mode: False     # Enable debug logging
@@ -124,7 +124,7 @@ application:
   num_nodes: 16             # Number of nodes
   workload: 'generate'      # Workload type
   tx_per_sec: 120           # Transactions per second
-  TI_dur: 10                # Transaction interval duration
+  tx_interval: 10           # Transaction interval duration
 ```
 
 #### Network Configuration

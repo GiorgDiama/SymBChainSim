@@ -45,7 +45,7 @@ def print_header(seed: int, scenario: str | None = None) -> None:
     parts = ["SymBChainSim"]
     if scenario:
         parts.append(f"scenario {scenario}")
-    parts += [Parameters.simulation["init_CP"], f"{Parameters.application['num_nodes']} nodes", stop_condition(), f"seed {seed}"]
+    parts += [Parameters.simulation["init_cp"], f"{Parameters.application['num_nodes']} nodes", stop_condition(), f"seed {seed}"]
     print(" | ".join(parts) + "\n")
 
 
