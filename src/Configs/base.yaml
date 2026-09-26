@@ -51,7 +51,7 @@ application:
   # Base size of transactions in MB
   base_transaction_size: 0.0016
   
-  # Transaction size variation in MB (standard deviation)
+  # Mean extra transaction size in MB on top of base_transaction_size (exponentially distributed)
   tx_size: 0.0008
   
   # Transaction pool model:

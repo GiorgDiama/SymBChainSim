@@ -144,6 +144,6 @@ def handle_update_workload_event(manager: "Manager", event: SystemEvent) -> None
     Parameters.application["tx_size"] = abs(normalvariate(*DynamicParameters.workload["tx_size_norm_dist"]))
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        Report.print_update(event.time, "DYNAMIC", "workload", f"{Parameters.application['tx_per_sec']} tx/s, tx size {Parameters.application['tx_size'] * 1000:.1f} KB")
+        Report.print_update(event.time, "DYNAMIC", "workload", f"{Parameters.application['tx_per_sec']} tx/s, mean tx size {(Parameters.application['base_transaction_size'] + Parameters.application['tx_size']) * 1000:.1f} KB")
 
     schedule_update_workload_event(manager)

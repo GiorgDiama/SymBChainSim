@@ -23,7 +23,7 @@ Most of SymbChainSim’s components are controlled through the configuration yam
 | `tx_interval`           | Transaction generation interval (every N seconds generate transactions for the next N seconds) |
 | `tx_per_sec`            | Total number of transactions to generate per second |
 | `base_transaction_size` | Base size of transactions in MB |
-| `tx_size`               | Transaction size variation in MB (standard deviation) |
+| `tx_size`               | Mean extra transaction size in MB on top of `base_transaction_size` (exponentially distributed) |
 | `transaction_model`     | Transaction pool model: `"global"` (one pool) or `"local"` (each node has its own pool) |
 
 ## execution
