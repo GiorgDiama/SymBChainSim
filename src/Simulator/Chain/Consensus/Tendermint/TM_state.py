@@ -291,7 +291,7 @@ class Tendermint(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != Tendermint.NAME:
-            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at Tendermint state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at Tendermint state")
             return "different_state"
         match event.payload["type"]:
             case "propose":

@@ -16,12 +16,13 @@ def set_up_logging():
     formatter = logging.Formatter(LOGGER_FORMAT)
 
     handlers = []
+    missing_log_dir = False
     try:
         file_handler = logging.FileHandler(LOG_PATH, mode="w")
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
     except FileNotFoundError:
-        print("WARNING: logs directory not found, skipping writing logs...")
+        missing_log_dir = True
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
@@ -39,6 +40,9 @@ def set_up_logging():
         LEVEL = logging.DEBUG
 
     logging.basicConfig(level=LEVEL, handlers=handlers, force=True)
+
+    if missing_log_dir:
+        logging.getLogger("Tools").warning(f"logs directory not found ({LOG_PATH}), skipping writing logs...")
 
 
 ############################ DEBUGGER ###########################

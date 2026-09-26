@@ -290,7 +290,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             str: Result of event handling ("different protocol", "unhandled", or protocol-specific result)
         """
         if not event.actor or not event.actor.cp or event.actor.cp.NAME != PBFT.NAME:
-            print(f"actor with {event.actor.cp.NAME} tried to execute event {event} at PBFT state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at PBFT state")
             return "different protocol"
 
         match event.payload["type"]:

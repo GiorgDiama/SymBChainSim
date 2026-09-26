@@ -300,7 +300,7 @@ class BigFoot(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != BigFoot.NAME:
-            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at BigFoot state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at BigFoot state")
             return "different_state"
         match event.payload["type"]:
             case "propose":
