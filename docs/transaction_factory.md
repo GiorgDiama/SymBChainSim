@@ -47,7 +47,6 @@ Note: sizes provided are divided by `1e6` before use (treating the input as byte
 - `mark_transactions_as_processed(block, pool)` sets `processed=True` on included transactions
   - Local: marks in the local pool
   - Global: marks in the global pool once per `block.depth` (controlled by `depth_removed`)
-- `removed_processed(pool)` returns a new deque without processed transactions (utility)
 - `_mark_pool(txions, pool)` marks matching IDs in-place
 
 ### Class state

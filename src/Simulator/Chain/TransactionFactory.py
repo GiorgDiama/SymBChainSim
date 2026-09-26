@@ -234,26 +234,6 @@ class TransactionFactory:
                 raise ValueError(f"No such mempool model: {Parameters.application['transaction_model']}")
 
     @staticmethod
-    def removed_processed(pool: Deque[Transaction]) -> Deque[Transaction]:
-        """
-        Returns a new pool without processed transactions.
-
-        Args:
-            pool (Deque[Transaction]): Pool to filter.
-        Returns:
-            Deque[Transaction]: New pool without processed transactions.
-        """
-        logger.debug("Removing processed transactions from pool")
-
-        new_pool = deque([])
-        while pool:
-            tx = pool.popleft()
-            if tx.processed:
-                continue
-            new_pool.append(tx)
-        return new_pool
-
-    @staticmethod
     def _mark_pool(txions: List[Transaction], pool: Deque[Transaction]) -> Deque[Transaction]:
         """
         Marks transactions in the pool as processed.

@@ -5,10 +5,8 @@ from Chain.Consensus.ConsensusProtocol import ConsensusProtocol
 from Chain.TransactionFactory import TransactionFactory
 from Chain.Block import Block
 
-from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
 from Chain.Reconfiguration.ReconfigurationState import ReconfigurationState
 
-from Engine.Scheduler import Scheduler
 
 from Utils import Tools
 
@@ -68,7 +66,6 @@ class Node:
             faulty=None,
             mean_fault_time=None,
             mean_recovery_time=None,
-            fault_event=None,
             recovery_event=None,
             byzantine=None,
             sync_fault_chance=None,
@@ -297,20 +294,9 @@ class Node:
             else:
                 return f"**DEAD** - Node: {self.id}"
 
-    def stored_txions(self, num=None):
-        """Returns the last 'num' txions from the pool - if num is None returns a list of all txions in the pool"""
-        if num is None:
-            return [x.id for x in self.pool]
-        return [x.id for x in list(self.pool)[-num:]]
-
     def blockchain_length(self):
         """Returns the length of the blockchain (excluding the genesis block)"""
         return len(self.blockchain) - 1
-
-    @property
-    def ids(self):
-        """returns a list of all block ids in the nodes local blockchain"""
-        return [x.id for x in self.blockchain]
 
     @property
     def trunc_ids(self):

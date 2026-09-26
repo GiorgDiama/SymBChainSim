@@ -64,7 +64,6 @@ class Queue:
 
     def __init__(self):
         self.prio_queue = PrioQueue()
-        self.old_messages = {}
 
     def add_event(self, event: Event):
         self.prio_queue.add_task(event, event.time)

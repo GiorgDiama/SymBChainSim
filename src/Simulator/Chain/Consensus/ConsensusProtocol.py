@@ -67,11 +67,6 @@ class ConsensusProtocol(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
-    def rejoin(self, time: float) -> None:
-        """Handle protocol-specific logic when a node rejoins the network."""
-        pass
-
     @staticmethod
     @abc.abstractmethod
     def handle_event(event) -> str:

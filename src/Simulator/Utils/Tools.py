@@ -2,11 +2,8 @@ from Parameters import Parameters
 
 from Engine.Event import MessageEvent, SystemEvent
 
-from Utils import Serialise
 
 import os
-import yaml
-import json
 import logging
 
 """ A collection of useful utility functions and tools for SBS """
@@ -42,48 +39,6 @@ def set_up_logging():
         LEVEL = logging.DEBUG
 
     logging.basicConfig(level=LEVEL, handlers=handlers, force=True)
-
-
-####################### Simulation Results Analysis #############################
-
-
-def save_simulation_results(sim, name="results"):
-    blockchains = {}
-    for node in sim.nodes:
-        blockchains[node.id] = []
-        for block in node.blockchain[1:]:
-            blockchains[node.id].append(
-                {
-                    "size": block.size,
-                    "timestamp": block.time_added,
-                    "tx": [(x.id, x.timestamp) for x in block.transactions],
-                }
-            )
-
-    with open(f"output/{name}.json", "w") as f:
-        json.dump(blockchains, f, indent=4)
-
-
-def dump_reconfiguration_chain(manager):
-    if "Metrics" in Parameters.reconfiguration.keys():
-        conf_block_ids = Parameters.reconfiguration["Metrics"]["blocks"] = {}
-        for block in Parameters.global_configuration_chain:
-            assert block.id not in conf_block_ids
-            print(
-                block.depth,
-                f"{str(block.configuration):40}",
-                round(block.extra_data.get("requested", -1), 2),
-                round(block.extra_data.get("agreed", -1), 2),
-            )
-            conf_block_ids[block.id] = {}
-
-        for node in manager.sim.nodes:
-            for block in node.reconfiguration_state.confchain:
-                conf_block_ids[block.id][node.id] = Serialise.serialisable_configuration_block(block)
-
-        Parameters.reconfiguration["Metrics"]["global_chain"] = [Serialise.serialisable_block(block, transactions=False) for block in Parameters.simulation["blockchain"].values()]
-        with open("Results/Sensitivity/data.json", "w") as f:
-            json.dump(Parameters.reconfiguration["Metrics"], f, indent=2)
 
 
 ############################ DEBUGGER ###########################
@@ -221,26 +176,6 @@ def sim_info(simulator, print_event_queues=True):
 
         s += "\n" + node_cp_states
         return s
-
-
-####################### YAML ######################
-
-
-def read_yaml(path):
-    """
-    Reads a yaml file - assumes path is relevant to SBS_SRC
-    """
-    with open(Parameters.path_to_src + "/" + path, "rb") as f:
-        data = yaml.safe_load(f)
-    return data
-
-
-def write_yaml(data, path):
-    """
-    Write a yaml file - assumes path is relevant to SBS_SRC
-    """
-    with open(Parameters.path_to_src + "/" + path, "w+") as f:
-        yaml.dump(data, f)
 
 
 ###################### COLOR #####################

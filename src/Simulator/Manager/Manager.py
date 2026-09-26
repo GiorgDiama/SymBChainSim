@@ -5,7 +5,7 @@ from Chain.Consensus.PBFT.PBFT_state import PBFT
 from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 from Chain.Consensus.Tendermint.TM_state import Tendermint
 
-from Engine.Event import Event, SystemEvent
+from Engine.Event import Event
 from Engine.Simulation import Simulation
 
 from Utils import Tools

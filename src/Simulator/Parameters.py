@@ -31,30 +31,7 @@ class Parameters:
 
     CPs = {}
 
-    tx_factory = None
-
     global_configuration_chain = []
-
-    @staticmethod
-    def reset_params():
-        """resets all dictionaries storing the parameters of the system"""
-        Parameters.dynamic_sim = {}
-        Parameters.simulation = {}
-        Parameters.application = {}
-        Parameters.execution = {}
-        Parameters.data = {}
-        Parameters.consensus = {}
-        Parameters.network = {}
-        Parameters.behaviour = {}
-        Parameters.CPs = {}
-
-        Parameters.BigFoot = {}
-        Parameters.PBFT = {}
-        Parameters.Tendermint = {}
-
-        Parameters.reconfiguration = {}
-
-        Parameters.global_configuration_chain = []
 
     @staticmethod
     def load_params_from_config(config):

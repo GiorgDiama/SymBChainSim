@@ -47,9 +47,6 @@ Specifically, protocols implementing `ConsensusProtocol` require the following m
 - ``init_round_change(time)``  
   Handles logic for initiating a round change when the current round cannot progress.  
 
-- ``rejoin(time)``  
-  Defines the behavior of a node rejoining the protocol after being offline, ensuring it synchronizes with the current state of the network.  
-
 - ``handle_event(event)`` *(static)*  
   Processes protocol-specific events and returns the outcome as a string.  
 

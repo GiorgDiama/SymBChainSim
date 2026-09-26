@@ -285,21 +285,6 @@ class BigFoot(ConsensusProtocol):
             # check if any future events are here for this round slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol specific rejoin logic for BigFoot.
-
-        Args:
-            time (float): The current simulation time.
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining BigFoot protocol at time {time}")
-        # set node's protocol state
-        self.set_state()
-        # set round to latest known round (latest block round + 1)
-        round = self.node.blockchain[-1].extra_data["round"] + 1
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-        self.start(time, round)  # start the protocol
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------

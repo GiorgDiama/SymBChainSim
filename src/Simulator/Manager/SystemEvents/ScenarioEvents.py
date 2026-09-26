@@ -1,4 +1,3 @@
-from Parameters import Parameters
 
 from Engine.Event import SystemEvent
 
@@ -109,7 +108,6 @@ def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: 
         node = manager.sim.nodes[entry[0]]
 
         event = SystemEvent(time=fail_at, payload={"type": "scenario_fault", "node": node})
-        node.behaviour.fault_event = event
         manager.sim.q.add_event(event)
 
         recover_at = entry[1] + entry[2]

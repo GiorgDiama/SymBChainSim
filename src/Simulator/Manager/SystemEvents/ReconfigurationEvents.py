@@ -1,7 +1,6 @@
 from Parameters import Parameters
 from Engine.Event import SystemEvent
 
-from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
 import Chain.Reconfiguration.CentralisedReconfiguration as CentralisedReconfiguration
 
 import random

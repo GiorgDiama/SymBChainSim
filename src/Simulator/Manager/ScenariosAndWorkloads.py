@@ -49,7 +49,7 @@ def set_up_scenario(manager, scenario, config="scenario.yaml", overrides=None):
 
     for key in scenario["intervals"].keys():
         interval = scenario["intervals"][key]
-        start, end = interval["start"], interval["end"]
+        start = interval["start"]
         for key, value in interval.items():
             # schedule system events for each update interval
             match key:

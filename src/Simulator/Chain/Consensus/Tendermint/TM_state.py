@@ -275,19 +275,6 @@ class Tendermint(ConsensusProtocol):
         logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol-specific rejoin logic for Tendermint. Resets state and starts at the latest known round.
-
-        Args:
-            time (float): The current simulation time.
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining TM protocol at time {time}")
-        self.set_state()  # set node's protocol state
-        round = self.node.blockchain[-1].extra_data["round"] + 1  # set round to latest known round (latest block round + 1)
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-        self.start(time, round)  # start the protocol
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------

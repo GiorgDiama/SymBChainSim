@@ -274,22 +274,6 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time, add_time=True)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol specific rejoin logic for PBFT.
-
-        Args:
-            time: Current simulation time
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining PBFT protocol at time {time}")
-
-        self.set_state()
-        round = self.node.blockchain[-1].extra_data["round"] + 1
-
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-
-        self.start(time, round)
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------

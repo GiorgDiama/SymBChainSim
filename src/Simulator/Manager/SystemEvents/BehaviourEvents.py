@@ -21,14 +21,12 @@ class Behaviour:
         byzantine (dict): Byzantine behaviour parameters loaded from YAML.
         faulty (dict): Faulty behaviour parameters loaded from YAML.
         faulty_nodes (list[Node]): Nodes selected to exhibit faulty behaviour.
-        byzantine_nodes (list[Node]): Nodes selected to exhibit byzantine behaviour.
     """
 
     byzantine = {}
     faulty = {}
 
     faulty_nodes = []
-    byzantine_nodes = []
 
     @staticmethod
     def init(manager: "Manager") -> None:
@@ -84,8 +82,6 @@ def schedule_random_fault_event(manager: "Manager", time: float, node: Optional[
 
     event = SystemEvent(time=fail_at, payload={"type": "random_fault", "node": node})
     manager.sim.q.add_event(event)
-
-    node.behaviour.fault_event = event
 
     return None
 
