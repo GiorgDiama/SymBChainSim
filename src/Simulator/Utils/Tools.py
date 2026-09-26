@@ -64,43 +64,6 @@ def save_simulation_results(sim, name="results"):
         json.dump(blockchains, f, indent=4)
 
 
-def get_blocks_by_cp(sim, simple=True):
-    if simple:
-        for n in sim.nodes:
-            bc = n.blockchain[1:]
-            total_blocks = len(bc)
-            CP_blocks = {}
-            total_synced = len([b for b in bc if b.extra_data.get("synced", False)])
-            for key in Parameters.CPs:
-                CP_blocks[key] = len([x for x in bc if x.consensus == key])
-            print(
-                f"{f'node {n.id}':8}",
-                "TOTAL BLOCKS:",
-                total_blocks,
-                "--- BLOCKS PER CP:",
-                CP_blocks,
-                "Synced blocks:",
-                total_synced,
-            )
-        return
-
-    for n in sim.nodes:
-        bc = n.blockchain[1:]
-        blocks = ""
-        for cur, next in zip(bc[:-1], bc[1:]):
-            blocks += cur.consensus.NAME + " "
-            if cur.consensus != next.consensus:
-                blocks += "SW"
-
-        blocks_by_cp = blocks.split("SW")
-
-        print(
-            n,
-            "->".join([f"{x.split(' ')[0]}:{len(x.split(' '))}" for x in blocks_by_cp]),
-            f"| TOTAL: {len(bc)}",
-        )
-
-
 def dump_reconfiguration_chain(manager):
     if "Metrics" in Parameters.reconfiguration.keys():
         conf_block_ids = Parameters.reconfiguration["Metrics"]["blocks"] = {}
@@ -121,17 +84,6 @@ def dump_reconfiguration_chain(manager):
         Parameters.reconfiguration["Metrics"]["global_chain"] = [Serialise.serialisable_block(block, transactions=False) for block in Parameters.simulation["blockchain"].values()]
         with open("Results/Sensitivity/data.json", "w") as f:
             json.dump(Parameters.reconfiguration["Metrics"], f, indent=2)
-
-
-def print_events():
-    for key, value in Parameters.simulation["events"].items():
-        if isinstance(value, dict):
-            events_to_list = ((node, num) for node, num in value.items())
-            events_to_list = sorted(events_to_list, key=lambda x: x[0])
-            s = " | ".join(f"{node}:{num:<5}" for node, num in events_to_list)
-            print(f"{key:<18}: {sum(list(value.values())):<5} --> {s}")
-        else:
-            print(f"{key:<18}: {value}")
 
 
 ############################ DEBUGGER ###########################

@@ -95,4 +95,3 @@ def save_snapshots(name: str = "snapshot") -> None:
     with open(path, "w") as f:
         json.dump(Metrics.snapshots, f, indent=2)
 
-    print(f"Snapshots saved to {path} (plot them with ScenarioGenerationAndVisualisation/snapshot_visualisation.ipynb)")

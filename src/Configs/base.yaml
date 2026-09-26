@@ -30,8 +30,8 @@ simulation:
   # Switch to debugging mode once the simulation clock reaches this time (-1 = never)
   start_debugging_at: -1
   
-  # Print simulation simulation information at the start of execution
-  print_info: True
+  # Also print the nodes, parameters, per-node metrics and event counts (same as --verbose)
+  print_info: False
   
 application:
   # Number of nodes in the blockchain network

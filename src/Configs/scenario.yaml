@@ -21,6 +21,9 @@ simulation:
   # Switch to debugging mode once the simulation clock reaches this time (-1 = never)
   start_debugging_at: -1
 
+  # Also print the nodes, parameters, per-node metrics and event counts (same as --verbose)
+  print_info: False
+
   # Simulate (or not) the node failures described in the scenario
   simulate_faults: False
 

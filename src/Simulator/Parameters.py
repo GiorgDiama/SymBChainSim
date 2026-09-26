@@ -145,33 +145,3 @@ class Parameters:
         Parameters.application["f"] = (Parameters.application["Nn"] - 1) // 3
 
         Parameters.application["required_messages"] = (2 * Parameters.application["f"]) + 1
-
-    @staticmethod
-    def parameters_to_string():
-        """Returns a formatted string of all simulation parameters"""
-
-        def dict_to_str(x, p_name_size=30):
-            return "\n".join([f"{f'%{p_name_size}s' % key}: {value}" for key, value in x.items()])
-
-        s = "-" * 20 + "DYNAMIC" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.dynamic_sim) + "\n"
-
-        s += "-" * 20 + "SIMULATION" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.simulation) + "\n"
-
-        s += "-" * 20 + "APPLICATION" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.application) + "\n"
-
-        s += "-" * 20 + "EXECUTION" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.execution) + "\n"
-
-        s += "-" * 20 + "DATA" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.data) + "\n"
-
-        s += "-" * 20 + "NETWORK" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.network) + "\n"
-
-        s += "-" * 20 + "BEHAVIOUR" + "-" * 20 + "\n"
-        s += dict_to_str(Parameters.behaviour) + "\n"
-
-        return s

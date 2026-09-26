@@ -13,7 +13,7 @@ Most of SymbChainSim’s components are controlled through the configuration yam
 | `logging_level`     | Logging verbosity level ("DEBUG" or "INFO") |
 | `print_every`       | Print simulation progress every N seconds |
 | `snapshot_interval` | Take snapshots of simulation state every N seconds |
-| `print_info`        | Print simulation information at the start of execution |
+| `print_info`        | Also print the nodes, parameters, per-node metrics and event counts (same as `--verbose`) |
 
 ## application
 | Parameter               | Description |

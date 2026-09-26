@@ -102,9 +102,6 @@ class Manager:
             logger.debug("Loading workload from file.")
             load_workload()
 
-        if Parameters.simulation.get("print_info", False):
-            print(self.simulation_details_to_string())
-
     # -----------------------------------------------------------
     #                      Managed Simulation Logic
     # -----------------------------------------------------------
@@ -233,28 +230,3 @@ class Manager:
             case _:
                 logger.error(f"Unhandled system event type: {event.payload['type']}")
                 raise ValueError(f"Event '{event.payload['type']}'was not handled by its own handler...")
-
-    # -----------------------------------------------------------
-    #                      UTILITY
-    # -----------------------------------------------------------
-
-    def simulation_details_to_string(self) -> str:
-        """
-        Returns a string with details about the simulation, including node info and simulation parameters.
-
-        Returns:
-            str: A formatted string with simulation and node details.
-        """
-        s = Tools.color("-" * 28 + "NODE INFO" + "-" * 28) + "\n"
-        s += ("NODE\tLOCATION\tBANDWIDTH\tCP\tNEIGHBOURS") + "\n"
-        for n in self.sim.nodes:
-            neigh_list = ",".join([str(n.id) for n in n.neighbours])
-            cp_name = "None"
-            if n.cp is not None:
-                cp_name = n.cp.NAME
-
-            s += f"{n.id:3d} {n.location:12}\t{n.bandwidth}\t{cp_name:10}\t{neigh_list:12}" + "\n"
-
-        s += Tools.color("-" * 25 + "SIM PARAMETERS" + "-" * 25) + "\n"
-        s += Parameters.parameters_to_string()
-        return s

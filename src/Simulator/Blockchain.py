@@ -1,8 +1,10 @@
+from Parameters import Parameters
+
 from Manager.Manager import Manager
 import Manager.ScenariosAndWorkloads as Scenario
 
 from Utils.Metrics import Metrics
-from Utils import Tools
+from Utils import Report
 
 import argparse
 import random
@@ -34,6 +36,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--reconfig", action=argparse.BooleanOptionalAction, help="enable/disable random reconfiguration (not available with --scenario)"
     )
+    parser.add_argument("-v", "--verbose", action="store_true", default=None, help="also print the nodes, parameters, per-node metrics and event counts")
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, help="enable/disable step-by-step debugging mode")
     parser.add_argument("--debug-at", type=float, metavar="TIME", help="switch to debugging mode at this simulation time")
     parser.add_argument(
@@ -68,6 +71,7 @@ def get_overrides(args: argparse.Namespace) -> dict:
     named = {
         "simulation.run_name": args.name,
         "simulation.init_CP": args.cp,
+        "simulation.print_info": args.verbose,
         "simulation.debugging_mode": args.debug,
         "simulation.start_debugging_at": args.debug_at,
         "reconfiguration.reconfigure": args.reconfig,
@@ -94,21 +98,24 @@ def run(args: argparse.Namespace) -> None:
         # invalid --set keys
         sys.exit(f"error: {e}")
 
+    Report.print_header(args.seed, args.scenario)
+    verbose = Parameters.simulation.get("print_info", False)
+    if verbose:
+        Report.print_setup(manager.sim)
+
     t = datetime.now()
     manager.run()
     runtime = datetime.now() - t
 
-    print(Tools.color(f"{'-' * 30} BLOCKS {'-' * 30}", 42))
-    Tools.get_blocks_by_cp(manager.sim)
-
     Metrics.measure_all(manager.sim)
-    Metrics.print_metrics()
+    Report.print_summary(manager.sim)
+    if verbose:
+        Report.print_per_node(manager.sim)
+        Report.print_events()
 
-    print(Tools.color(f"{'-' * 30} EVENTS {'-' * 30}", 43))
-    Tools.print_events()
-
-    print(Tools.color(f"SIMULATED TIME: {manager.sim.clock:0.2f} seconds", 45))
-    print(Tools.color(f"EXECUTION TIME: {runtime} seconds", 45))
+    if Parameters.simulation["snapshot_interval"] != -1:
+        print(f"Snapshots → Outputs/Snapshots/{Parameters.simulation['run_name']}.json (plot with ScenarioGenerationAndVisualisation/snapshot_visualisation.ipynb)")
+    print(f"Finished in {runtime.total_seconds():.1f} s")
 
 
 if __name__ == "__main__":

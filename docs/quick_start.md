@@ -90,10 +90,11 @@ The default simulation uses:
 ### Understanding the Output
 
 After running, you'll see:
-- Block production statistics by consensus protocol
-- Performance metrics (throughput, latency, etc.)
-- Event processing summary
-- Simulation and execution times
+- Progress lines every 100 simulated seconds
+- The results, averaged over all nodes (blocks, throughput, latency, etc.)
+- Where the snapshots were saved and how long the run took
+
+Add `-v` to also see the nodes, parameters, per-node metrics and event counts.
 
 ## Configuration
 
