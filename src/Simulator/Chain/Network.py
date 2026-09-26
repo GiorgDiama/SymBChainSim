@@ -292,7 +292,7 @@ class Network:
             for n in Network.nodes:
                 Network.assign_neighbours(n)
         else:
-            num_neighbours = min(Parameters.network["num_neighbours"], Parameters.application["Nn"] - 1)
+            num_neighbours = min(Parameters.network["num_neighbours"], Parameters.application["num_nodes"] - 1)
             node.neighbours = random.sample([x for x in Network.nodes if x != node], num_neighbours)
 
     @staticmethod

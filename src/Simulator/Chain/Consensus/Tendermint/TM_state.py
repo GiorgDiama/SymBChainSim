@@ -177,11 +177,11 @@ class Tendermint(ConsensusProtocol):
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
             # new miner in a round robin fashion
-            self.miner = self.rounds.round % Parameters.application["Nn"]
+            self.miner = self.rounds.round % Parameters.application["num_nodes"]
         elif Parameters.execution["proposer_selection"] == "hash":
             # get new miner based on the hash of the last block + the round (to
             # avoid endlessly waiting for offline nodes)
-            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
         else:
             raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
         logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")

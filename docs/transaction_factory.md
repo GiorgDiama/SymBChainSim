@@ -29,10 +29,10 @@ Note: sizes provided are divided by `1e6` before use (treating the input as byte
 
 ### Interval-based generation
 `generate_interval_txions(start)` produces transactions for the window `[start, start + TI_dur]`:
-- For each second in the interval, create `Tn` transactions unless `stop_after_tx` is reached
+- For each second in the interval, create `tx_per_sec` transactions unless `stop_after_tx` is reached
 - `id` comes from and updates `Parameters.application["txIDS"]`
 - `timestamp = second`
-- `size` is drawn from an exponential distribution with mean `Tsize`, then increased by `base_transaction_size`
+- `size` is drawn from an exponential distribution with mean `tx_size`, then increased by `base_transaction_size`
 - `creator` is uniformly sampled from the registered nodes
 - Each transaction is sent to `transaction_prop` and `produced_tx` is incremented
 
@@ -58,9 +58,9 @@ Note: sizes provided are divided by `1e6` before use (treating the input as byte
 
 ### Configuration Parameters
 - `application.transaction_model`: `local` or `global`
-- `application.Tn`: transactions per second
+- `application.tx_per_sec`: transactions per second
 - `application.TI_dur`: interval duration for generation
-- `application.Tsize`: mean for exponential tx size
+- `application.tx_size`: mean for exponential tx size
 - `application.base_transaction_size`: minimum/offset size
 - `application.txIDS`: running counter for tx IDs
 - `simulation.stop_after_tx`: optional cap on total generated

@@ -19,10 +19,10 @@ def set_up_scenario(manager, scenario, config="scenario.yaml", overrides=None):
     with open(PATH_TO_SCENARIOS + scenario + ".json", "r") as f:
         scenario = json.load(f)
 
-    Parameters.application["Nn"] = scenario["set_up"]["num_nodes"]
+    Parameters.application["num_nodes"] = scenario["set_up"]["num_nodes"]
     Parameters.calculate_fault_tolerance()
 
-    Parameters.simulation["simTime"] = scenario["set_up"]["duration"]
+    Parameters.simulation["sim_time"] = scenario["set_up"]["duration"]
     Parameters.simulation["stop_after_blocks"] = -1
     Parameters.simulation["stop_after_tx"] = -1
 
@@ -72,7 +72,7 @@ def load_workload():
         data = json.load(f)
 
     Parameters.simulation["stop_after_tx"] = len(data)
-    Parameters.simulation["simTime"] = -1
+    Parameters.simulation["sim_time"] = -1
     Parameters.simulation["stop_after_blocks"] = -1
 
     TransactionFactory.add_scenario_transactions([x.values() for x in data])

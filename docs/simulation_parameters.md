@@ -6,7 +6,7 @@ Most of SymbChainSim’s components are controlled through the configuration yam
 | Parameter           | Description |
 | ------------------- | ----------- |
 | `init_CP`           | Initial consensus protocol at simulation start (Options: "PBFT", "Tendermint", "BigFoot") |
-| `simTime`           | Stop simulation after this many seconds (-1 = no limit) |
+| `sim_time`          | Stop simulation after this many seconds (-1 = no limit) |
 | `stop_after_blocks` | Stop after this many blocks are produced (-1 = no limit) |
 | `stop_after_tx`     | Stop after this many transactions are processed (-1 = no limit) |
 | `debugging_mode`    | Enable detailed debugging mode (step-by-step event processing) |
@@ -18,12 +18,12 @@ Most of SymbChainSim’s components are controlled through the configuration yam
 ## application
 | Parameter               | Description |
 | ----------------------- | ----------- |
-| `Nn`                    | Number of nodes in the blockchain network |
+| `num_nodes`             | Number of nodes in the blockchain network |
 | `workload`              | Workload generation mode: `'generate'` (parameter based) or `'path_to_workload_trace'` (trace-based) |
 | `TI_dur`                | Transaction generation interval (every N seconds generate transactions for the next N seconds) |
-| `Tn`                    | Total number of transactions to generate per second |
+| `tx_per_sec`            | Total number of transactions to generate per second |
 | `base_transaction_size` | Base size of transactions in MB |
-| `Tsize`                 | Transaction size variation in MB (standard deviation) |
+| `tx_size`               | Transaction size variation in MB (standard deviation) |
 | `transaction_model`     | Transaction pool model: `"global"` (one pool) or `"local"` (each node has its own pool) |
 
 ## execution

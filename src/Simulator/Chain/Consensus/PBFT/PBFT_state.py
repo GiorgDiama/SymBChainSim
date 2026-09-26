@@ -178,9 +178,9 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             - hash_based: (last_block_hash + self.round) mod number of block producers
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
-            self.miner = self.rounds.round % Parameters.application["Nn"]
+            self.miner = self.rounds.round % Parameters.application["num_nodes"]
         elif Parameters.execution["proposer_selection"] == "hash":
-            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
         else:
             raise ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}")
         logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")

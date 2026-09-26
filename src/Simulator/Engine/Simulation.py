@@ -40,7 +40,7 @@ class Simulation:
         self.q = Queue()
         self.clock = 0.0
 
-        self.nodes: List[Node] = [Node(x, self.q) for x in range(Parameters.application["Nn"])]
+        self.nodes: List[Node] = [Node(x, self.q) for x in range(Parameters.application["num_nodes"])]
 
         self.manager: "Manager"
 

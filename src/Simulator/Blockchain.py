@@ -23,7 +23,7 @@ def parse_args() -> argparse.Namespace:
         "  uv run Blockchain.py\n"
         "  uv run Blockchain.py --cp Tendermint --name tendermint\n"
         "  uv run Blockchain.py --scenario light_scenario\n"
-        "  uv run Blockchain.py --set application.Nn=8 --set network.num_neighbours=4",
+        "  uv run Blockchain.py --set application.num_nodes=8 --set network.num_neighbours=4",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
     )

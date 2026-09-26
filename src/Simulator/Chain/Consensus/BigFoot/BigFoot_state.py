@@ -131,11 +131,11 @@ class BigFoot(ConsensusProtocol):
         match Parameters.execution["proposer_selection"]:
             case "round_robin":
                 # new miner in a round robin fashion
-                self.miner = self.rounds.round % Parameters.application["Nn"]
+                self.miner = self.rounds.round % Parameters.application["num_nodes"]
             case "hash":
                 # get new miner based on the hash of the last block + the round
                 # (to avoid endlessly waiting for offline nodes)
-                self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+                self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
             case _:
                 raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 

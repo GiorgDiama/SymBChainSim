@@ -4,7 +4,7 @@ simulation:
   init_CP: "PBFT"
   
   # Stop simulation after this many seconds (-1 = no limit)
-  simTime: 1800
+  sim_time: 1800
   
   # Stop simulation after this many blocks are produced (-1 = no limit)
   stop_after_blocks: -1
@@ -35,7 +35,7 @@ simulation:
   
 application:
   # Number of nodes in the blockchain network
-  Nn: 16
+  num_nodes: 16
   
   # Workload generation mode: 
   #   'generate': generate based on parameters
@@ -46,13 +46,13 @@ application:
   TI_dur: 10
   
   # Total number of transactions to generate per second
-  Tn: 120
+  tx_per_sec: 120
   
   # Base size of transactions in MB
   base_transaction_size: 0.0016
   
   # Transaction size variation in MB (standard deviation)
-  Tsize: 0.0008
+  tx_size: 0.0008
   
   # Transaction pool model:
   #   "global": abstracted model with only 1 global pool (accuracy of this model is evaluated in the TOMACS paper)

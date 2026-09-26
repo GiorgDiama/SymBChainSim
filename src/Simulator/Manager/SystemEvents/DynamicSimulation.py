@@ -136,12 +136,12 @@ def handle_update_workload_event(manager: "Manager", event: SystemEvent) -> None
         None
     """
     # generation algorithm requires an int
-    Parameters.application["Tn"] = int(normalvariate(*DynamicParameters.workload["Tn_norm_dist"]))
+    Parameters.application["tx_per_sec"] = int(normalvariate(*DynamicParameters.workload["tx_per_sec_norm_dist"]))
 
     # since transaction sizes are quire small abs to ensure no negative values
-    Parameters.application["Tsize"] = abs(normalvariate(*DynamicParameters.workload["Tsize_norm_dist"]))
+    Parameters.application["tx_size"] = abs(normalvariate(*DynamicParameters.workload["tx_size_norm_dist"]))
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        print(f"{'Workload  updated':<20}: TPS= {Parameters.application['Tn']} size= {Parameters.application['Tsize']}")
+        print(f"{'Workload  updated':<20}: TPS= {Parameters.application['tx_per_sec']} size= {Parameters.application['tx_size']}")
 
     schedule_update_workload_event(manager)

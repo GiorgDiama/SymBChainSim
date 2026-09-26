@@ -32,8 +32,8 @@ def mean(values: list[float]) -> float | None:
 
 def stop_condition() -> str:
     conditions = []
-    if Parameters.simulation["simTime"] != -1:
-        conditions.append(f"{Parameters.simulation['simTime']} s")
+    if Parameters.simulation["sim_time"] != -1:
+        conditions.append(f"{Parameters.simulation['sim_time']} s")
     if Parameters.simulation["stop_after_blocks"] != -1:
         conditions.append(f"{Parameters.simulation['stop_after_blocks']} blocks")
     if Parameters.simulation["stop_after_tx"] != -1:
@@ -45,7 +45,7 @@ def print_header(seed: int, scenario: str | None = None) -> None:
     parts = ["SymBChainSim"]
     if scenario:
         parts.append(f"scenario {scenario}")
-    parts += [Parameters.simulation["init_CP"], f"{Parameters.application['Nn']} nodes", stop_condition(), f"seed {seed}"]
+    parts += [Parameters.simulation["init_CP"], f"{Parameters.application['num_nodes']} nodes", stop_condition(), f"seed {seed}"]
     print(" | ".join(parts) + "\n")
 
 
@@ -90,8 +90,8 @@ def wrap_items(items: list[str], width: int) -> list[str]:
 def print_progress(sim: "Simulation") -> None:
     """Prints one line of progress e.g., [ 100 / 300 s]   41 blocks   16,361 tx"""
     clock = f"{sim.clock:5.0f}"
-    if Parameters.simulation["simTime"] != -1:
-        clock += f" / {Parameters.simulation['simTime']}"
+    if Parameters.simulation["sim_time"] != -1:
+        clock += f" / {Parameters.simulation['sim_time']}"
 
     blocks = number(Metrics.confirmed_blocks(sim))
     if Parameters.simulation["stop_after_blocks"] != -1:

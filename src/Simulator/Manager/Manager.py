@@ -81,7 +81,7 @@ class Manager:
             num_nodes (int): Number of nodes to initialize. If -1, uses value from parameters. Defaults to -1.
         """
         if num_nodes != -1:
-            Parameters.application["Nn"] = num_nodes
+            Parameters.application["num_nodes"] = num_nodes
             Parameters.calculate_fault_tolerance()
             logger.debug(f"Number of nodes set to {num_nodes} and fault tolerance calculated.")
 
@@ -123,8 +123,8 @@ class Manager:
         Returns:
             bool: True if any finish condition is met, otherwise False.
         """
-        if times_out := (Parameters.simulation["simTime"] != -1):
-            times_out = self.sim.clock >= Parameters.simulation["simTime"]
+        if times_out := (Parameters.simulation["sim_time"] != -1):
+            times_out = self.sim.clock >= Parameters.simulation["sim_time"]
 
         if reached_blocks := (Parameters.simulation["stop_after_blocks"] != -1):
             reached_blocks = Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"]

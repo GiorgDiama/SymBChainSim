@@ -122,7 +122,7 @@ class TransactionFactory:
         logger.debug(f"Generating interval transactions starting at {start}")
 
         for second in range(round(start), round(start + Parameters.application["TI_dur"])):
-            for _ in range(Parameters.application["Tn"]):
+            for _ in range(Parameters.application["tx_per_sec"]):
                 if Parameters.simulation["stop_after_tx"] != -1 and TransactionFactory.produced_tx == Parameters.simulation["stop_after_tx"]:
                     logger.debug("Reached stop_after_tx limit, stopping transaction generation.")
                     return
@@ -132,7 +132,7 @@ class TransactionFactory:
 
                 timestamp = second
 
-                size = random.expovariate(1 / Parameters.application["Tsize"])
+                size = random.expovariate(1 / Parameters.application["tx_size"])
                 size += Parameters.application["base_transaction_size"]
 
                 creator = random.choice(TransactionFactory.nodes)

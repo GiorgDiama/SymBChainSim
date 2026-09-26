@@ -11,5 +11,5 @@ workload:
   use: True
 
   # Transaction size distribution mew and sigma ranges to sample from when updating the workload
-  Tn_norm_dist: [70, 20]
-  Tsize_norm_dist: [0.001, 0.008]
+  tx_per_sec_norm_dist: [70, 20]
+  tx_size_norm_dist: [0.001, 0.008]
