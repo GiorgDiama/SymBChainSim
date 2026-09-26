@@ -3,6 +3,8 @@ from Engine.Event import SystemEvent
 
 from Chain.TransactionFactory import TransactionFactory
 
+from Utils import Report
+
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -128,6 +130,7 @@ def handle_scenario_fault_event(manager: "Manager", event: SystemEvent) -> None:
         None
     """
     event.payload["node"].kill()
+    Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} failed")
 
 
 def handle_scenario_recovery_event(manager: "Manager", event: SystemEvent) -> None:
@@ -145,3 +148,4 @@ def handle_scenario_recovery_event(manager: "Manager", event: SystemEvent) -> No
     time = event.time
 
     node.resurrect(time)
+    Report.print_update(time, "FAULT", f"node {node.id} recovered")

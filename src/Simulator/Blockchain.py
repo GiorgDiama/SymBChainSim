@@ -95,7 +95,7 @@ def run(args: argparse.Namespace) -> None:
             manager.load_params(args.config or "base.yaml", overrides)
             manager.set_up()
     except ValueError as e:
-        # invalid --set keys
+        # invalid --set keys or unknown scenario
         sys.exit(f"error: {e}")
 
     Report.print_header(args.seed, args.scenario)

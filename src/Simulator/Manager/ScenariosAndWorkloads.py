@@ -16,8 +16,11 @@ PATH_TO_SCENARIOS = "../Resources/Scenarios/"
 def set_up_scenario(manager, scenario, config="scenario.yaml", overrides=None):
     manager.load_params(config, overrides)
 
-    with open(PATH_TO_SCENARIOS + scenario + ".json", "r") as f:
-        scenario = json.load(f)
+    try:
+        with open(PATH_TO_SCENARIOS + scenario + ".json", "r") as f:
+            scenario = json.load(f)
+    except FileNotFoundError:
+        raise ValueError(f"scenario '{scenario}' not found in {PATH_TO_SCENARIOS}")
 
     Parameters.application["num_nodes"] = scenario["set_up"]["num_nodes"]
     Parameters.calculate_fault_tolerance()
