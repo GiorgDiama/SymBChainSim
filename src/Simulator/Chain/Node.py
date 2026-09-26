@@ -229,10 +229,41 @@ class Node:
         self.state.alive = True
         logger.debug(f"Node {self.id}: Resurrected at time {time}.")
 
+        if self.cp is not None and self.cp.NAME == "DESYNC":
+            self.restart_dropped_syncs(time)
+            return
+
         is_desynced = self.attempt_sync(time)
 
         if not is_desynced:
             logger.debug(f"Node {self.id}: Rejoining latest configuration after resurrection at time {time}.")
+            self.join_latest_conf(time)
+
+    def restart_dropped_syncs(self, time: float) -> None:
+        """
+        Restarts the syncs of a node that went offline while syncing
+
+        Offline nodes drop their events, so a sync event that was due while the node was offline never
+        completed and the node would stay de-synced forever. Syncs whose event is still pending are left as they are.
+        """
+        data_event = self.cp.local_fast_sync_event_data
+        if data_event is not None and data_event.time <= time:
+            logger.debug(f"Node {self.id}: Restarting BLOCKCHAIN sync dropped while offline at time {time}.")
+            self.cp.local_fast_sync_event_data = None
+            self.state.synced = True
+            self.attempt_sync(time)
+
+        conf_event = self.cp.local_fast_sync_event_configuration
+        if conf_event is not None and conf_event.time <= time:
+            logger.debug(f"Node {self.id}: Restarting CONFCHAIN sync dropped while offline at time {time}.")
+            self.cp.local_fast_sync_event_configuration = None
+            self.reconfiguration_state.configuration_synced = True
+            self.reconfiguration_state.attempt_sync_configuration(time)
+
+        # neighbours were not ahead any more so there was nothing left to sync
+        if self.cp.NAME == "DESYNC" and self.cp.ready_to_rejoin():
+            self.state.synced = True
+            self.reconfiguration_state.configuration_synced = True
             self.join_latest_conf(time)
 
     def add_block(self, block: "Block", time: float, update_time_added: bool = True) -> None:
