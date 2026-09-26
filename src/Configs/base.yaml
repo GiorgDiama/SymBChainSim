@@ -46,7 +46,7 @@ application:
   TI_dur: 10
   
   # Total number of transactions to generate per second
-  Tn: 180
+  Tn: 120
   
   # Base size of transactions in MB
   base_transaction_size: 0.0016

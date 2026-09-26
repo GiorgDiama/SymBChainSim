@@ -84,7 +84,7 @@ uv run Blockchain.py --scenario light_scenario
 The default simulation uses:
 - **16 nodes** with PBFT consensus
 - **30-minute simulation time** (1800 seconds)
-- **180 transactions per second**
+- **120 transactions per second**
 
 
 ### Understanding the Output
@@ -122,7 +122,7 @@ simulation:
 application:
   Nn: 16                    # Number of nodes
   workload: 'generate'      # Workload type
-  Tn: 180                   # Transactions per second
+  Tn: 120                   # Transactions per second
   TI_dur: 10                # Transaction interval duration
 ```
 
