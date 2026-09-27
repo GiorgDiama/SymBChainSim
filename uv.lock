@@ -1752,19 +1752,25 @@ source = { virtual = "." }
 dependencies = [
     { name = "jupyter" },
     { name = "matplotlib" },
-    { name = "mkdocs-material" },
     { name = "numpy" },
     { name = "pyyaml" },
+]
+
+[package.dev-dependencies]
+docs = [
+    { name = "mkdocs-material" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "matplotlib", specifier = ">=3.10.6" },
-    { name = "mkdocs-material", specifier = ">=9.6.20" },
     { name = "numpy", specifier = ">=2.3.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
 ]
+
+[package.metadata.requires-dev]
+docs = [{ name = "mkdocs-material", specifier = ">=9.6.20" }]
 
 [[package]]
 name = "terminado"
