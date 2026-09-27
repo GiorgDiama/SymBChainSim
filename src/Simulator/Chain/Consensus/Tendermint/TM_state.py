@@ -177,11 +177,11 @@ class Tendermint(ConsensusProtocol):
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
             # new miner in a round robin fashion
-            self.miner = self.rounds.round % Parameters.application["Nn"]
+            self.miner = self.rounds.round % Parameters.application["num_nodes"]
         elif Parameters.execution["proposer_selection"] == "hash":
             # get new miner based on the hash of the last block + the round (to
             # avoid endlessly waiting for offline nodes)
-            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
         else:
             raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
         logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")
@@ -275,19 +275,6 @@ class Tendermint(ConsensusProtocol):
         logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol-specific rejoin logic for Tendermint. Resets state and starts at the latest known round.
-
-        Args:
-            time (float): The current simulation time.
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining TM protocol at time {time}")
-        self.set_state()  # set node's protocol state
-        round = self.node.blockchain[-1].extra_data["round"] + 1  # set round to latest known round (latest block round + 1)
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-        self.start(time, round)  # start the protocol
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------
@@ -304,7 +291,7 @@ class Tendermint(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != Tendermint.NAME:
-            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at Tendermint state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at Tendermint state")
             return "different_state"
         match event.payload["type"]:
             case "propose":

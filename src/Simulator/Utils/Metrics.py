@@ -2,7 +2,6 @@ from Parameters import Parameters
 
 from Chain.TransactionFactory import TransactionFactory
 
-from Utils import Tools
 
 import statistics as st
 import numpy as np
@@ -98,43 +97,6 @@ class Metrics:
 
             sizes = Metrics.measure_block_sizes(BC)
             Metrics.block_info[node.id] = {"values": sizes, "AVG": st.mean(sizes) if sizes else 0}
-
-    @staticmethod
-    def print_metrics() -> None:
-        """Prints all collected metrics in a formatted table."""
-        averages = {n: {} for n in Metrics.latency.keys()}
-        val = "{v:.3f}"
-
-        # latency
-        for key, value in Metrics.latency.items():
-            averages[key]["Latency"] = "%.3f" % value["AVG"]
-
-        # throughput
-        for key, value in Metrics.throughput.items():
-            averages[key]["Throughput"] = "%.3f" % value
-
-        # blockctime
-        for key, value in Metrics.blocktime.items():
-            averages[key]["BlockTime"] = "%.3f" % value["AVG"]
-
-        # decentralisation
-        for key, value in Metrics.decentralisation.items():
-            averages[key]["Decent."] = "%.6f" % value
-
-        for key, value in Metrics.transaction_info.items():
-            averages[key]["Mempool"] = value["pool"]
-            averages[key]["Confirmed"] = value["processed_tx"]
-
-        for key, value in Metrics.block_info.items():
-            averages[key]["AVG. BlockSize"] = round(value["AVG"], 3)
-
-        print(Tools.color(f"{'-' * 30} METRICS {'-' * 30}", 46))
-
-        for key, metrics in averages.items():
-            print(f"{f'Node: {key}':10}", end="")
-            for metric, value in metrics.items():
-                print(f"{metric}:{value} ", end=" | ")
-            print()
 
     @staticmethod
     def measure_latency(blocks: List["Block"]) -> tuple[List[float], float]:
@@ -271,10 +233,9 @@ class Metrics:
             Dict[str, int]: Transaction statistics including pool size and processed transactions.
         """
         node_info = {}
-        if Parameters.application["transaction_model"] == "local":
-            node_info["pool"] = len(node.pool)
-        else:
-            node_info["pool"] = len(TransactionFactory.global_mempool)
+        pool = node.pool if Parameters.application["transaction_model"] == "local" else TransactionFactory.global_mempool
+        # committed transactions are only marked as processed and removed from the pool later
+        node_info["pool"] = sum(1 for tx in pool if not tx.processed)
 
         node_info["processed_tx"] = sum(len(b.transactions) for b in node.blockchain)
         return node_info

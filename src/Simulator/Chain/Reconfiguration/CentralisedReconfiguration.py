@@ -1,13 +1,17 @@
 from Parameters import Parameters
 
 from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
+from Utils import Report
 
 import random
+import logging
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from Manager.Manager import Manager
+
+logger = logging.getLogger(__name__.split(".")[-1])
 
 
 def create_random_configuration_block(time) -> ConfigurationBlock:
@@ -54,7 +58,8 @@ def propagate_configuration_block(manager: "Manager", configuration_block: Confi
         - Model==False: append the block to the configuration chains of all nodes directly and immediately
     """
     if Parameters.reconfiguration["print_updates"]:
-        print("RECONFIGURATION:", configuration_block.configuration)
+        conf = configuration_block.configuration
+        Report.print_update(time, "RECONFIG", "switched to", f"{conf['CP']}, max block size {conf['block_size']} MB, block time {conf['block_time']} s")
 
     if Parameters.reconfiguration["propagation"]["model"]:
         percent_receivers = Parameters.reconfiguration["propagation"]["per_cent_nodes"]
@@ -66,8 +71,7 @@ def propagate_configuration_block(manager: "Manager", configuration_block: Confi
         for node in receivers:
             receive_at = time + random.uniform(*delay_range)
 
-            if Parameters.reconfiguration["print_updates"]:
-                print(f"node {node} will receive configuration block at {receive_at}")
+            logger.debug(f"node {node} will receive configuration block at {receive_at}")
 
             node.reconfiguration_state.schedule_future_receive_configuration(block=configuration_block.copy(), time=receive_at)
     else:

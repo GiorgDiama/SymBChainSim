@@ -2,7 +2,7 @@ from Parameters import Parameters, read_yaml
 
 from Engine.Event import SystemEvent
 
-from Utils import Tools
+from Utils import Report
 
 import random
 
@@ -21,14 +21,12 @@ class Behaviour:
         byzantine (dict): Byzantine behaviour parameters loaded from YAML.
         faulty (dict): Faulty behaviour parameters loaded from YAML.
         faulty_nodes (list[Node]): Nodes selected to exhibit faulty behaviour.
-        byzantine_nodes (list[Node]): Nodes selected to exhibit byzantine behaviour.
     """
 
     byzantine = {}
     faulty = {}
 
     faulty_nodes = []
-    byzantine_nodes = []
 
     @staticmethod
     def init(manager: "Manager") -> None:
@@ -85,8 +83,6 @@ def schedule_random_fault_event(manager: "Manager", time: float, node: Optional[
     event = SystemEvent(time=fail_at, payload={"type": "random_fault", "node": node})
     manager.sim.q.add_event(event)
 
-    node.behaviour.fault_event = event
-
     return None
 
 
@@ -104,7 +100,7 @@ def handle_random_fault_event(manager: "Manager", event) -> None:
     event.payload["node"].kill()
 
     if Parameters.behaviour.get("print_updates", False):
-        print(Tools.color(f"Node {event.payload['node'].id} failed!", c=41))
+        Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} failed")
 
     schedule_recovery_event(manager, event.time, event.payload["node"])
 
@@ -151,6 +147,6 @@ def handle_recover_event(manager: "Manager", event) -> None:
     node.resurrect(time)
 
     if Parameters.behaviour.get("print_updates", False):
-        print(Tools.color(f"Node {event.payload['node'].id} recovered!", c=42))
+        Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} recovered")
 
     schedule_random_fault_event(manager, event.time, event.payload["node"])

@@ -101,18 +101,6 @@ class MessageEvent(Event):
         self.actor = receiver
         self.forwarded_by: Optional[str] = None
 
-    def is_same(self, other: "MessageEvent") -> bool:
-        """
-        Checks if this message event is the same as another based on their IDs.
-
-        Args:
-            other (MessageEvent): The other message event to compare with.
-
-        Returns:
-            bool: True if the events have the same ID, False otherwise.
-        """
-        return self.id == other.id
-
     @staticmethod
     def from_Event(event: Event, receiver: "Node") -> "MessageEvent":
         """

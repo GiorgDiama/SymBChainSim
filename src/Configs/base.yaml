@@ -1,10 +1,10 @@
 simulation:
   # Initial consensus protocol to use at simulation start
   #   Options: "PBFT", "Tendermint", "BigFoot"
-  init_CP: "PBFT"
+  init_cp: "PBFT"
   
   # Stop simulation after this many seconds (-1 = no limit)
-  simTime: 1800
+  sim_time: 1800
   
   # Stop simulation after this many blocks are produced (-1 = no limit)
   stop_after_blocks: -1
@@ -23,13 +23,19 @@ simulation:
   
   # Take snapshots of simulation state every N seconds
   snapshot_interval: 30
+
+  # Snapshots are saved to Outputs/Snapshots/<run_name>.json
+  run_name: "snapshot"
+
+  # Switch to debugging mode once the simulation clock reaches this time (-1 = never)
+  start_debugging_at: -1
   
-  # Print simulation simulation information at the start of execution
-  print_info: True
+  # Also print the nodes, parameters, per-node metrics and event counts (same as --verbose)
+  print_info: False
   
 application:
   # Number of nodes in the blockchain network
-  Nn: 16
+  num_nodes: 16
   
   # Workload generation mode: 
   #   'generate': generate based on parameters
@@ -37,16 +43,16 @@ application:
   workload: 'generate'
   
   # Transaction generation interval (every N seconds generate transactions for the next N seconds)
-  TI_dur: 10
+  tx_interval: 10
   
   # Total number of transactions to generate per second
-  Tn: 180
+  tx_per_sec: 120
   
   # Base size of transactions in MB
   base_transaction_size: 0.0016
   
-  # Transaction size variation in MB (standard deviation)
-  Tsize: 0.0008
+  # Mean extra transaction size in MB on top of base_transaction_size (exponentially distributed)
+  tx_size: 0.0008
   
   # Transaction pool model:
   #   "global": abstracted model with only 1 global pool (accuracy of this model is evaluated in the TOMACS paper)
@@ -76,7 +82,7 @@ execution:
 
 data:
   # Maximum block size in MBs
-  Bsize: 1
+  max_block_size: 1
   
   # Base block size in MB (excluding transactions)
   base_block_size: 0.002
@@ -116,13 +122,13 @@ network:
   processing_delay: 0
 
   bandwidth:
-    # Mean bandwidth in Mbps
+    # Mean bandwidth in MB/s
     mean: 5
     
-    # Standard deviation of bandwidth in Mbps
+    # Standard deviation of bandwidth in MB/s
     dev: 2
     
-    # Minimum bandwidth in Mbps
+    # Minimum bandwidth in MB/s
     min: 2
     
     # Bandwidth sampling frequency: 
@@ -159,7 +165,7 @@ dynamic_sim:
 
 reconfiguration:
   # Enable reconfiguration of blockchain system
-  reconfigure: True
+  reconfigure: False
 
   # How often to reconfigure the system
   reconfiguration_interval: 300

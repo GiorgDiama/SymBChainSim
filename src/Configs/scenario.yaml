@@ -1,7 +1,7 @@
 simulation:
   # Initial consensus protocol to use at simulation start
   #   Options: "PBFT", "Tendermint", "BigFoot"
-  init_CP: "PBFT"
+  init_cp: "PBFT"
   
   # Enable detailed debugging mode (step-by-step event processing mode)
   debugging_mode: False
@@ -14,6 +14,15 @@ simulation:
   
   # Take snapshots of simulation state every N seconds
   snapshot_interval: 30
+
+  # Snapshots are saved to Outputs/Snapshots/<run_name>.json
+  run_name: "snapshot"
+
+  # Switch to debugging mode once the simulation clock reaches this time (-1 = never)
+  start_debugging_at: -1
+
+  # Also print the nodes, parameters, per-node metrics and event counts (same as --verbose)
+  print_info: False
 
   # Simulate (or not) the node failures described in the scenario
   simulate_faults: False
@@ -47,7 +56,7 @@ execution:
 
 data:
   # Maximum block size in MBs
-  Bsize: 1
+  max_block_size: 1
   
   # Base block size in MB (excluding transactions)
   base_block_size: 0

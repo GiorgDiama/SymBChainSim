@@ -35,11 +35,11 @@ The `generate_scenario.py` script uses a dictionary of parameters to define the 
 -   `ti_sigma` (float): Standard deviation of the normal distribution used to determine the length of time intervals.
 -   `num_nodes` (int): The total number of blockchain nodes participating in the simulation.
 -   `networks` (list of tuples `(mean, std_dev)`): 
-    - A list of network models. Each tuple represents a normal distribution from which node bandwidths (in some unit, e.g., Mbps) are sampled. Each node is randomly assigned one of these network models.
+    - A list of network models. Each tuple represents a normal distribution from which node bandwidths (in MB/s) are sampled. Each node is randomly assigned one of these network models.
 -   `fail_duration` (list of tuples `(mean, std_dev)`):
     - A list of normal distributions defining the duration of node failures. When a node fails, its downtime is sampled from one of these distributions.
 -   `workloads` (list of tuples `(mean, std_dev)`): A list of normal distributions representing transaction rates (e.g., transactions per second) within a given interval. The number of transactions for an interval is sampled from one of these distributions.
--   `sizes` (tuple `(min, max)`): A tuple specifying the minimum and maximum transaction sizes. Transaction sizes are uniformly sampled within this range.
+-   `sizes` (tuple `(min, max)`): A tuple specifying the minimum and maximum transaction sizes in MB. Transaction sizes are uniformly sampled within this range.
 
 ### Example Parameters (from `generate_scenario.py`)
 
@@ -52,7 +52,7 @@ parameters_dict = {
     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)], # Bandwidth models (mean, std_dev)
     "fail_duration": [(20, 5), (60, 10), (120, 20)], # Failure duration models
     "workloads": [(50, 10), (100, 20), (100, 50)], # Transaction rate models
-    "sizes": (8, 20.5),   # Transaction size range (min, max)
+    "sizes": (0.0016, 0.004),   # Transaction size range in MB (min, max)
 }
 ```
 
@@ -88,7 +88,7 @@ Generated scenarios adhere to the following JSON structure:
     -   `end`: The end time of the interval.
     -   `network`: A list of tuples, where each tuple `(node_id, bandwidth)` specifies the assigned bandwidth for a given node during this interval.
     -   `faults`: A list of tuples `(node_id, fail_time, duration)` indicating when a specific node fails and for how long within this interval.
-    -   `transactions`: A sorted list of tuples `(creator, id, timestamp, size)` representing the transactions generated during this interval. Transactions are sorted by `timestamp`.
+    -   `transactions`: A sorted list of tuples `(creator, id, timestamp, size)` (size in MB) representing the transactions generated during this interval. Transactions are sorted by `timestamp`.
 
 ### Output
 
@@ -98,10 +98,10 @@ Generated scenarios are saved as JSON files in the `../Resources/Scenarios/` dir
 
 Scenario files can be used to run a simulation with SymBChainSim. The main entry point for running simulations is the `src/Simulator/Blockchain.py` script.
 
-To execute a simulation using a previously generated scenario, you need to specify the scenario's name using the `--sc` command-line argument.
+To execute a simulation using a previously generated scenario, you need to specify the scenario's name using the `--scenario` command-line argument.
 
 ```bash
-uv run src/Simulator/Blockchain.py --sc <scenario_name>
+uv run src/Simulator/Blockchain.py --scenario <scenario_name>
 ```
 
 Replace `<scenario_name>` with the name you provided when generating the scenario (e.g., `my_scenario`). The system will automatically look for the scenario file in the `Resources/Scenarios/` directory.

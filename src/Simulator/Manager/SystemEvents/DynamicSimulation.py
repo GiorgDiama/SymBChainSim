@@ -1,6 +1,7 @@
-from Parameters import Parameters
+from Parameters import Parameters, read_yaml
 from Engine.Event import SystemEvent
 from Chain.Network import Network
+from Utils import Report
 
 from random import normalvariate
 
@@ -29,7 +30,7 @@ class DynamicParameters:
         Returns:
             None
         """
-        params = Parameters.read_yaml(Parameters.dynamic_sim["config"])
+        params = read_yaml(Parameters.dynamic_sim["config"])
 
         DynamicParameters.network = params["network"]
         DynamicParameters.workload = params["workload"]
@@ -46,7 +47,7 @@ def schedule_update_network_event(manager: "Manager", init: bool = False) -> Non
 
     Args:
         manager (Manager): Simulation manager.
-        init (bool): If True, schedule at current clock; otherwise offset by TI_dur.
+        init (bool): If True, schedule at current clock; otherwise offset by tx_interval.
 
     Returns:
         None
@@ -56,7 +57,7 @@ def schedule_update_network_event(manager: "Manager", init: bool = False) -> Non
 
     time = manager.sim.clock
     if not init:
-        time += Parameters.application["TI_dur"]
+        time += Parameters.application["tx_interval"]
 
     event = SystemEvent(
         time=time,
@@ -84,7 +85,8 @@ def handle_update_network_event(manager: "Manager", event: SystemEvent) -> None:
     Parameters.network["bandwidth"]["dev"] = normalvariate(*DynamicParameters.network["sigma_dist"])
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        print(f"{'Network updated':<20}: mu= {Parameters.network['bandwidth']['mean']} sigma= {Parameters.network['bandwidth']['dev']}")
+        bandwidth = Parameters.network["bandwidth"]
+        Report.print_update(event.time, "DYNAMIC", "network", f"bandwidth {bandwidth['mean']:.1f} ± {bandwidth['dev']:.1f} MB/s")
 
     Network.set_bandwidths()
 
@@ -102,7 +104,7 @@ def schedule_update_workload_event(manager: "Manager", init: bool = False) -> No
 
     Args:
         manager (Manager): Simulation manager.
-        init (bool): If True, schedule at current clock; otherwise offset by TI_dur.
+        init (bool): If True, schedule at current clock; otherwise offset by tx_interval.
 
     Returns:
         None
@@ -112,7 +114,7 @@ def schedule_update_workload_event(manager: "Manager", init: bool = False) -> No
 
     time = manager.sim.clock
     if not init:
-        time += Parameters.application["TI_dur"]
+        time += Parameters.application["tx_interval"]
 
     event = SystemEvent(
         time=time,
@@ -136,12 +138,17 @@ def handle_update_workload_event(manager: "Manager", event: SystemEvent) -> None
         None
     """
     # generation algorithm requires an int
-    Parameters.application["Tn"] = int(normalvariate(*DynamicParameters.workload["Tn_norm_dist"]))
+    Parameters.application["tx_per_sec"] = int(normalvariate(*DynamicParameters.workload["tx_per_sec_norm_dist"]))
 
     # since transaction sizes are quire small abs to ensure no negative values
-    Parameters.application["Tsize"] = abs(normalvariate(*DynamicParameters.workload["Tsize_norm_dist"]))
+    Parameters.application["tx_size"] = abs(normalvariate(*DynamicParameters.workload["tx_size_norm_dist"]))
 
     if Parameters.dynamic_sim.get("print_updates", False):
-        print(f"{'Workload  updated':<20}: TPS= {Parameters.application['Tn']} size= {Parameters.application['Tsize']}")
+        Report.print_update(
+            event.time,
+            "DYNAMIC",
+            "workload",
+            f"{Parameters.application['tx_per_sec']} tx/s, mean tx size {(Parameters.application['base_transaction_size'] + Parameters.application['tx_size']) * 1000:.1f} KB",
+        )
 
     schedule_update_workload_event(manager)

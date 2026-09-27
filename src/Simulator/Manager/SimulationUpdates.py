@@ -1,7 +1,6 @@
 from Parameters import Parameters
 
-from Utils.Metrics import Metrics
-from Utils import Tools
+from Utils import Report
 
 
 """
@@ -24,17 +23,10 @@ def print_progress(sim):
 
     if sim.clock >= Parameters.simulation["print_next"] and Parameters.simulation["print_every"] != -1:
         Parameters.simulation["print_next"] += Parameters.simulation["print_every"]
-
-        sim_time = f"Simulation time: {'%.2f' % sim.clock:>10} out of {Parameters.simulation['simTime']}"
-        blocks = f"Confirmed blocks: {Metrics.confirmed_blocks(sim):>5} out of {Parameters.simulation['stop_after_blocks']}"
-        tx = f"Confirmed Transactions {Metrics.processed_tx_system(sim):>10} out of {Parameters.simulation['stop_after_tx']}"
-
-        s = f"{sim_time}\t{blocks}\t{tx}"
-
-        print(Tools.color(s, 44))
+        Report.print_progress(sim)
 
 
 def start_debug(sim):
     """Starts the built-in debugger `Parameters.simulation.start_debugging_at`"""
-    if "start_debugging_at" in Parameters.simulation and sim.clock >= Parameters.simulation["start_debugging_at"]:
+    if Parameters.simulation["start_debugging_at"] != -1 and sim.clock >= Parameters.simulation["start_debugging_at"]:
         Parameters.simulation["debugging_mode"] = True

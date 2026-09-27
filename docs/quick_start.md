@@ -76,7 +76,7 @@ VS Code may automatically detect and prompt you to set this interpreter.
 uv run Blockchain.py
 
 # Run with existing example scenario
-uv run Blockchain.py --sc light_scenario
+uv run Blockchain.py --scenario light_scenario
 ```
 
 ### Default Configuration
@@ -84,16 +84,17 @@ uv run Blockchain.py --sc light_scenario
 The default simulation uses:
 - **16 nodes** with PBFT consensus
 - **30-minute simulation time** (1800 seconds)
-- **180 transactions per second**
+- **120 transactions per second**
 
 
 ### Understanding the Output
 
 After running, you'll see:
-- Block production statistics by consensus protocol
-- Performance metrics (throughput, latency, etc.)
-- Event processing summary
-- Simulation and execution times
+- Progress lines every 100 simulated seconds
+- The results, averaged over all nodes (blocks, throughput, latency, etc.)
+- Where the snapshots were saved and how long the run took
+
+Add `-v` to also see the nodes, parameters, per-node metrics and event counts.
 
 ## Configuration
 
@@ -111,8 +112,8 @@ SBS uses YAML configuration files located in `src/Configs/`:
 #### Simulation Parameters
 ```yaml
 simulation:
-  init_CP: "PBFT"           # Initial consensus protocol
-  simTime: 1800             # Simulation duration (seconds)
+  init_cp: "PBFT"           # Initial consensus protocol
+  sim_time: 1800            # Simulation duration (seconds)
   stop_after_blocks: -1     # Stop after N blocks (-1 = disabled)
   debugging_mode: False     # Enable debug logging
 ```
@@ -120,10 +121,10 @@ simulation:
 #### Application Settings
 ```yaml
 application:
-  Nn: 16                    # Number of nodes
+  num_nodes: 16             # Number of nodes
   workload: 'generate'      # Workload type
-  Tn: 180                   # Transactions per second
-  TI_dur: 10                # Transaction interval duration
+  tx_per_sec: 120           # Transactions per second
+  tx_interval: 10           # Transaction interval duration
 ```
 
 #### Network Configuration
@@ -133,7 +134,7 @@ network:
   num_neighbours: 6         # Number of neighbors per node
   use_latency: "measured"   # Latency model
   bandwidth:
-    mean: 5                 # Mean bandwidth (Mbps)
+    mean: 5                 # Mean bandwidth (MB/s)
     dev: 2                  # Standard deviation
 ```
 

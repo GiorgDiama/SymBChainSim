@@ -178,9 +178,9 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             - hash_based: (last_block_hash + self.round) mod number of block producers
         """
         if Parameters.execution["proposer_selection"] == "round_robin":
-            self.miner = self.rounds.round % Parameters.application["Nn"]
+            self.miner = self.rounds.round % Parameters.application["num_nodes"]
         elif Parameters.execution["proposer_selection"] == "hash":
-            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+            self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
         else:
             raise ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}")
         logger.debug(f"Node {self.node.id}: Selected miner {self.miner} for round {self.rounds.round}")
@@ -274,22 +274,6 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
         logger.debug(f"Node {self.node.id}: Initializing round change timeout at time {time}")
         timeouts.schedule_timeout(self, time, add_time=True)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol specific rejoin logic for PBFT.
-
-        Args:
-            time: Current simulation time
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining PBFT protocol at time {time}")
-
-        self.set_state()
-        round = self.node.blockchain[-1].extra_data["round"] + 1
-
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-
-        self.start(time, round)
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------
@@ -306,7 +290,7 @@ class PBFT(ConsensusProtocol.ConsensusProtocol):
             str: Result of event handling ("different protocol", "unhandled", or protocol-specific result)
         """
         if not event.actor or not event.actor.cp or event.actor.cp.NAME != PBFT.NAME:
-            print(f"actor with {event.actor.cp.NAME} tried to execute event {event} at PBFT state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at PBFT state")
             return "different protocol"
 
         match event.payload["type"]:

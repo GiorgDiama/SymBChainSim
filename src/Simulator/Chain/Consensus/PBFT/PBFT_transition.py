@@ -170,7 +170,6 @@ def prepare(state: "PBFT", event: "Event") -> str:
     """
     time = event.time
     block = event.payload["block"]
-    round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] PREPARE: Processing prepare vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
     # validate message: old (invalid), current (continue processing), future (valid, add to backlog)

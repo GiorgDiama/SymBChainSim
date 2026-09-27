@@ -131,11 +131,11 @@ class BigFoot(ConsensusProtocol):
         match Parameters.execution["proposer_selection"]:
             case "round_robin":
                 # new miner in a round robin fashion
-                self.miner = self.rounds.round % Parameters.application["Nn"]
+                self.miner = self.rounds.round % Parameters.application["num_nodes"]
             case "hash":
                 # get new miner based on the hash of the last block + the round
                 # (to avoid endlessly waiting for offline nodes)
-                self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["Nn"]
+                self.miner = (self.node.last_block.id + self.rounds.round) % Parameters.application["num_nodes"]
             case _:
                 raise (ValueError(f"No such 'proposer_selection {Parameters.execution['proposer_selection']}"))
 
@@ -285,21 +285,6 @@ class BigFoot(ConsensusProtocol):
             # check if any future events are here for this round slow nodes might miss pre_prepare vote so its good to check early
             handle_backlog(self.node, time)
 
-    def rejoin(self, time: float) -> None:
-        """
-        Defines the protocol specific rejoin logic for BigFoot.
-
-        Args:
-            time (float): The current simulation time.
-        """
-        logger.debug(f"Node {self.node.id}: Rejoining BigFoot protocol at time {time}")
-        # set node's protocol state
-        self.set_state()
-        # set round to latest known round (latest block round + 1)
-        round = self.node.blockchain[-1].extra_data["round"] + 1
-        logger.debug(f"Node {self.node.id}: Rejoining at round {round} (latest block round + 1)")
-        self.start(time, round)  # start the protocol
-
     # -----------------------------------------------------------
     #                      HANDLER
     # -----------------------------------------------------------
@@ -315,7 +300,7 @@ class BigFoot(ConsensusProtocol):
             str: Result of event handling
         """
         if event.actor.cp.NAME != BigFoot.NAME:
-            print(f"actor at {event.actor.cp.NAME} tried to execute event {event} at BigFoot state")
+            logger.warning(f"actor at {event.actor.cp.NAME} tried to execute event {event} at BigFoot state")
             return "different_state"
         match event.payload["type"]:
             case "propose":

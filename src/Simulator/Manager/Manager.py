@@ -5,7 +5,7 @@ from Chain.Consensus.PBFT.PBFT_state import PBFT
 from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
 from Chain.Consensus.Tendermint.TM_state import Tendermint
 
-from Engine.Event import Event, SystemEvent
+from Engine.Event import Event
 from Engine.Simulation import Simulation
 
 from Utils import Tools
@@ -52,21 +52,23 @@ class Manager:
     #                    Set Up and Configuration
     # -----------------------------------------------------------
 
-    def load_params(self, config: str = "base.yaml") -> None:
+    def load_params(self, config: str = "base.yaml", overrides: dict | None = None) -> None:
         """
-        Loads simulation parameters from environment variables, config file, and command line arguments.
+        Loads simulation parameters from a config file and applies any overrides.
 
         Args:
             config (str): The configuration file to load parameters from. Defaults to "base.yaml".
+            overrides (dict | None): Parameter overrides with dotted keys, e.g. {"network.num_neighbours": 4}.
+                Keys must exist in the config (see Parameters.apply_overrides).
         """
         Parameters.load_params_from_config(config)
-        Tools.parse_cmd_args()
+        Parameters.apply_overrides(overrides or {})
 
         Tools.set_up_logging()
 
         logger.debug(f"Loaded simulation parameters from config: {config}")
 
-        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_CP"]]
+        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_cp"]]
         Parameters.simulation["event_id"] = 0
 
         logger.debug(f"Parameters loaded. Application CP: {Parameters.application['CP']}")
@@ -79,7 +81,7 @@ class Manager:
             num_nodes (int): Number of nodes to initialize. If -1, uses value from parameters. Defaults to -1.
         """
         if num_nodes != -1:
-            Parameters.application["Nn"] = num_nodes
+            Parameters.application["num_nodes"] = num_nodes
             Parameters.calculate_fault_tolerance()
             logger.debug(f"Number of nodes set to {num_nodes} and fault tolerance calculated.")
 
@@ -100,9 +102,6 @@ class Manager:
             logger.debug("Loading workload from file.")
             load_workload()
 
-        if Parameters.simulation.get("print_info", False):
-            print(self.simulation_details_to_string())
-
     # -----------------------------------------------------------
     #                      Managed Simulation Logic
     # -----------------------------------------------------------
@@ -115,7 +114,7 @@ class Manager:
             self.update_sim()
 
         if Parameters.simulation["snapshot_interval"] != -1:
-            Snapshots.save_snapshots()
+            Snapshots.save_snapshots(Parameters.simulation["run_name"])
 
     def finished(self) -> bool:
         """
@@ -124,8 +123,8 @@ class Manager:
         Returns:
             bool: True if any finish condition is met, otherwise False.
         """
-        if times_out := (Parameters.simulation["simTime"] != -1):
-            times_out = self.sim.clock >= Parameters.simulation["simTime"]
+        if times_out := (Parameters.simulation["sim_time"] != -1):
+            times_out = self.sim.clock >= Parameters.simulation["sim_time"]
 
         if reached_blocks := (Parameters.simulation["stop_after_blocks"] != -1):
             reached_blocks = Metrics.confirmed_blocks(self.sim) >= Parameters.simulation["stop_after_blocks"]
@@ -231,28 +230,3 @@ class Manager:
             case _:
                 logger.error(f"Unhandled system event type: {event.payload['type']}")
                 raise ValueError(f"Event '{event.payload['type']}'was not handled by its own handler...")
-
-    # -----------------------------------------------------------
-    #                      UTILITY
-    # -----------------------------------------------------------
-
-    def simulation_details_to_string(self) -> str:
-        """
-        Returns a string with details about the simulation, including node info and simulation parameters.
-
-        Returns:
-            str: A formatted string with simulation and node details.
-        """
-        s = Tools.color("-" * 28 + "NODE INFO" + "-" * 28) + "\n"
-        s += ("NODE\tLOCATION\tBANDWIDTH\tCP\tNEIGHBOURS") + "\n"
-        for n in self.sim.nodes:
-            neigh_list = ",".join([str(n.id) for n in n.neighbours])
-            cp_name = "None"
-            if n.cp is not None:
-                cp_name = n.cp.NAME
-
-            s += f"{n.id:3d} {n.location:12}\t{n.bandwidth}\t{cp_name:10}\t{neigh_list:12}" + "\n"
-
-        s += Tools.color("-" * 25 + "SIM PARAMETERS" + "-" * 25) + "\n"
-        s += Parameters.parameters_to_string()
-        return s

@@ -1,8 +1,8 @@
-from Parameters import Parameters
-
 from Engine.Event import SystemEvent
 
 from Chain.TransactionFactory import TransactionFactory
+
+from Utils import Report
 
 from typing import List, TYPE_CHECKING
 
@@ -109,7 +109,6 @@ def schedule_scenario_fault_and_recovery_events(manager: "Manager", fault_list: 
         node = manager.sim.nodes[entry[0]]
 
         event = SystemEvent(time=fail_at, payload={"type": "scenario_fault", "node": node})
-        node.behaviour.fault_event = event
         manager.sim.q.add_event(event)
 
         recover_at = entry[1] + entry[2]
@@ -130,6 +129,7 @@ def handle_scenario_fault_event(manager: "Manager", event: SystemEvent) -> None:
         None
     """
     event.payload["node"].kill()
+    Report.print_update(event.time, "FAULT", f"node {event.payload['node'].id} failed")
 
 
 def handle_scenario_recovery_event(manager: "Manager", event: SystemEvent) -> None:
@@ -147,3 +147,4 @@ def handle_scenario_recovery_event(manager: "Manager", event: SystemEvent) -> No
     time = event.time
 
     node.resurrect(time)
+    Report.print_update(time, "FAULT", f"node {node.id} recovered")

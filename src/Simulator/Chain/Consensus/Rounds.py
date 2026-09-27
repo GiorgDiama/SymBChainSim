@@ -121,7 +121,7 @@ def handle_round_change_msg(event: "MessageEvent") -> str:
 
     # try to count the vote (if message contains an invalid vote return)
     if (ret := process_round_change_vote(node, new_round, event.creator)) == "invalid":
-        logger.debug(f"invalid message - sender already voted for higher round")
+        logger.debug("invalid message - sender already voted for higher round")
         return ret
 
     if len(msgs[new_round]) == Parameters.application["f"] + 1:

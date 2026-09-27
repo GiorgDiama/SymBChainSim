@@ -14,14 +14,14 @@ def schedule_transaction_generation_event(manager: "Manager", init: bool = False
 
     Args:
         manager (Manager): Simulation manager.
-        init (bool): If True, schedule at current clock; otherwise offset by TI_dur.
+        init (bool): If True, schedule at current clock; otherwise offset by tx_interval.
 
     Returns:
         None
     """
     time = manager.sim.clock
     if not init:
-        time += Parameters.application["TI_dur"]
+        time += Parameters.application["tx_interval"]
 
     event = SystemEvent(
         time=time,

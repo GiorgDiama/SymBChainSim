@@ -66,30 +66,12 @@ def take_snapshot(sim: "Simulation", start_from: float = 0) -> None:
     Metrics.snapshot_count += 1
 
 
-def calculate_snapshot_metrics(final_sim: "Simulation") -> None:
-    """Calculates metrics for stored snapshots.
-
-    Args:
-        final_sim (Simulation): The final simulation state.
-    """
-    for snapshot in Metrics.snapshots:
-        start, end = snapshot["time_last"], snapshot["time"]
-
-        for node in final_sim.nodes:
-            blocks = []
-
-            for b in node.blockchain:
-                if b.time_added >= end:
-                    break
-                if b.time_added >= start:
-                    blocks.append(b)
-
-
 def save_snapshots(name: str = "snapshot") -> None:
     """Saves snapshots to a JSON file.
 
     Args:
         name (str): Name of the output file.
     """
-    with open(SNAPSHOT_PATH + f"{name}.json", "w") as f:
+    path = SNAPSHOT_PATH + f"{name}.json"
+    with open(path, "w") as f:
         json.dump(Metrics.snapshots, f, indent=2)

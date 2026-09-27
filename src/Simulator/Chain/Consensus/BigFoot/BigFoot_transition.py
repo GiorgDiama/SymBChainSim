@@ -141,7 +141,6 @@ def prepare(state: "BigFoot", event: "Event") -> str:
     """
     time = event.time
     block = event.payload["block"]
-    round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] PREPARE: Processing prepare vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}, fast_path: {state.fast_path}")
 
     # validate message: old (invalid), current (continue processing), future (valid, add to backlog)
@@ -185,8 +184,8 @@ def prepare(state: "BigFoot", event: "Event") -> str:
                 # -----------------------------------------------------------
                 #                      FAST PATH
                 # -----------------------------------------------------------
-                logger.debug(f"[Node {state.node.id}] PREPARE: Using FAST PATH, required votes: {Parameters.application['Nn'] - 1}")
-                if state.count_votes("prepare") == Parameters.application["Nn"] - 1:
+                logger.debug(f"[Node {state.node.id}] PREPARE: Using FAST PATH, required votes: {Parameters.application['num_nodes'] - 1}")
+                if state.count_votes("prepare") == Parameters.application["num_nodes"] - 1:
                     logger.debug(f"[Node {state.node.id}] PREPARE: Fast path successful! Adding block {block.id} to blockchain")
                     state.node.add_block(state.block, time)
 
@@ -235,7 +234,6 @@ def commit(state: "BigFoot", event: "Event") -> str:
     """
     time = event.time
     block = event.payload["block"]
-    round = state.rounds.round
     logger.debug(f"[Node {state.node.id}] COMMIT: Processing commit vote from node {event.creator} for block {block.id} at time {time}, current state: {state.state}")
 
     # validate message: old (invalid), current (continue processing), future (valid, add to backlog)

@@ -34,7 +34,7 @@ def handle_timeout(state: "BigFoot", event: "Event"):
         state.fast_path_timeout = None
 
         if not state.node.state.synced:
-            logger.debug(f"INVALID - node is desynced")
+            logger.debug("INVALID - node is desynced")
             return "handled"
 
         logger.debug(f"Node {state.node.id} had it's fast path time out for round {state.rounds.round}!")

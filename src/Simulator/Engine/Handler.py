@@ -96,7 +96,7 @@ def handle_backlog(node: "Node", call_time: float) -> None:
         logger.debug(f"BACKLOG CHECK: {event.payload['type']} creator:{'' if event.creator is None else event.creator.id} actor:{'' if event.actor is None else event.actor.id} time:{event.time}")
 
         Tools.debug_logs(
-            msg=f"",
+            msg="",
             input=f"HANDLING BACKLOG: {event} ",
             in_col="43",
             clear=False,

@@ -24,7 +24,7 @@ class Transaction:
         creator (int): ID of the node that created the transaction.
         id (int): Unique identifier for the transaction.
         timestamp (float): Time when the transaction was created.
-        size (float): Size of the transaction in bytes.
+        size (float): Size of the transaction in MB.
         processed (bool): Whether the transaction has been processed/committed.
     """
 
@@ -103,26 +103,26 @@ class TransactionFactory:
         Adds transactions from a list (provided by a scenario) to the simulation.
 
         Args:
-            txion_list (List[tuple]): List of transactions in format (creator, id, timestamp, size).
+            txion_list (List[tuple]): List of transactions in format (creator, id, timestamp, size in MB).
         """
         logger.debug(f"Adding scenario transactions: {len(txion_list)} transactions")
 
         for creator, id, timestamp, size in txion_list:
-            t = Transaction(creator, id, timestamp, size / 1e6)
+            t = Transaction(creator, id, timestamp, size)
             TransactionFactory.transaction_prop(t)
 
     @staticmethod
     def generate_interval_txions(start: float) -> None:
         """
-        Generates transactions for the interval [start, start+TI_dur] based on the current configuration.
+        Generates transactions for the interval [start, start+tx_interval] based on the current configuration.
 
         Args:
             start (float): Start time for transaction generation.
         """
         logger.debug(f"Generating interval transactions starting at {start}")
 
-        for second in range(round(start), round(start + Parameters.application["TI_dur"])):
-            for _ in range(Parameters.application["Tn"]):
+        for second in range(round(start), round(start + Parameters.application["tx_interval"])):
+            for _ in range(Parameters.application["tx_per_sec"]):
                 if Parameters.simulation["stop_after_tx"] != -1 and TransactionFactory.produced_tx == Parameters.simulation["stop_after_tx"]:
                     logger.debug("Reached stop_after_tx limit, stopping transaction generation.")
                     return
@@ -132,7 +132,7 @@ class TransactionFactory:
 
                 timestamp = second
 
-                size = random.expovariate(1 / Parameters.application["Tsize"])
+                size = random.expovariate(1 / Parameters.application["tx_size"])
                 size += Parameters.application["base_transaction_size"]
 
                 creator = random.choice(TransactionFactory.nodes)
@@ -232,26 +232,6 @@ class TransactionFactory:
             case _:
                 logger.error(f"No such mempool model: {Parameters.application['transaction_model']}")
                 raise ValueError(f"No such mempool model: {Parameters.application['transaction_model']}")
-
-    @staticmethod
-    def removed_processed(pool: Deque[Transaction]) -> Deque[Transaction]:
-        """
-        Returns a new pool without processed transactions.
-
-        Args:
-            pool (Deque[Transaction]): Pool to filter.
-        Returns:
-            Deque[Transaction]: New pool without processed transactions.
-        """
-        logger.debug("Removing processed transactions from pool")
-
-        new_pool = deque([])
-        while pool:
-            tx = pool.popleft()
-            if tx.processed:
-                continue
-            new_pool.append(tx)
-        return new_pool
 
     @staticmethod
     def _mark_pool(txions: List[Transaction], pool: Deque[Transaction]) -> Deque[Transaction]:

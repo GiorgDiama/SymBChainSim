@@ -9,19 +9,14 @@ Scenario JSON Schema
             'end': end_time
             'network' : [(node, BW)...]
             'behaviour': [(node, fail_at, duration)]
-            'transactions': [(creator, id, timestamp, size)...]
+            'transactions': [(creator, id, timestamp, size in MB)...]
         '2':  ...
 """
 
 import json
 from bisect import insort
 import random
-import sys
-
-############### SEED ############
-seed = 5
-random.seed(seed)
-############## SEED ############
+import argparse
 
 
 def generate(name: str, parameters_dict: dict) -> None:
@@ -108,10 +103,10 @@ def generate(name: str, parameters_dict: dict) -> None:
 #     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
 #     "fail_duration": ((20, 5), (60, 10), (120, 20)),
 #     "workloads": [(500, 100), (1_000, 200), (2_000, 500)],
-#     "sizes": (8, 20.5),
+#     "sizes": (0.0016, 0.004),
 # }
 
-parameters_dict = {
+DEFAULT_PARAMETERS = {
     "dur": 1200,
     "ti_mu": 300,
     "ti_sigma": 20,
@@ -119,12 +114,36 @@ parameters_dict = {
     "networks": [(10, 0.1), (5, 0.1), (2.5, 0.1)],
     "fail_duration": [(20, 5), (60, 10), (120, 20)],
     "workloads": [(50, 10), (100, 20), (100, 50)],
-    "sizes": (8, 20.5),
+    "sizes": (0.0016, 0.004),  # transaction size range in MB
 }
 
-if "--name" in sys.argv:
-    name_index = sys.argv.index("--name")
-    name = sys.argv[name_index + 1]
-    generate(name=name, parameters_dict=parameters_dict)
-else:
-    print(f"You must provide a scenario name using the --name.")
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Generate a scenario file in src/Resources/Scenarios.",
+        epilog="Network, fault and workload distributions are set in DEFAULT_PARAMETERS in this file.",
+    )
+    parser.add_argument("--name", required=True, help="the scenario is saved as src/Resources/Scenarios/<name>.json")
+    parser.add_argument("--seed", type=int, default=5, help="random seed (default: 5)")
+    parser.add_argument("--duration", type=int, default=DEFAULT_PARAMETERS["dur"], help="scenario duration in seconds (default: %(default)s)")
+    parser.add_argument("--num-nodes", type=int, default=DEFAULT_PARAMETERS["num_nodes"], help="number of nodes (default: %(default)s)")
+    parser.add_argument(
+        "--interval-mean", type=float, default=DEFAULT_PARAMETERS["ti_mu"], help="mean interval length in seconds (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--interval-dev", type=float, default=DEFAULT_PARAMETERS["ti_sigma"], help="interval length standard deviation (default: %(default)s)"
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    random.seed(args.seed)
+
+    parameters_dict = DEFAULT_PARAMETERS | {
+        "dur": args.duration,
+        "num_nodes": args.num_nodes,
+        "ti_mu": args.interval_mean,
+        "ti_sigma": args.interval_dev,
+    }
+    generate(name=args.name, parameters_dict=parameters_dict)

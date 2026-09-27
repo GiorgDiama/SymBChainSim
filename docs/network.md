@@ -16,7 +16,7 @@ The Network module models the blockchain peer-to-peer layer used by nodes to exc
 ### Delay model (essentials)
 Total propagation delay is:
 
-- **Transmission delay**: message_size / effective_bandwidth
+- **Transmission delay**: message_size (MB) / effective_bandwidth (MB/s)
 - **Latency**: one of the following, chosen by configuration
   - measured latencies from a dataset (location to location)
   - distance-derived latencies via a simple linear model (single-trip)

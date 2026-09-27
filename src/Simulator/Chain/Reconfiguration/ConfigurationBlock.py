@@ -49,30 +49,6 @@ class ConfigurationBlock:
         return new_block
 
     @staticmethod
-    def from_json(data: Dict[str, Any]) -> "ConfigurationBlock":
-        """
-        Creates a ConfigurationBlock instance from JSON data.
-
-        Args:
-            data (Dict[str, Any]): Dictionary containing block data.
-
-        Returns:
-            ConfigurationBlock: A new ConfigurationBlock instance created from the JSON data.
-        """
-        block = ConfigurationBlock(
-            depth=data["depth"],
-            id=data["id"],
-            previous=data["previous"],
-            proposer=data["proposer"],
-            size=data["size"],
-            consensus="PBFT",
-        )
-        block.time_created = data["time_created"]
-        block.extra_data = data["extra_data"]
-        block.configuration = data["configuration"]
-        return block
-
-    @staticmethod
     def genesis_block() -> "ConfigurationBlock":
         """
         Generates the genesis configuration block with the initial configuration.
@@ -86,8 +62,8 @@ class ConfigurationBlock:
         genesis_block.extra_data["round"] = -1
         genesis_block.size = 0.1
         genesis_block.configuration = {
-            "CP": Parameters.simulation["init_CP"],
-            "block_size": Parameters.data["Bsize"],
+            "CP": Parameters.simulation["init_cp"],
+            "block_size": Parameters.data["max_block_size"],
             "block_time": Parameters.data["block_time"],
         }
         Parameters.global_configuration_chain = [genesis_block]

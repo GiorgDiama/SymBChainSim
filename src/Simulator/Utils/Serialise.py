@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, Dict, Any
 
 if TYPE_CHECKING:
-    from Engine.Simulation import Simulation
     from Chain.Block import Block
     from Chain.Reconfiguration.ConfigurationBlock import ConfigurationBlock
     from Chain.Node import Node
@@ -86,19 +85,3 @@ def serialisable_configuration_block(block: "ConfigurationBlock") -> Dict[str, A
     block_info["size"] = block.size
     block_info["extra_data"] = block.extra_data
     return block_info
-
-
-def serialise_sim_state(sim: "Simulation") -> Dict[int, Dict[str, Any]]:
-    """
-    Creates a serializable representation of the simulation state.
-
-    Args:
-        sim (Simulation): The simulation instance to serialize.
-
-    Returns:
-        Dict[int, Dict[str, Any]]: Serializable simulation state.
-    """
-    ser_state = {}
-    for node in sim.nodes:
-        ser_state[node.id] = serialisable_node(node)
-    return ser_state

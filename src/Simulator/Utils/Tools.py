@@ -2,12 +2,8 @@ from Parameters import Parameters
 
 from Engine.Event import MessageEvent, SystemEvent
 
-from Utils import Serialise
 
 import os
-import sys
-import yaml
-import json
 import logging
 
 """ A collection of useful utility functions and tools for SBS """
@@ -20,12 +16,13 @@ def set_up_logging():
     formatter = logging.Formatter(LOGGER_FORMAT)
 
     handlers = []
+    missing_log_dir = False
     try:
         file_handler = logging.FileHandler(LOG_PATH, mode="w")
         file_handler.setFormatter(formatter)
         handlers.append(file_handler)
     except FileNotFoundError:
-        print("WARNING: logs directory not found, skipping writing logs...")
+        missing_log_dir = True
 
     console_handler = logging.StreamHandler()
     console_handler.setFormatter(formatter)
@@ -44,140 +41,8 @@ def set_up_logging():
 
     logging.basicConfig(level=LEVEL, handlers=handlers, force=True)
 
-
-def get_named_cmd_arg(name):
-    """
-    Searches argv for a patterns of type "--opt_name value" and returns value if opt_name==name
-    """
-    if name in sys.argv:
-        return sys.argv[sys.argv.index(name) + 1]
-    else:
-        return None
-
-
-def parse_cmd_args():
-    """
-    Modifies simulation parameters based on cmd arguments
-    """
-    if "--no-debug" in sys.argv:
-        Parameters.simulation["debugging_mode"] = False
-
-    if "--debug" in sys.argv:
-        Parameters.simulation["debugging_mode"] = True
-
-    if "--no-reconfig" in sys.argv:
-        Parameters.reconfiguration["optimisation_chain"] = False
-
-    if "--docker" in sys.argv:
-        Parameters.reconfiguration["local_service"] = False
-
-    if param := get_named_cmd_arg("--debug-at"):
-        Parameters.simulation["start_debugging_at"] = float(param)
-
-    if (param := get_named_cmd_arg("--gossip")) is not None:
-        Parameters.network["gossip"] = False if param == "False" else True
-
-    if param := get_named_cmd_arg("--peers"):
-        Parameters.network["num_neighbours"] = int(param)
-
-    if (param := get_named_cmd_arg("--bandwidth_mean")) is not None:
-        Parameters.network["bandwidth"]["mean"] = float(param)
-
-    if (param := get_named_cmd_arg("--bandwidth_dev")) is not None:
-        Parameters.network["bandwidth"]["dev"] = float(param)
-
-    if (param := get_named_cmd_arg("--cp")) is not None:
-        Parameters.simulation["init_CP"] = param
-
-
-####################### Simulation Results Analysis #############################
-
-
-def save_simulation_results(sim, name="results"):
-    blockchains = {}
-    for node in sim.nodes:
-        blockchains[node.id] = []
-        for block in node.blockchain[1:]:
-            blockchains[node.id].append(
-                {
-                    "size": block.size,
-                    "timestamp": block.time_added,
-                    "tx": [(x.id, x.timestamp) for x in block.transactions],
-                }
-            )
-
-    with open(f"output/{name}.json", "w") as f:
-        json.dump(blockchains, f, indent=4)
-
-
-def get_blocks_by_cp(sim, simple=True):
-    if simple:
-        for n in sim.nodes:
-            bc = n.blockchain[1:]
-            total_blocks = len(bc)
-            CP_blocks = {}
-            total_synced = len([b for b in bc if b.extra_data.get("synced", False)])
-            for key in Parameters.CPs:
-                CP_blocks[key] = len([x for x in bc if x.consensus == key])
-            print(
-                f"{f'node {n.id}':8}",
-                "TOTAL BLOCKS:",
-                total_blocks,
-                "--- BLOCKS PER CP:",
-                CP_blocks,
-                "Synced blocks:",
-                total_synced,
-            )
-        return
-
-    for n in sim.nodes:
-        bc = n.blockchain[1:]
-        blocks = ""
-        for cur, next in zip(bc[:-1], bc[1:]):
-            blocks += cur.consensus.NAME + " "
-            if cur.consensus != next.consensus:
-                blocks += "SW"
-
-        blocks_by_cp = blocks.split("SW")
-
-        print(
-            n,
-            "->".join([f"{x.split(' ')[0]}:{len(x.split(' '))}" for x in blocks_by_cp]),
-            f"| TOTAL: {len(bc)}",
-        )
-
-
-def dump_reconfiguration_chain(manager):
-    if "Metrics" in Parameters.reconfiguration.keys():
-        conf_block_ids = Parameters.reconfiguration["Metrics"]["blocks"] = {}
-        for block in Parameters.global_configuration_chain:
-            assert block.id not in conf_block_ids
-            print(
-                block.depth,
-                f"{str(block.configuration):40}",
-                round(block.extra_data.get("requested", -1), 2),
-                round(block.extra_data.get("agreed", -1), 2),
-            )
-            conf_block_ids[block.id] = {}
-
-        for node in manager.sim.nodes:
-            for block in node.reconfiguration_state.confchain:
-                conf_block_ids[block.id][node.id] = Serialise.serialisable_configuration_block(block)
-
-        Parameters.reconfiguration["Metrics"]["global_chain"] = [Serialise.serialisable_block(block, transactions=False) for block in Parameters.simulation["blockchain"].values()]
-        with open("Results/Sensitivity/data.json", "w") as f:
-            json.dump(Parameters.reconfiguration["Metrics"], f, indent=2)
-
-
-def print_events():
-    for key, value in Parameters.simulation["events"].items():
-        if isinstance(value, dict):
-            events_to_list = ((node, num) for node, num in value.items())
-            events_to_list = sorted(events_to_list, key=lambda x: x[0])
-            s = " | ".join(f"{node}:{num:<5}" for node, num in events_to_list)
-            print(f"{key:<18}: {sum(list(value.values())):<5} --> {s}")
-        else:
-            print(f"{key:<18}: {value}")
+    if missing_log_dir:
+        logging.getLogger("Tools").warning(f"logs directory not found ({LOG_PATH}), skipping writing logs...")
 
 
 ############################ DEBUGGER ###########################
@@ -315,26 +180,6 @@ def sim_info(simulator, print_event_queues=True):
 
         s += "\n" + node_cp_states
         return s
-
-
-####################### YAML ######################
-
-
-def read_yaml(path):
-    """
-    Reads a yaml file - assumes path is relevant to SBS_SRC
-    """
-    with open(Parameters.path_to_src + "/" + path, "rb") as f:
-        data = yaml.safe_load(f)
-    return data
-
-
-def write_yaml(data, path):
-    """
-    Write a yaml file - assumes path is relevant to SBS_SRC
-    """
-    with open(Parameters.path_to_src + "/" + path, "w+") as f:
-        yaml.dump(data, f)
 
 
 ###################### COLOR #####################
