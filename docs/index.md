@@ -1,4 +1,10 @@
-# SymBChainSim
+---
+title: SymBChainSim
+---
+
+<p align="center" markdown>
+![SymBChainSim](assets/SBS_logo.png){ width="450"  }
+</p>
 
 SymBChainSim (SBS) is a discrete-event blockchain simulator written in Python, built for blockchain digital twins.
 Data-driven: supports updating the simulated system (network, nodes, etc.) from data while the simulation runs.
