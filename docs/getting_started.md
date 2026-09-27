@@ -124,5 +124,5 @@ uv run Blockchain.py --set simulation.sim_time=300 -v
 
 - [Compare two runs](tutorials/compare_runs.md) and plot them side by side.
 - [Add failing nodes and a changing workload and network](tutorials/runtime_changes.md).
-- [Run a scenario](tutorials/scenarios.md) with changing network, workload and node failures.
+- [Generate and use scenarios](tutorials/scenarios.md) to run protocols under the same changing conditions.
 - Curious how it works inside? Start with [DES in 2 minutes](concepts/des.md).
