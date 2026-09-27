@@ -1,8 +1,8 @@
 # SymBChainSim
 
-SymBChainSim (SBS) is a blockchain simulator written in Python.
-You can change the blockchain **while the simulation runs**.
-For example, you can switch the consensus protocol, the block size or the network conditions mid-run.
+SymBChainSim (SBS) is a discrete-event blockchain simulator written in Python, built for blockchain digital twins.
+Data-driven: supports updating the simulated system (network, nodes, etc.) from data while the simulation runs.
+Reconfiguration: supports changes to the blockchain's configuration (the consensus protocol, block size, etc) during runtime and models the effects.
 
 ## What you can do with SBS
 
@@ -50,7 +50,7 @@ The output shows each switch:
 
 -   :material-lightbulb: **[Concepts](concepts/des.md)**
 
-    Optional. How SBS models a blockchain and its consensus.
+    How SBS models a blockchain and its consensus.
 
 -   :material-robot: **[Use SBS with an agent](reference/agents.md)**
 
@@ -60,11 +60,12 @@ The output shows each switch:
 
 ## Why SBS exists
 
-SBS was built to support **blockchain digital twins**.
-A digital twin is a simulation that runs next to a real system and helps manage it.
-To do this, the simulation must follow changes in the real system as they happen.
-This is why SBS supports changes during a run.
-SBS also works as a general blockchain simulator.
+SBS was built to support blockchain digital twins.
+A digital twin is a virtual model of a real system, kept in sync with it by a stream of data.
+It gives insight into the state of the modelled system, and lets you test a change there before applying it to the real system.
+Keeping a twin in sync means following changes in the real system as they happen, which is why SBS supports runtime updates to the simulated system.
+SBS also models and analyses the effects of reconfiguration, so you can predict the outcome of a change before making it.
+However, you can use SBS as an extensible general-purpose blockchain simulator.
 
 ## Cite SBS
 
