@@ -61,10 +61,15 @@ nav:
       - Runtime changes: tutorials/runtime_changes.md
       - Generate and use scenarios: tutorials/scenarios.md
   - Concepts:
-      - DES in 2 minutes: concepts/des.md
-      - How SBS models a blockchain: concepts/blockchain_model.md
-      - How consensus is modelled: concepts/consensus.md
-  - Reference:
-      - Configuration: reference/configuration.md
-      - Extending SBS: reference/extending.md
-      - Using SBS with an agent: reference/agents.md
+      - Overview: concepts/overview.md
+      - The simulation engine: concepts/simulation_engine.md
+      - Nodes, blocks and transactions: concepts/nodes_blocks_transactions.md
+      - The network: concepts/network.md
+      - Consensus: concepts/consensus.md
+      - The Manager: concepts/manager.md
+      - Reconfiguration: concepts/reconfiguration.md
+  - Guides:
+      - Configuration: guides/configuration.md
+      - Metrics: guides/metrics.md
+      - Extending SBS: guides/extending.md
+      - Using SBS with an agent: guides/agents.md

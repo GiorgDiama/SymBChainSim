@@ -54,11 +54,11 @@ The output shows each switch:
 
     Compare runs, run scenarios and change the blockchain at runtime.
 
--   :material-lightbulb: **[Concepts](concepts/des.md)**
+-   :material-lightbulb: **[Concepts](concepts/overview.md)**
 
     How SBS models a blockchain and its consensus.
 
--   :material-robot: **[Use SBS with an agent](reference/agents.md)**
+-   :material-robot: **[Use SBS with an agent](guides/agents.md)**
 
     Give your coding agent a guide to SBS.
 

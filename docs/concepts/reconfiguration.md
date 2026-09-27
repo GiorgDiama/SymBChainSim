@@ -1,3 +1,3 @@
-# DES in 2 minutes
+# Reconfiguration
 
 *This page is being written.*

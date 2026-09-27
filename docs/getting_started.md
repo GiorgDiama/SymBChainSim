@@ -108,7 +108,7 @@ The other transactions wait, so the transaction confirmation latency grows.
 
 Every `--set` names a setting as `group.name`.
 You can find all the settings, with comments, in [`src/Configs/base.yaml`](https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Configs/base.yaml).
-[Configuration](reference/configuration.md) explains how the config files work.
+[Configuration](guides/configuration.md) explains how the config files work.
 
 ## See more detail
 
@@ -125,4 +125,4 @@ uv run Blockchain.py --set simulation.sim_time=300 -v
 - [Compare two runs](tutorials/compare_runs.md) and plot them side by side.
 - [Add failing nodes and a changing workload and network](tutorials/runtime_changes.md).
 - [Generate and use scenarios](tutorials/scenarios.md) to run protocols under the same changing conditions.
-- Curious how it works inside? Start with [DES in 2 minutes](concepts/des.md).
+- Curious how it works inside? Start with [The simulation engine](concepts/simulation_engine.md).

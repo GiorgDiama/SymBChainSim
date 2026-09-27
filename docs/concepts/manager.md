@@ -1,3 +1,3 @@
-# How SBS models a blockchain
+# The Manager
 
 *This page is being written.*
