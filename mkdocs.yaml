@@ -57,8 +57,8 @@ nav:
   - Get started: getting_started.md
   - Tutorials:
       - Compare two runs: tutorials/compare_runs.md
+      - Runtime changes: tutorials/runtime_changes.md
       - Run a scenario: tutorials/scenarios.md
-      - "Advanced: runtime changes": tutorials/runtime_changes.md
   - Concepts:
       - DES in 2 minutes: concepts/des.md
       - How SBS models a blockchain: concepts/blockchain_model.md

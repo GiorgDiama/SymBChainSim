@@ -83,7 +83,7 @@ You plot it in the first tutorial.
     You can use `--name <name>` to set the name of the output file.
 
 
-## Change one thing
+## Changing the default configuration
 
 Try a different consensus protocol with `--cp`:
 
@@ -123,6 +123,6 @@ uv run Blockchain.py --set simulation.sim_time=300 -v
 ## What next
 
 - [Compare two runs](tutorials/compare_runs.md) and plot them side by side.
-- [Run a scenario](tutorials/scenarios.md) with changing network, workload and node failures.
 - [Change the blockchain during a run](tutorials/runtime_changes.md).
+- [Run a scenario](tutorials/scenarios.md) with changing network, workload and node failures.
 - Curious how it works inside? Start with [DES in 2 minutes](concepts/des.md).

@@ -12,12 +12,13 @@ byzantine:
       delay: 5
     probs: [5, 20]
 
+# The defaults cause frequent faults, used in the "Runtime changes" tutorial to show how protocols cope
 faulty:
   # number of faulty nodes
-  num: 1
+  num: 3
 
   # probabilities for crash
-  mean_fault_range: [120, 200]
+  mean_fault_range: [30, 60]
   
   # how long for the node to recover
-  mean_recovery_range: [20, 50]
+  mean_recovery_range: [20, 40]
