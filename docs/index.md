@@ -58,7 +58,7 @@ The output shows each switch:
 
     How SBS models a blockchain and its consensus.
 
--   :material-robot: **[Use SBS with an agent](guides/agents.md)**
+-   :material-robot: **[Use SBS with an agent](how_to/agents.md)**
 
     Give your coding agent a guide to SBS.
 

@@ -108,7 +108,7 @@ The other transactions wait, so the transaction confirmation latency grows.
 
 Every `--set` names a setting as `group.name`.
 You can find all the settings, with comments, in [`src/Configs/base.yaml`](https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Configs/base.yaml).
-[Configuration](guides/configuration.md) explains how the config files work.
+[Configuration](reference/configuration.md) explains how the config files work.
 
 ## See more detail
 

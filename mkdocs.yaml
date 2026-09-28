@@ -68,8 +68,9 @@ nav:
       - Consensus: concepts/consensus.md
       - The Manager: concepts/manager.md
       - Reconfiguration: concepts/reconfiguration.md
-  - Guides:
-      - Configuration: guides/configuration.md
-      - Metrics: guides/metrics.md
-      - Extending SBS: guides/extending.md
-      - Using SBS with an agent: guides/agents.md
+  - How-to guides:
+      - Extending SBS: how_to/extending.md
+      - Using SBS with an agent: how_to/agents.md
+  - Reference:
+      - Configuration: reference/configuration.md
+      - Metrics: reference/metrics.md

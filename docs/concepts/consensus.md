@@ -35,7 +35,7 @@ In each round, one node proposes a block and the other nodes vote on it.
     The rest of SBS does not depend on voting.
     The engine, the nodes, the network and the transactions are generic.
     To model a permissionless blockchain, you implement its protocol, such as Proof of Work, as a new consensus protocol.
-    See [Extending SBS](../guides/extending.md).
+    See [Extending SBS](../how_to/extending.md).
 
 ## Honest, faulty and malicious nodes
 
@@ -221,7 +221,7 @@ Each protocol is a folder with the same parts:
 Every event of a protocol is tagged with the protocol's name.
 When a node switches to another protocol, the events of the old one are dropped.
 
-To add your own protocol, see [Extending SBS](../guides/extending.md).
+To add your own protocol, see [Extending SBS](../how_to/extending.md).
 
 ## Where it lives
 

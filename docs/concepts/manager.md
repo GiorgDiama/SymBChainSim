@@ -93,7 +93,7 @@ To build one, you write system events that bring in data from the real system.
 2. Add a case for your `type` to `Manager.handle_system_event`.
 3. Schedule the first event in `Manager.init_system_events`, usually behind a config switch.
 
-See [Extending SBS](../guides/extending.md) for more.
+See [Extending SBS](../how_to/extending.md) for more.
 
 ## Where it lives
 
