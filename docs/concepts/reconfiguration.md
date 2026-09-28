@@ -120,7 +120,7 @@ These settings are in the `reconfiguration` group of [`base.yaml`](https://githu
 To turn it on, use `--reconfig`:
 
 ```bash
-uv run python Blockchain.py --reconfig --seed 7 --set simulation.sim_time=700
+uv run Blockchain.py --reconfig --seed 7 --set simulation.sim_time=700
 ```
 
 ```text

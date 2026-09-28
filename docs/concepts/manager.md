@@ -59,7 +59,7 @@ Each faulty node has its own average times, set in [`behaviour_config.yaml`](htt
 | Reconfiguration | Create a new configuration and send it to the nodes | `--reconfig` |
 | Snapshots | Save the state of the simulation every `simulation.snapshot_interval` seconds | On by default. Set the interval to `-1` to turn them off. |
 
-The [Runtime changes](../tutorials/runtime_changes.md) tutorial shows the dynamic, fault and reconfiguration events in a real run.
+The [Runtime changes](../tutorials/runtime_changes.md) tutorial shows the dynamic and fault events in a real run.
 Reconfiguration needs more than one event, because the nodes must agree on the new configuration. See [Reconfiguration](reconfiguration.md).
 
 ## Simulation updates
