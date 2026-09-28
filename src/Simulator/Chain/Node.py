@@ -68,7 +68,6 @@ class Node:
             mean_recovery_time=None,
             recovery_event=None,
             byzantine=None,
-            sync_fault_chance=None,
         )
 
         self.backlog: list["Event"] = []
@@ -348,7 +347,7 @@ class Node:
             s += "NOT FAULTY"
         s += "\t"
         if self.behaviour.byzantine:
-            s += f"{Tools.color('BYZANTINE', 41)} -> fault_chance: {self.behaviour.sync_fault_chance}"
+            s += Tools.color("BYZANTINE", 41)
         else:
             s += "HONEST"
         return s
