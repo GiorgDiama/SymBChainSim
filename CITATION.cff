@@ -1,0 +1,48 @@
+cff-version: 1.2.0
+message: "If you use SymBChainSim, please cite:"
+title: SymBChainSim
+type: software
+repository-code: "https://github.com/GiorgDiama/SymBChainSim"
+url: "https://giorgdiama.github.io/SymBChainSim/"
+license: MIT
+authors:
+  - family-names: Diamantopoulos
+    given-names: Georgios
+references:
+  - type: conference-paper
+    title: "SymBChainSim: A novel simulation tool for dynamic and adaptive blockchain management and its trilemma tradeoff"
+    authors:
+      - family-names: Diamantopoulos
+        given-names: Georgios
+      - family-names: Bahsoon
+        given-names: Rami
+      - family-names: Tziritas
+        given-names: Nikos
+      - family-names: Theodoropoulos
+        given-names: Georgios
+    collection-title: "Proceedings of the 2023 ACM SIGSIM Conference on Principles of Advanced Discrete Simulation"
+    publisher:
+      name: ACM
+    doi: 10.1145/3573900.3591121
+    year: 2023
+    month: 6
+    start: 118
+    end: 127
+  - type: article
+    title: "SymBChainSim: A novel simulation system for info-symbiotic blockchain management"
+    authors:
+      - family-names: Diamantopoulos
+        given-names: Georgios
+      - family-names: Bahsoon
+        given-names: Rami
+      - family-names: Tziritas
+        given-names: Nikos
+      - family-names: Theodoropoulos
+        given-names: Georgios
+    journal: "ACM Transactions on Modeling and Computer Simulation"
+    doi: 10.1145/3704917
+    volume: 35
+    issue: 2
+    year: 2025
+    start: 1
+    end: 25

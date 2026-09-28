@@ -21,12 +21,14 @@ class Behaviour:
         byzantine (dict): Byzantine behaviour parameters loaded from YAML.
         faulty (dict): Faulty behaviour parameters loaded from YAML.
         faulty_nodes (list[Node]): Nodes selected to exhibit faulty behaviour.
+        byzantine_nodes (list[Node]): Nodes selected to be byzantine.
     """
 
     byzantine = {}
     faulty = {}
 
     faulty_nodes = []
+    byzantine_nodes = []
 
     @staticmethod
     def init(manager: "Manager") -> None:
@@ -53,6 +55,11 @@ class Behaviour:
             n.behaviour.faulty = True
             n.behaviour.mean_fault_time = random.randint(*mean_fault_range)
             n.behaviour.mean_recovery_time = random.randint(*mean_recover_range)
+
+        # byzantine nodes are only marked: SBS has no byzantine behaviour model yet
+        Behaviour.byzantine_nodes = random.sample(manager.sim.nodes, k=Behaviour.byzantine["num"])
+        for n in Behaviour.byzantine_nodes:
+            n.behaviour.byzantine = True
 
 
 # -----------------------------------------------------------

@@ -1,6 +1,7 @@
 from Parameters import Parameters
 
 from Utils.Metrics import Metrics
+from Chain.Consensus.Protocols import PROTOCOLS
 from Utils import Tools
 
 import statistics as st
@@ -114,7 +115,7 @@ def print_update(time: float, source: str, what: str, details: str = "") -> None
 
 
 def blocks_per_cp(node) -> dict[str, int]:
-    return {cp: len([b for b in node.blockchain[1:] if b.consensus == cp]) for cp in Parameters.CPs}
+    return {cp: len([b for b in node.blockchain[1:] if b.consensus == cp]) for cp in PROTOCOLS}
 
 
 def print_summary(sim: "Simulation") -> None:
@@ -122,7 +123,7 @@ def print_summary(sim: "Simulation") -> None:
     nodes = [n.id for n in sim.nodes]
 
     blocks = st.mean(n.blockchain_length() for n in sim.nodes)
-    per_cp = {cp: st.mean(blocks_per_cp(n)[cp] for n in sim.nodes) for cp in Parameters.CPs}
+    per_cp = {cp: st.mean(blocks_per_cp(n)[cp] for n in sim.nodes) for cp in PROTOCOLS}
     per_cp = ", ".join(f"{cp} {number(num)}" for cp, num in per_cp.items() if num > 0)
 
     confirmed = st.mean(Metrics.transaction_info[n]["processed_tx"] for n in nodes)

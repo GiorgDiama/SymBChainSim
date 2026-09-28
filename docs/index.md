@@ -1,33 +1,82 @@
-# Introduction to SymbChainSim
+---
+title: SymBChainSim
+---
 
-**SymbChainSim (SBS)** is a blockchain simulation tool written in Python that supports dynamic updates **during runtime**. The motivation behind SymbChainSim is dynamic blockchain optimisation / management while the ultimate goal is the creation of blockchain digital twins. SymbChainSim is designed to be modular and takes a low abstraction approach to modelling consensus protocols to accurately capture their dynamics. 
+<p align="center" markdown>
+![SymBChainSim](assets/SBS_logo.png){ width="450"  }
+</p>
 
-SymbChainSim is a Discrete Event Simulation (DES) tool. A quick introduction to DES can be found [here](https://softwaresim.com/blog/a-gentle-introduction-to-discrete-event-simulation/). In general, working with SymbChainSim does not require deep understanding of the concepts behind DES; an intuitive idea of DES is enough to start using and even extending SBS.
+SymBChainSim (SBS) is a discrete-event blockchain simulator written in Python, built for blockchain digital twins.
+Data-driven: supports updating the simulated system (network, nodes, etc.) from data while the simulation runs.
+Reconfiguration: supports changes to the blockchain's configuration (the consensus protocol, block size, etc) during runtime and models the effects.
 
-## Table of Contents
--   [**Quick Start**](quick_start.md): Get up and running with SymBChainSim. This section covers installation, basic execution, and configuration of your first simulation.
--   [**Simulation Engine**](simulation_engine.md): Delve into the core Discrete Event Simulation (DES) engine that powers SymBChainSim, understanding its components and how to extend them.
--   [**Blockchain Models**](node.md): Details on the fundamental building blocks of the simulated blockchain.s
-    -   **Node**: Details about the generic blockchain node model, its responsibilities and attributes.
-    -   **Block**: Details on the data structure for blocks, including their key fields and helpers.
-    -   **Transaction Factory**: Details on how transactions are produced, propagated, selected, and finalized across the network.
-    -   **Network**: Details on the peer-to-peer layer model, message propagation, delay models, and network topology.
-- [**Consensus**](consensus.md): Understand how consensus is modeled in SBS.
-    -   **Consensus Protocols**: Details the low-abstraction, modular approach to modeling various consensus protocols.
-    -   **High-Level Sync**: The node synchronization mechanism for catching up on missing blockchain data and configuration chains.
-    -   **Rounds**: A generic round-change mechanism used by round-based consensus protocols.
-- [**Manager**](manager.md): The central orchestrator for dynamic simulations.
-    -   **Manager**: The module responsible for setting up, running, and dynamically controlling the simulation.
-    -   **Dynamic Simulation**: Explore how parameters, network behaviors, and workloads are dynamically updated during runtime.
-- [**Reconfiguration**](reconfiguration.md): Details on how SymBChainSim models dynamic reconfiguration of the blockchain system.
-- [**Metrics**](metrics.md): Understand how performance metrics are collected and calculated to provide insights into the blockchain network's behavior.
-- [**Scenarios**](scenarios.md): Details on how to generate custom scenarios that define network conditions, node behaviors, and transaction workloads for comprehensive testing.
-- [**Parameters**](simulation_parameters.md): Get a detailed overview of all configurable parameters that control SymBChainSim's components and behaviors.
+## What you can do with SBS
 
-### Learn more
+- Measure throughput, latency and decentralisation for a blockchain setup.
+- Compare consensus protocols: PBFT, Tendermint and BigFoot.
+- Replay a scenario with changing network speed, workload and node failures.
+- Reconfigure the blockchain during a run and see the effect.
 
-You may find the following publication useful as they discuss the higher level ideas behind the simulator and motivate the design choices. (If you use SymbChainSim please also cite these):
+## Try it
 
->*Diamantopoulos, G., Bahsoon, R., Tziritas, N., & Theodoropoulos, G. (2023, June). Symbchainsim: A novel simulation tool for dynamic and adaptive blockchain management and its trilemma tradeoff. In Proceedings of the 2023 ACM SIGSIM Conference on Principles of Advanced Discrete Simulation (pp. 118-127).*
->
->*Diamantopoulos, G., Bahsoon, R., Tziritas, N., & Theodoropoulos, G. (2025). SymBChainSim: A novel simulation system for info-symbiotic blockchain management. ACM Transactions on Modeling and Computer Simulation, 35(2), 1-25.* 
+You need [uv](https://docs.astral.sh/uv/getting-started/installation/). Then run:
+
+```console
+git clone https://github.com/GiorgDiama/SymBChainSim.git
+cd SymBChainSim/src/Simulator
+uv run Blockchain.py
+```
+
+The first run installs everything it needs. The simulation takes about 30 seconds.
+
+Want to see the blockchain change during a run? Add `--reconfig`:
+
+```console
+uv run Blockchain.py --reconfig
+```
+
+The output shows each switch:
+
+```text
+[RECONFIG]  280.1 s  switched to   Tendermint, max block size 1 MB, block time 0.1 s
+[RECONFIG]  577.3 s  switched to   PBFT, max block size 2 MB, block time 1 s
+```
+
+## Where to go next
+
+<div class="grid cards" markdown>
+
+-   :material-rocket-launch: **[Get started](getting_started.md)**
+
+    Run your first simulation and learn to read the results.
+
+-   :material-school: **[Tutorials](tutorials/compare_runs.md)**
+
+    Compare runs, run scenarios and change the blockchain at runtime.
+
+-   :material-lightbulb: **[Concepts](concepts/overview.md)**
+
+    How SBS models a blockchain and its consensus.
+
+-   :material-robot: **[Use SBS with an agent](how_to/agents.md)**
+
+    Give your coding agent a guide to SBS.
+
+</div>
+
+## Why SBS exists
+
+SBS was built to support blockchain digital twins.
+A digital twin is a virtual model of a real system, kept in sync with it by a stream of data.
+It gives insight into the state of the modelled system, and lets you test a change there before applying it to the real system.
+Keeping a twin in sync means following changes in the real system as they happen, which is why SBS supports runtime updates to the simulated system.
+SBS also models and analyses the effects of reconfiguration, so you can predict the outcome of a change before making it.
+However, you can use SBS as an extensible general-purpose blockchain simulator.
+
+## Cite SBS
+
+If you use SymBChainSim, please cite:
+
+> Diamantopoulos, G., Bahsoon, R., Tziritas, N., & Theodoropoulos, G. (2023). SymBChainSim: A novel simulation tool for dynamic and adaptive blockchain management and its trilemma tradeoff. In *Proceedings of the 2023 ACM SIGSIM Conference on Principles of Advanced Discrete Simulation* (pp. 118–127). https://doi.org/10.1145/3573900.3591121
+
+> Diamantopoulos, G., Bahsoon, R., Tziritas, N., & Theodoropoulos, G. (2025). SymBChainSim: A novel simulation system for info-symbiotic blockchain management. *ACM Transactions on Modeling and Computer Simulation*, 35(2), 1–25. https://doi.org/10.1145/3704917

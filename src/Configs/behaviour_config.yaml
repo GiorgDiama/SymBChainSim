@@ -1,23 +1,16 @@
+# Settings for malicious (byzantine) nodes. SBS has no model for them yet:
+# add your own settings here and the logic in Manager/SystemEvents/BehaviourEvents.py
 byzantine:
   # number of byzantine nodes
   num: 0
 
-  sync:
-    # define the chance a byzantine node will send bad sync data (and the delay that will cause)
-    bad_data:
-      delay: 10
-
-    # define the chance a byzantine node will not respond to a sync message (and the delay that will cause)
-    no_response:
-      delay: 5
-    probs: [5, 20]
-
+# The defaults cause frequent faults, used in the "Runtime changes" tutorial to show how protocols cope
 faulty:
   # number of faulty nodes
-  num: 1
+  num: 3
 
   # probabilities for crash
-  mean_fault_range: [120, 200]
+  mean_fault_range: [30, 60]
   
   # how long for the node to recover
-  mean_recovery_range: [20, 50]
+  mean_recovery_range: [20, 40]

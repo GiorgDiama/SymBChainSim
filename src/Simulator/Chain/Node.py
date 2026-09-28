@@ -2,6 +2,7 @@ from Parameters import Parameters
 
 from Chain.Consensus import HighLevelSync
 from Chain.Consensus.ConsensusProtocol import ConsensusProtocol
+from Chain.Consensus.Protocols import PROTOCOLS
 from Chain.TransactionFactory import TransactionFactory
 from Chain.Block import Block
 
@@ -68,7 +69,6 @@ class Node:
             mean_recovery_time=None,
             recovery_event=None,
             byzantine=None,
-            sync_fault_chance=None,
         )
 
         self.backlog: list["Event"] = []
@@ -86,7 +86,7 @@ class Node:
             round = last_block_round + 1
         """
         protocol = self.reconfiguration_state.confchain[-1].configuration["CP"]
-        self.cp = Parameters.CPs[protocol](self)
+        self.cp = PROTOCOLS[protocol](self)
 
         assert self.cp is not None, "failed to retrieve CP from latest configuration block"
 
@@ -303,7 +303,6 @@ class Node:
                     f"   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} "
                     f"global_pool: {len(TransactionFactory.global_mempool)}\n"
                     f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
-                    f"CHANGE_TO: {Parameters.application['CP'].NAME} | "
                     f"req msg: {Parameters.application['required_messages']} "
                     f"f: {Parameters.application['f']}\n"
                     f"   CP_state: {self.cp.state_to_string()}\n"
@@ -317,8 +316,7 @@ class Node:
                     f"{Tools.color(f'**dead** Node: {self.id}', 41)}\n"
                     f"   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} "
                     f"global_pool: {len(TransactionFactory.global_mempool)}\n"
-                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
-                    f"CHANGE_TO: {Parameters.application['CP'].NAME}\n"
+                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME}\n"
                     f"   CP_state: {self.cp.state_to_string()}\n"
                     f"   BEHAVIOUR: {self.behaviour_state_to_string}\n"
                 )
@@ -348,7 +346,7 @@ class Node:
             s += "NOT FAULTY"
         s += "\t"
         if self.behaviour.byzantine:
-            s += f"{Tools.color('BYZANTINE', 41)} -> fault_chance: {self.behaviour.sync_fault_chance}"
+            s += Tools.color("BYZANTINE", 41)
         else:
             s += "HONEST"
         return s

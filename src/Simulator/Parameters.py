@@ -29,8 +29,6 @@ class Parameters:
 
     behaviour = {}
 
-    CPs = {}
-
     global_configuration_chain = []
 
     @staticmethod

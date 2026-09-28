@@ -1,9 +1,6 @@
 from Parameters import Parameters
 
 from Chain.Network import Network
-from Chain.Consensus.PBFT.PBFT_state import PBFT
-from Chain.Consensus.BigFoot.BigFoot_state import BigFoot
-from Chain.Consensus.Tendermint.TM_state import Tendermint
 
 from Engine.Event import Event
 from Engine.Simulation import Simulation
@@ -38,14 +35,8 @@ class Manager:
 
     def __init__(self) -> None:
         """
-        Initializes the Manager and sets up consensus protocols.
+        Initializes the Manager.
         """
-        Parameters.CPs = {
-            PBFT.NAME: PBFT,
-            BigFoot.NAME: BigFoot,
-            Tendermint.NAME: Tendermint,
-        }
-
         self.sim: Simulation = None
 
     # -----------------------------------------------------------
@@ -68,10 +59,7 @@ class Manager:
 
         logger.debug(f"Loaded simulation parameters from config: {config}")
 
-        Parameters.application["CP"] = Parameters.CPs[Parameters.simulation["init_cp"]]
         Parameters.simulation["event_id"] = 0
-
-        logger.debug(f"Parameters loaded. Application CP: {Parameters.application['CP']}")
 
     def set_up(self, num_nodes: int = -1) -> None:
         """
