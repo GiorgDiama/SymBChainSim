@@ -8,6 +8,7 @@ edit_uri: edit/base/docs/
 theme:
   name: material
   logo: assets/icon.png
+  favicon: assets/favicon.png
   features:
     - announce.dismiss
     - content.code.annotate
