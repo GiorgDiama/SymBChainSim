@@ -1,0 +1,37 @@
+# Builds the docs on every PR that changes them, and deploys them to the gh-pages branch on every push to base
+name: docs
+
+on:
+  push:
+    branches: [base]
+    paths: &docs_paths
+      - "docs/**"
+      - "mkdocs.yaml"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/docs.yml"
+  pull_request:
+    branches: [base]
+    paths: *docs_paths
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Build
+        run: uv run --group docs mkdocs build --strict
+
+      - name: Deploy
+        if: github.event_name != 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          uv run --group docs mkdocs gh-deploy --force --strict
