@@ -1,0 +1,1410 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://giorgdiama.github.io/SymBChainSim/how_to/extending/">
+      
+      
+        <link rel="prev" href="../../concepts/reconfiguration/">
+      
+      
+        <link rel="next" href="../agents/">
+      
+      
+      <link rel="icon" href="../../assets/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+    
+    
+      
+        <title>Extending SBS - SymBChainSim</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.e53b48f4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#extending-sbs" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="SymBChainSim" class="md-header__button md-logo" aria-label="SymBChainSim" data-md-component="logo">
+      
+  <img src="../../assets/icon.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            SymBChainSim
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Extending SBS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/GiorgDiama/SymBChainSim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SymBChainSim
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="SymBChainSim" class="md-nav__button md-logo" aria-label="SymBChainSim" data-md-component="logo">
+      
+  <img src="../../assets/icon.png" alt="logo">
+
+    </a>
+    SymBChainSim
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/GiorgDiama/SymBChainSim" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    SymBChainSim
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Get started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Tutorials
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/compare_runs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Compare two runs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/runtime_changes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Runtime changes
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Generate and use scenarios
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Concepts
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/simulation_engine/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The simulation engine
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/nodes_blocks_transactions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Nodes, blocks and transactions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The network
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/consensus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Consensus
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/manager/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The Manager
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/reconfiguration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Reconfiguration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    How-to guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How-to guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Extending SBS
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Extending SBS
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-map-of-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      A map of the code
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a parameter
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-consensus-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a consensus protocol
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-system-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a system event
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-reconfiguration-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a reconfiguration option
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-decision-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a decision method
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a metric
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-your-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check your change
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Using SBS with an agent
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/metrics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Metrics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#a-map-of-the-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      A map of the code
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a parameter
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-consensus-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a consensus protocol
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-system-event" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a system event
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-reconfiguration-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a reconfiguration option
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-decision-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a decision method
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-a-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      Add a metric
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#check-your-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      Check your change
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="extending-sbs">Extending SBS</h1>
+<p>SBS is built to be changed.
+This page shows how to make the most common changes.
+Each recipe points to the concept page that explains the part you change.</p>
+<h2 id="a-map-of-the-code">A map of the code</h2>
+<p>All the simulator code is in <code>src/Simulator</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Folder or file</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Blockchain.py</code></td>
+<td>The entry point and the command-line flags.</td>
+</tr>
+<tr>
+<td><code>Parameters.py</code></td>
+<td>The loaded config, as global dictionaries such as <code>Parameters.network</code>.</td>
+</tr>
+<tr>
+<td><code>Engine</code></td>
+<td>The event queue, the events and the main loop (see <a href="../../concepts/simulation_engine/">The simulation engine</a>).</td>
+</tr>
+<tr>
+<td><code>Chain</code></td>
+<td>The node, blocks, transactions and the network model (see <a href="../../concepts/nodes_blocks_transactions/">Nodes, blocks and transactions</a> and <a href="../../concepts/network/">The network</a>).</td>
+</tr>
+<tr>
+<td><code>Chain/Consensus</code></td>
+<td>The consensus protocols, one folder each (see <a href="../../concepts/consensus/">Consensus</a>).</td>
+</tr>
+<tr>
+<td><code>Chain/Reconfiguration</code></td>
+<td>The configuration chain and the centralised method (see <a href="../../concepts/reconfiguration/">Reconfiguration</a>).</td>
+</tr>
+<tr>
+<td><code>Manager</code></td>
+<td>The Manager and its system events (see <a href="../../concepts/manager/">The Manager</a>).</td>
+</tr>
+<tr>
+<td><code>Utils</code></td>
+<td>Metrics, snapshots, the printed output and other helpers.</td>
+</tr>
+</tbody>
+</table>
+<p>Run all commands from <code>src/Simulator</code>.</p>
+<h2 id="add-a-parameter">Add a parameter</h2>
+<ol>
+<li>Add the parameter, with a comment, to a group in <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Configs/base.yaml"><code>base.yaml</code></a>.</li>
+<li>If scenario runs need it too, add it to <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Configs/scenario.yaml"><code>scenario.yaml</code></a>.</li>
+<li>Read it in the code through its group, such as <code>Parameters.application["my_parameter"]</code>.</li>
+</ol>
+<p><code>--set</code> works for the new parameter straight away.
+See <a href="../../reference/configuration/">Configuration</a>.</p>
+<h2 id="add-a-consensus-protocol">Add a consensus protocol</h2>
+<p>The easiest way to start is to copy PBFT, which is the simplest protocol.
+In this example, the new protocol is called <code>MyPBFT</code>.</p>
+<p><strong>1. Copy the folder.</strong>
+Copy <code>Chain/Consensus/PBFT</code> to <code>Chain/Consensus/MyPBFT</code>.
+Rename each file from <code>PBFT_*</code> to <code>MyPBFT_*</code>.
+Then replace <code>PBFT</code> with <code>MyPBFT</code> in every file of the new folder.
+This renames the class, its <code>NAME</code>, its imports and its settings in <code>Parameters</code>.</p>
+<p><strong>2. Register the protocol.</strong>
+Four places outside the folder need to know about it.</p>
+<p>In <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Simulator/Chain/Consensus/Protocols.py"><code>Chain/Consensus/Protocols.py</code></a>, add it to <code>PROTOCOLS</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">Chain.Consensus.MyPBFT.MyPBFT_state</span><span class="w"> </span><span class="kn">import</span> <span class="n">MyPBFT</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">PROTOCOLS</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">PBFT</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">PBFT</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">BigFoot</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">BigFoot</span><span class="p">,</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">Tendermint</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">Tendermint</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">MyPBFT</span><span class="o">.</span><span class="n">NAME</span><span class="p">:</span> <span class="n">MyPBFT</span><span class="p">,</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">}</span>
+</code></pre></div>
+<p>In <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Simulator/Parameters.py"><code>Parameters.py</code></a>, add a place for its settings, and load them in <code>load_params_from_config</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>    <span class="n">MyPBFT</span> <span class="o">=</span> <span class="p">{}</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>        <span class="n">Parameters</span><span class="o">.</span><span class="n">MyPBFT</span> <span class="o">=</span> <span class="n">read_yaml</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;consensus&quot;</span><span class="p">][</span><span class="s2">&quot;MyPBFT&quot;</span><span class="p">])</span>
+</code></pre></div>
+<p>In <code>base.yaml</code> and <code>scenario.yaml</code>, add the path to its config file to the <code>consensus</code> group:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">consensus</span><span class="p">:</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">MyPBFT</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Chain/Consensus/MyPBFT/MyPBFT_config.yaml</span>
+</code></pre></div>
+<p><strong>3. Run it.</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="go">uv run Blockchain.py --cp MyPBFT --set simulation.sim_time=300 --set MyPBFT.timeout=5</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>  Blocks                   198  (MyPBFT 198)
+</code></pre></div>
+<p>The results count the blocks of each protocol, so the new name shows up at once.
+To let the random reconfiguration pick it too, add it to <code>reconfiguration.random_configuration.protocols</code>.</p>
+<p><strong>4. Change the logic.</strong>
+Now you can change the copy into your own protocol.
+Each file has one job:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What to change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MyPBFT_state.py</code></td>
+<td>The protocol's data on a node, how a round starts, and how the proposer is chosen. <code>handle_event</code> sends each event type to its handler.</td>
+</tr>
+<tr>
+<td><code>MyPBFT_transition.py</code></td>
+<td>What the node does when it gets each type of message.</td>
+</tr>
+<tr>
+<td><code>MyPBFT_messages.py</code></td>
+<td>How the node builds and sends each type of message.</td>
+</tr>
+<tr>
+<td><code>MyPBFT_timeouts.py</code></td>
+<td>What happens when a round times out.</td>
+</tr>
+<tr>
+<td><code>MyPBFT_config.yaml</code></td>
+<td>The protocol's own settings.</td>
+</tr>
+</tbody>
+</table>
+<p>Keep these rules from PBFT:</p>
+<ul>
+<li>The class must implement the interface in <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Simulator/Chain/Consensus/ConsensusProtocol.py"><code>ConsensusProtocol.py</code></a>.</li>
+<li>Put <code>"CP": state.NAME</code> in the payload of every event. When a node switches protocol, SBS drops the events of the old one.</li>
+<li>Call <code>self.node.update(time)</code> when a new round starts and when a round times out. This is where a node applies a new configuration (see <a href="../../concepts/reconfiguration/#spreading-and-applying-a-new-configuration">Reconfiguration</a>).</li>
+<li>Use the shared round change in <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Simulator/Chain/Consensus/Rounds.py"><code>Rounds.py</code></a>, unless your protocol changes rounds in another way.</li>
+</ul>
+<h2 id="add-a-system-event">Add a system event</h2>
+<p>A system event lets the Manager change the simulation at a given time.
+The steps are on <a href="../../concepts/manager/#adding-your-own-system-event">The Manager</a> page.
+This example raises the transaction rate at a set time, to model a burst of users.</p>
+<p>First, add two parameters to the <code>application</code> group of <code>base.yaml</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="w">  </span><span class="c1"># Raise the transaction rate to burst_tx_per_sec at this time (-1 = no burst)</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="nt">burst_at</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="nt">burst_tx_per_sec</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">300</span>
+</code></pre></div>
+<p>Then write the event in a new file, <code>Manager/SystemEvents/BurstEvents.py</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">Parameters</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parameters</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">Engine.Event</span><span class="w"> </span><span class="kn">import</span> <span class="n">SystemEvent</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">Utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Report</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">Manager.Manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">Manager</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">schedule_burst_event</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="s2">&quot;Manager&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Schedules the start of the burst&quot;&quot;&quot;</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>    <span class="n">time</span> <span class="o">=</span> <span class="n">Parameters</span><span class="o">.</span><span class="n">application</span><span class="p">[</span><span class="s2">&quot;burst_at&quot;</span><span class="p">]</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>    <span class="n">event</span> <span class="o">=</span> <span class="n">SystemEvent</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;burst&quot;</span><span class="p">})</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>    <span class="n">manager</span><span class="o">.</span><span class="n">sim</span><span class="o">.</span><span class="n">q</span><span class="o">.</span><span class="n">add_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="k">def</span><span class="w"> </span><span class="nf">handle_burst_event</span><span class="p">(</span><span class="n">manager</span><span class="p">:</span> <span class="s2">&quot;Manager&quot;</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">SystemEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Raises the transaction rate for the rest of the run&quot;&quot;&quot;</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>    <span class="n">Parameters</span><span class="o">.</span><span class="n">application</span><span class="p">[</span><span class="s2">&quot;tx_per_sec&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Parameters</span><span class="o">.</span><span class="n">application</span><span class="p">[</span><span class="s2">&quot;burst_tx_per_sec&quot;</span><span class="p">]</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>    <span class="n">Report</span><span class="o">.</span><span class="n">print_update</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="s2">&quot;BURST&quot;</span><span class="p">,</span> <span class="s2">&quot;tx rate&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Parameters</span><span class="o">.</span><span class="n">application</span><span class="p">[</span><span class="s1">&#39;tx_per_sec&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> tx/s&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Then connect it in <a href="https://github.com/GiorgDiama/SymBChainSim/blob/base/src/Simulator/Manager/Manager.py"><code>Manager/Manager.py</code></a>.
+Import the file:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">Manager.SystemEvents</span><span class="w"> </span><span class="kn">import</span> <span class="n">BurstEvents</span> <span class="k">as</span> <span class="n">burstSE</span>
+</code></pre></div>
+<p>Schedule the event in <code>init_system_events</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>        <span class="k">if</span> <span class="n">Parameters</span><span class="o">.</span><span class="n">application</span><span class="p">[</span><span class="s2">&quot;burst_at&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>            <span class="n">burstSE</span><span class="o">.</span><span class="n">schedule_burst_event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+<p>And handle it in <code>handle_system_event</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>            <span class="k">case</span> <span class="s2">&quot;burst&quot;</span><span class="p">:</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>                <span class="n">burstSE</span><span class="o">.</span><span class="n">handle_burst_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+</code></pre></div>
+<p>Now run it with a burst at 150 seconds:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="go">uv run Blockchain.py --set application.burst_at=150 --set simulation.sim_time=300</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>SymBChainSim | PBFT | 16 nodes | 300 s | seed 1837413
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>0 / 300 s                 0 blocks           0 tx
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>100 / 300 s              66 blocks      11,865 tx
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    [BURST]      150.0 s  tx rate       300 tx/s
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>200 / 300 s             121 blocks      25,369 tx
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>300 / 300 s             160 blocks      41,619 tx
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a> RESULTS (mean over 16 nodes)
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>  Blocks                   160  (PBFT 160)
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>  Transactions             41,619 confirmed, 19,190 pending
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>  Throughput               139.9 tx/s
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>  Mean latency             12.77 s
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>  Mean block time          1.86 s
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>  Mean block size          0.63 MB
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>  Decentralisation (Gini)  0.15 (0 = perfectly decentralised)
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>Snapshots → Outputs/Snapshots/snapshot.json (plot with ScenarioGenerationAndVisualisation/snapshot_visualisation.ipynb)
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>Finished in 2.6 s
+</code></pre></div>
+<p>PBFT cannot keep up with 300 transactions per second.
+So the pending transactions and the latency grow.</p>
+<div class="admonition note">
+<p class="admonition-title">When the change takes effect</p>
+<p>The transactions are created every <code>application.tx_interval</code> seconds, for the next interval.
+So the new rate starts with the next batch of transactions.</p>
+</div>
+<p>This event happens once.
+To repeat an event, schedule the next one at the end of its handler, as the fault events do.</p>
+<h2 id="add-a-reconfiguration-option">Add a reconfiguration option</h2>
+<p>SBS can reconfigure the protocol, the block size and the block time.
+To add another parameter:</p>
+<ol>
+<li>Add it to the first configuration, in <code>ConfigurationBlock.genesis_block</code>.</li>
+<li>Add it to <code>ReconfigurationState.configuration</code>, the configuration a node currently uses.</li>
+<li>Apply it in <code>ReconfigurationState.try_apply_configuration</code>. The node calls this only at safe points, so think about when your change is safe. If the protocol must restart after the change, return <code>True</code>.</li>
+<li>In the code that uses the parameter, read it from <code>node.reconfiguration_state.configuration</code> instead of <code>Parameters</code>. Each node can then use a different value while the change spreads.</li>
+<li>Add it to the decision method, for example <code>create_random_configuration_block</code>, and add its options to <code>reconfiguration.random_configuration</code>.</li>
+</ol>
+<p>The code is in <a href="https://github.com/GiorgDiama/SymBChainSim/tree/base/src/Simulator/Chain/Reconfiguration"><code>Chain/Reconfiguration</code></a>.</p>
+<h2 id="add-a-decision-method">Add a decision method</h2>
+<p>The centralised method picks each configuration at random.
+You can replace it in two ways:</p>
+<ul>
+<li><strong>Keep the event, change the choice.</strong> Replace the random choice in <code>create_random_configuration_block</code> with your own method, such as a heuristic or a reinforcement learning agent.</li>
+<li><strong>Write a new event.</strong> Write a system event that creates a <code>ConfigurationBlock</code> and sends it with <code>propagate_configuration_block</code>. Use it in place of the reconfiguration event in <code>Manager.init_system_events</code>.</li>
+</ul>
+<p>In both cases, the nodes spread and apply the new configuration in the same way.
+See <a href="../../concepts/reconfiguration/#the-decision-making-mechanism">Reconfiguration</a>.</p>
+<h2 id="add-a-metric">Add a metric</h2>
+<p>See <a href="../../reference/metrics/#adding-a-metric">Adding a metric</a>.</p>
+<h2 id="check-your-change">Check your change</h2>
+<ul>
+<li><strong>Compare the output.</strong> With the same seed and config, SBS gives the same results every time. Run the same command before and after your change, and compare the outputs. If your change should not affect the results, they must be identical.</li>
+<li><strong>Step through events.</strong> With <code>--debug-at TIME</code>, the run switches to debugging mode at that time. It prints the event queue of every node, and it waits for you before each event.</li>
+<li><strong>Read the log.</strong> <code>--set simulation.logging_level=DEBUG</code> prints a line for each step of each node. The log also goes to <code>src/Outputs/Logs/log.txt</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../concepts/reconfiguration/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Reconfiguration">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Reconfiguration
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../agents/" class="md-footer__link md-footer__link--next" aria-label="Next: Using SBS with an agent">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Using SBS with an agent
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>
