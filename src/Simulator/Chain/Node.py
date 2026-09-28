@@ -303,7 +303,6 @@ class Node:
                     f"   LATEST_BLOCKS {self.trunc_ids}  local_pool: {len(self.pool)} "
                     f"global_pool: {len(TransactionFactory.global_mempool)}\n"
                     f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
-                    f"CHANGE_TO: {Parameters.application['CP'].NAME} | "
                     f"req msg: {Parameters.application['required_messages']} "
                     f"f: {Parameters.application['f']}\n"
                     f"   CP_state: {self.cp.state_to_string()}\n"
@@ -317,8 +316,7 @@ class Node:
                     f"{Tools.color(f'**dead** Node: {self.id}', 41)}\n"
                     f"   LATEST_BLOCKS {self.trunc_ids} local_pool: {len(self.pool)} "
                     f"global_pool: {len(TransactionFactory.global_mempool)}\n"
-                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME} | "
-                    f"CHANGE_TO: {Parameters.application['CP'].NAME}\n"
+                    f"   SYNCED: {self.state.synced} | CP: {self.cp.NAME}\n"
                     f"   CP_state: {self.cp.state_to_string()}\n"
                     f"   BEHAVIOUR: {self.behaviour_state_to_string}\n"
                 )
