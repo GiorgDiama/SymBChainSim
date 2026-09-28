@@ -1,6 +1,7 @@
 from Parameters import Parameters
 
 from Manager.Manager import Manager
+from Chain.Consensus.Protocols import PROTOCOLS
 import Manager.ScenariosAndWorkloads as Scenario
 
 from Utils.Metrics import Metrics
@@ -32,7 +33,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--scenario", help="run the named scenario from src/Resources/Scenarios")
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED, help=f"random seed (default: {DEFAULT_SEED})")
     parser.add_argument("--name", help="snapshots are saved to src/Outputs/Snapshots/<name>.json (default: snapshot)")
-    parser.add_argument("--cp", choices=["PBFT", "Tendermint", "BigFoot"], help="consensus protocol to start with")
+    parser.add_argument("--cp", choices=list(PROTOCOLS), help="consensus protocol to start with")
     parser.add_argument("--reconfig", action=argparse.BooleanOptionalAction, help="enable/disable random reconfiguration (not available with --scenario)")
     parser.add_argument("-v", "--verbose", action="store_true", default=None, help="also print the nodes, parameters, per-node metrics and event counts")
     parser.add_argument("--debug", action=argparse.BooleanOptionalAction, help="enable/disable step-by-step debugging mode")

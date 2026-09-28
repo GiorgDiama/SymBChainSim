@@ -2,6 +2,7 @@ from Parameters import Parameters
 
 from Chain.Consensus import HighLevelSync
 from Chain.Consensus.ConsensusProtocol import ConsensusProtocol
+from Chain.Consensus.Protocols import PROTOCOLS
 from Chain.TransactionFactory import TransactionFactory
 from Chain.Block import Block
 
@@ -85,7 +86,7 @@ class Node:
             round = last_block_round + 1
         """
         protocol = self.reconfiguration_state.confchain[-1].configuration["CP"]
-        self.cp = Parameters.CPs[protocol](self)
+        self.cp = PROTOCOLS[protocol](self)
 
         assert self.cp is not None, "failed to retrieve CP from latest configuration block"
 
